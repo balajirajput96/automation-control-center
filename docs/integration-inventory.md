@@ -51,3 +51,11 @@ On-demand execution confirmed that the private Google Drive report folder remain
 ## Antigravity CLI authorization
 
 The official Google Antigravity authorization flow was completed through the user-controlled browser session. The CLI is awaiting the one-time authorization code for final local session setup; no authorization code is stored in this repository.
+
+## Google developer CLI setup
+
+Antigravity CLI is installed at `~/.local/bin/agy` and authenticated through the user-controlled Google OAuth flow as `sellbuildingbazar.in@gmail.com` with Google AI Pro indicated in the CLI. Optional interaction-data sharing was declined. Gemini CLI v0.55.1 is also installed. Its local browser OAuth callback could not complete in this sandbox, so it is configured for the available `GEMINI_API_KEY` authentication mode; a headless health check completed successfully with the response `gemini-cli-automation-ready`.
+
+## Julius access retry
+
+A second Google sign-in attempt for Julius was initiated using the same authenticated Google account. The browser authorization flow again returned to a blank page before a Julius session could be verified, so no Julius dataset, report, or internal schedule has been created from this environment.

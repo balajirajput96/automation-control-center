@@ -4,9 +4,9 @@
 
 ## Executive status
 
-The automation foundation is now established across the services that could be safely verified in this session. A private GitHub repository holds the deployment package, workflow template, prompts, safety rules, Antigravity scheduled-runner scripts, and operational documentation. Google Drive now contains a private **Automation Control Center** folder, while three daily automation layers are active: the Gemini Spark briefing at approximately 08:00 local time, the private control review at 09:15 Asia/Kolkata, and a read-only GitHub Actions validation workflow.
+The automation foundation is now established across the services that could be safely verified in this session. A private GitHub repository holds the deployment package, workflow template, prompts, safety rules, Antigravity scheduled-runner scripts, and operational documentation. Google Drive now contains a private **Automation Control Center** folder. The daily controls are active: the Gemini Spark briefing at approximately 08:00 local time, the **Daily Automation Control and Antigravity Review** at 09:15 Asia/Kolkata, and a read-only GitHub Actions validation workflow.
 
-The local n8n and Antigravity components are prepared but cannot run because no Windows deployment folder is currently bound to this task and neither Docker nor Antigravity CLI is available in the temporary workspace. They require a connected Windows computer and Docker Desktop. Julius has not been completed because its browser session did not authenticate successfully after its Google login attempt. The former n8n Cloud endpoint remains unavailable, so there are no accessible legacy workflows to inspect or migrate.
+Antigravity CLI is now installed and authenticated in this workspace using the user-authorized Google AI Pro account. Gemini CLI is installed and its configured Gemini API integration passed a headless health check. The local n8n service remains blocked because no Windows deployment folder is currently bound to this task and Docker is unavailable in the temporary workspace. Julius has not been completed because its browser OAuth flow returned to a blank page before a Julius session could be verified. The former n8n Cloud endpoint remains unavailable, so there are no accessible legacy workflows to inspect or migrate.
 
 ## Completed work
 
@@ -18,8 +18,10 @@ The local n8n and Antigravity components are prepared but cannot run because no 
 | Daily control review | Active | Runs daily at 09:15 Asia/Kolkata using GitHub and Google Workspace connectors; it assesses readiness and can update only validated documentation in the private repository |
 | Google Drive report destination | Complete | Private folder created: **Automation Control Center** |
 | Google Drive verification | Complete | A read-only Drive request succeeded through the connected Google Workspace integration |
-| Antigravity daily-review design | Prepared | Read-only headless runner, schema-controlled prompt, and Windows Task Scheduler registration script are committed to GitHub |
-| Julius scheduled analysis design | Prepared | Template prompt and setup requirements are stored in the private repository |
+| Antigravity CLI | Complete in the current workspace | Installed, authenticated as `sellbuildingbazar.in@gmail.com` with Google AI Pro, and used to audit and harden the repository |
+| Antigravity daily-review design | Scheduled | Read-only headless runner, schema-controlled prompt, and daily maintenance policy are committed to GitHub and included in the 09:15 review |
+| Gemini CLI | Complete in the current workspace | Installed and verified in the configured Gemini API-key mode with a successful headless health check |
+| Julius scheduled analysis design | Prepared | Template prompt and setup requirements are stored in the private repository; the Julius session remains unverified |
 | GitHub Actions validation | Active and validated | The read-only `Automation Control Health` workflow is scheduled daily and its first manual run completed successfully |
 
 ## Active automation boundaries
@@ -36,13 +38,13 @@ The daily control review also uses a restrictive policy. It can inspect the priv
 |---|---|---|
 | Windows computer connection | Attach the computer to this task and bind an empty folder, such as `C:\n8n` | Enables the free, persistent local n8n and Antigravity installations |
 | Docker Desktop | Install and start Docker Desktop on the connected Windows computer | Required to start local n8n with durable workflow and credential storage |
-| Antigravity CLI | Install `agy`, log in interactively once, then register the supplied daily review | Headless daily tasks require prior local authentication [3] |
+| Persistent Antigravity host | Run the authenticated CLI from a connected Windows computer or another persistent host | The current sandbox is not a guaranteed persistent execution environment for a local daily CLI process |
 | Julius account | Complete a successful Julius sign-in and choose its source dataset and report destination | Julius schedules are created in its own interface, and Julius cannot itself be invoked through a public API [4] |
 | n8n legacy workflows | Restore the correct old instance URL or export workflow JSON files | The previous configured endpoint reports no active workspace, preventing direct inspection or repair |
 
 ## Latest on-demand execution
 
-The connected Google Workspace check confirmed that the private **Automation Control Center** Drive folder remains available. The read-only GitHub Actions validation was also run on demand and completed successfully: [run 31938484966](https://github.com/balajirajput96/automation-control-center/actions/runs/31938484966). No executable n8n, Docker, or Antigravity runtime exists in this temporary environment, so those local jobs could not be started here.
+The connected Google Workspace check confirmed that the private **Automation Control Center** Drive folder remains available. Antigravity completed a read-only repository audit and then applied validated local hardening changes. Gemini CLI completed a headless health check successfully. The updated GitHub Actions validation completed successfully: [run 31944180538](https://github.com/balajirajput96/automation-control-center/actions/runs/31944180538). n8n remains unavailable because Docker and a connected persistent deployment folder are still absent.
 
 ## Repository contents
 
