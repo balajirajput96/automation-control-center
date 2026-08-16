@@ -59,3 +59,7 @@ Antigravity CLI is installed at `~/.local/bin/agy` and authenticated through the
 ## Julius access retry
 
 A second Google sign-in attempt for Julius was initiated using the same authenticated Google account. The browser authorization flow again returned to a blank page before a Julius session could be verified, so no Julius dataset, report, or internal schedule has been created from this environment.
+
+## Latest automated review and repair
+
+The authenticated Antigravity daily review was executed successfully against the private repository. It identified that the original Gemini health-check endpoint was deprecated. The test was migrated to the official stateless Gemini Interactions API using `POST /v1beta/interactions` with `gemini-3.6-flash`; the corrected health check returned `automation-connector-ok`. The follow-up GitHub Actions validation run completed successfully.

@@ -44,7 +44,7 @@ The daily control review also uses a restrictive policy. It can inspect the priv
 
 ## Latest on-demand execution
 
-The connected Google Workspace check confirmed that the private **Automation Control Center** Drive folder remains available. Antigravity completed a read-only repository audit and then applied validated local hardening changes. Gemini CLI completed a headless health check successfully. The updated GitHub Actions validation completed successfully: [run 31944180538](https://github.com/balajirajput96/automation-control-center/actions/runs/31944180538). n8n remains unavailable because Docker and a connected persistent deployment folder are still absent.
+The connected Google Workspace check confirmed that the private **Automation Control Center** Drive folder remains available. Antigravity completed a read-only review report, identified a deprecated Gemini health-check path, and the low-risk repair was implemented. The health check now uses the stateless Gemini Interactions API at the verified `v1beta` path and completed successfully. The updated GitHub Actions validation completed successfully: [run 31945022529](https://github.com/balajirajput96/automation-control-center/actions/runs/31945022529). n8n remains unavailable because Docker and a connected persistent deployment folder are still absent.
 
 ## Repository contents
 
@@ -56,3 +56,4 @@ The project is structured so that configuration is reproducible and secrets are 
 [2]: https://gemini.google/overview/agent/spark/ "Gemini Spark — Google"
 [3]: https://antigravity.google/docs/cli/headless "Headless mode — Google Antigravity Docs"
 [4]: https://julius.ai/docs/get-started/apis "Secret Keys and Connections — Julius"
+[5]: https://ai.google.dev/gemini-api/docs/migrate-to-interactions "Migrating to the Interactions API — Google AI for Developers"
