@@ -1,0 +1,61 @@
+name: Automation Control Health
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "45 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate required automation artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          required=(
+            "README.md"
+            "deploy/n8n-local/docker-compose.yml"
+            "n8n/workflows/daily-automation-control-report.template.json"
+            "antigravity/daily-review-prompt.md"
+            "antigravity/run-daily-review.ps1"
+            "gemini-spark/daily-brief-prompt.md"
+            "julius/scheduled-analysis-prompt.md"
+            "docs/automation-blueprint.md"
+            "docs/implementation-status.md"
+          )
+          for path in "${required[@]}"; do
+            test -f "$path"
+          done
+
+      - name: Validate n8n workflow JSON
+        shell: bash
+        run: |
+          python -m json.tool n8n/workflows/daily-automation-control-report.template.json >/dev/null
+
+      - name: Verify no local secret files are tracked
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! git ls-files | grep -E '(^|/)(\.env|.*\.(key|pem|p12|pfx))$'
+
+      - name: Publish validation summary
+        shell: bash
+        run: |
+          {
+            echo "## Automation Control Health"
+            echo
+            echo "The repository structure and n8n template JSON passed static validation."
+            echo "This workflow is intentionally read-only and does not access credentials or external services."
+          } >> "$GITHUB_STEP_SUMMARY"
