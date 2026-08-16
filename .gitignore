@@ -15,7 +15,9 @@ n8n_data/
 *.sqlite-shm
 *.sqlite-wal
 
-# Operating system and editor artifacts
+# Operating system, editor, and Python artifacts
+__pycache__/
+*.pyc
 .DS_Store
 Thumbs.db
 .vscode/

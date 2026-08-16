@@ -41,6 +41,7 @@ jobs:
             "docs/integration-inventory.md"
             "docs/automation-blueprint.md"
             "docs/implementation-status.md"
+            "docs/gemini-interactions-migration.md"
           )
           for path in "${required[@]}"; do
             test -f "$path"
@@ -64,8 +65,10 @@ jobs:
           grep -q "N8N_ENCRYPTION_KEY" deploy/n8n-local/.env.example
           grep -q "N8N_ENCRYPTION_KEY" deploy/n8n-local/docker-compose.yml
 
-          # Check Gemini script header-based auth and no key query param
+          # Check Gemini Interactions API header-based auth and stateless health-check behavior
           grep -q "x-goog-api-key" scripts/test_gemini.py
+          grep -q "v1beta/interactions" scripts/test_gemini.py
+          grep -q '"store": False' scripts/test_gemini.py
           ! grep -q "generateContent?key=" scripts/test_gemini.py
 
           # Check Antigravity exit-code validation
