@@ -40,6 +40,10 @@ The daily control review also uses a restrictive policy. It can inspect the priv
 | Julius account | Complete a successful Julius sign-in and choose its source dataset and report destination | Julius schedules are created in its own interface, and Julius cannot itself be invoked through a public API [4] |
 | n8n legacy workflows | Restore the correct old instance URL or export workflow JSON files | The previous configured endpoint reports no active workspace, preventing direct inspection or repair |
 
+## Latest on-demand execution
+
+The connected Google Workspace check confirmed that the private **Automation Control Center** Drive folder remains available. The read-only GitHub Actions validation was also run on demand and completed successfully: [run 31938484966](https://github.com/balajirajput96/automation-control-center/actions/runs/31938484966). No executable n8n, Docker, or Antigravity runtime exists in this temporary environment, so those local jobs could not be started here.
+
 ## Repository contents
 
 The project is structured so that configuration is reproducible and secrets are excluded from Git. The `deploy/n8n-local` directory contains the free local Docker setup. The `n8n` directory contains a daily workflow template and credential handling guide. The `antigravity`, `gemini-spark`, and `julius` directories hold their respective automation prompts and setup materials. The `docs` directory preserves the connection inventory, architecture blueprint, and this status report.
