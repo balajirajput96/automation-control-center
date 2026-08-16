@@ -39,3 +39,7 @@ Julius still presented a Log In dialog. A Google sign-in attempt was initiated t
 ## Google Drive report destination
 
 A private Google Drive folder named **Automation Control Center** has been created for future runbooks and approved automation reports. Its Drive folder ID is `1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo`. No existing Drive files were modified or shared.
+
+## GitHub automation validation
+
+A scheduled GitHub Actions workflow named **Automation Control Health** now validates required artifacts, checks n8n template JSON, and verifies that local secret files are not tracked. The initial manual validation run completed successfully: `https://github.com/balajirajput96/automation-control-center/actions/runs/31938128554`.

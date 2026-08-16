@@ -4,9 +4,9 @@
 
 ## Executive status
 
-The automation foundation is now established across the services that could be safely verified in this session. A private GitHub repository holds the deployment package, workflow template, prompts, safety rules, Antigravity scheduled-runner scripts, and operational documentation. Google Drive now contains a private **Automation Control Center** folder, and two complementary daily reviews are active: the Gemini Spark briefing at approximately 08:00 local time and the private control review at 09:15 Asia/Kolkata.
+The automation foundation is now established across the services that could be safely verified in this session. A private GitHub repository holds the deployment package, workflow template, prompts, safety rules, Antigravity scheduled-runner scripts, and operational documentation. Google Drive now contains a private **Automation Control Center** folder, while three daily automation layers are active: the Gemini Spark briefing at approximately 08:00 local time, the private control review at 09:15 Asia/Kolkata, and a read-only GitHub Actions validation workflow.
 
-The local n8n and Antigravity components are prepared but cannot run until a Windows computer folder is connected to the task and Docker Desktop is running. Julius has not been completed because its browser session did not authenticate successfully after its Google login attempt. The former n8n Cloud endpoint remains unavailable, so there are no accessible legacy workflows to inspect or migrate.
+The local n8n and Antigravity components are prepared but cannot run because no Windows deployment folder is currently bound to this task and neither Docker nor Antigravity CLI is available in the temporary workspace. They require a connected Windows computer and Docker Desktop. Julius has not been completed because its browser session did not authenticate successfully after its Google login attempt. The former n8n Cloud endpoint remains unavailable, so there are no accessible legacy workflows to inspect or migrate.
 
 ## Completed work
 
@@ -20,12 +20,13 @@ The local n8n and Antigravity components are prepared but cannot run until a Win
 | Google Drive verification | Complete | A read-only Drive request succeeded through the connected Google Workspace integration |
 | Antigravity daily-review design | Prepared | Read-only headless runner, schema-controlled prompt, and Windows Task Scheduler registration script are committed to GitHub |
 | Julius scheduled analysis design | Prepared | Template prompt and setup requirements are stored in the private repository |
+| GitHub Actions validation | Active and validated | The read-only `Automation Control Health` workflow is scheduled daily and its first manual run completed successfully |
 
 ## Active automation boundaries
 
 The Gemini Spark briefing produces priorities, calendar context, urgent items, overdue follow-ups, automation blockers, document-review items, and an approval-needed section. It is explicitly prohibited from sending messages, creating or editing calendar events, modifying Drive files, sharing documents, spending money, or making bookings.
 
-The daily control review also uses a restrictive policy. It can inspect the private repository and Google Workspace signals, report current blockers, and safely correct factual project documentation. It does not alter credentials, delete data, expose services to the internet, create public repositories, or send third-party messages.
+The daily control review also uses a restrictive policy. It can inspect the private repository and Google Workspace signals, report current blockers, and safely correct factual project documentation. It does not alter credentials, delete data, expose services to the internet, create public repositories, or send third-party messages. Separately, the GitHub Actions validation workflow checks the required automation artifacts, validates the n8n template JSON, and confirms that local secret files are not tracked; its first manual run completed successfully.
 
 > Gemini Spark supports recurring schedules and can work across selected Google services, while maintaining user direction and designed approval points for high-stakes actions. [1] [2]
 
