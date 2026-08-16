@@ -35,3 +35,7 @@ The Google account `sellbuildingbazar.in@gmail.com` is now authenticated in Gemi
 ## Julius authentication check
 
 Julius still presented a Log In dialog. A Google sign-in attempt was initiated through Julius, but the browser returned to a blank page before any Julius session or permission result could be verified. No Julius schedule or data connection has been created.
+
+## Google Drive report destination
+
+A private Google Drive folder named **Automation Control Center** has been created for future runbooks and approved automation reports. Its Drive folder ID is `1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo`. No existing Drive files were modified or shared.
