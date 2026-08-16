@@ -1,0 +1,2 @@
+ALTER TABLE `deployment_targets` ADD CONSTRAINT `deployment_targets_owner_provider_unique` UNIQUE(`ownerId`,`provider`);--> statement-breakpoint
+ALTER TABLE `integrations` ADD CONSTRAINT `integrations_owner_service_unique` UNIQUE(`ownerId`,`service`);

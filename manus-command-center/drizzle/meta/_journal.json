@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1786870990780,
+      "tag": "0000_hesitant_zuras",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1786871208384,
+      "tag": "0001_equal_wiccan",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1786872180392,
+      "tag": "0002_magenta_cobalt_man",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.85rem;
+  --background: oklch(0.995 0.003 225);
+  --foreground: oklch(0.21 0.018 248);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.018 248);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.018 248);
+  --primary: oklch(0.23 0.05 225);
+  --primary-foreground: oklch(0.99 0.005 230);
+  --secondary: oklch(0.98 0.01 211);
+  --secondary-foreground: oklch(0.32 0.02 248);
+  --muted: oklch(0.97 0.006 220);
+  --muted-foreground: oklch(0.53 0.02 248);
+  --accent: oklch(0.96 0.022 207);
+  --accent-foreground: oklch(0.25 0.04 220);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.9 0.012 215);
+  --input: oklch(0.9 0.012 215);
+  --ring: oklch(0.68 0.12 211);
+  --sidebar: oklch(0.99 0.003 230);
+  --sidebar-foreground: oklch(0.21 0.018 248);
+  --sidebar-primary: oklch(0.23 0.05 225);
+  --sidebar-primary-foreground: oklch(0.99 0.005 230);
+  --sidebar-accent: oklch(0.96 0.022 207);
+  --sidebar-accent-foreground: oklch(0.25 0.04 220);
+  --sidebar-border: oklch(0.9 0.012 215);
+  --sidebar-ring: oklch(0.68 0.12 211);
+}
+
+.dark {
+  --background: oklch(0.16 0.018 248);
+  --foreground: oklch(0.94 0.005 225);
+  --card: oklch(0.21 0.018 248);
+  --card-foreground: oklch(0.94 0.005 225);
+  --popover: oklch(0.21 0.018 248);
+  --popover-foreground: oklch(0.94 0.005 225);
+  --secondary: oklch(0.25 0.02 248);
+  --secondary-foreground: oklch(0.9 0.005 225);
+  --muted: oklch(0.25 0.02 248);
+  --muted-foreground: oklch(0.7 0.02 225);
+  --accent: oklch(0.29 0.03 220);
+  --accent-foreground: oklch(0.95 0.005 225);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --sidebar: oklch(0.18 0.018 248);
+  --sidebar-foreground: oklch(0.94 0.005 225);
+}
+
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  body { @apply bg-background text-foreground; font-family: "Manrope", sans-serif; }
+  button:not(:disabled), [role="button"]:not([aria-disabled="true"]), [type="button"]:not(:disabled), [type="submit"]:not(:disabled), [type="reset"]:not(:disabled), a[href], select:not(:disabled), input[type="checkbox"]:not(:disabled), input[type="radio"]:not(:disabled) { @apply cursor-pointer; }
+}
+
+@layer components {
+  .container { width: 100%; margin-inline: auto; padding-inline: 1rem; }
+  .flex { min-height: 0; min-width: 0; }
+  .blueprint-grid { background-image: linear-gradient(to right, rgb(15 76 92 / 0.055) 1px, transparent 1px), linear-gradient(to bottom, rgb(15 76 92 / 0.055) 1px, transparent 1px), radial-gradient(circle at 80% 5%, rgb(207 250 254 / 0.7), transparent 24rem), radial-gradient(circle at 10% 92%, rgb(255 221 230 / 0.44), transparent 20rem); background-size: 28px 28px, 28px 28px, auto, auto; }
+  .blueprint-card { border: 1px solid rgb(203 213 225 / 0.82); border-radius: 1rem; background: rgb(255 255 255 / 0.82); box-shadow: 0 10px 30px rgb(15 23 42 / 0.045); backdrop-filter: blur(16px); }
+  .eyebrow { font-family: "DM Mono", monospace; font-size: 0.64rem; font-weight: 500; letter-spacing: 0.14em; color: rgb(8 145 178); }
+  .formula-label { font-family: "DM Mono", monospace; font-size: 0.62rem; line-height: 1.55; letter-spacing: 0.04em; color: rgb(100 116 139); }
+  .bg-soft-pink { background-color: rgb(255 228 235); }
+}
+
+@media (min-width: 640px) { .container { padding-inline: 1.5rem; } }
+@media (min-width: 1024px) { .container { max-width: 1280px; padding-inline: 2rem; } }
