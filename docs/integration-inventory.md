@@ -63,3 +63,7 @@ A second Google sign-in attempt for Julius was initiated using the same authenti
 ## Latest automated review and repair
 
 The authenticated Antigravity daily review was executed successfully against the private repository. It identified that the original Gemini health-check endpoint was deprecated. The test was migrated to the official stateless Gemini Interactions API using `POST /v1beta/interactions` with `gemini-3.6-flash`; the corrected health check returned `automation-connector-ok`. The follow-up GitHub Actions validation run completed successfully.
+
+## Temporary n8n validation
+
+A temporary, localhost-only n8n Community Edition 2.34.6 instance was initialized with isolated data and a temporary encryption key. The `Daily Automation Control Report (Template)` workflow was imported successfully after adding a stable workflow identifier and a dedicated `Execute Workflow Trigger` for CLI validation. The workflow executed successfully, producing a timestamped control-report item with status `needs_connected_service_checks`. This validates the template structure and local execution path; the temporary service is not a persistent deployment and contains no production credentials.

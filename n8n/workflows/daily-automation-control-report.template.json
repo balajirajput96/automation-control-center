@@ -1,5 +1,6 @@
 {
   "name": "Daily Automation Control Report (Template)",
+  "id": "4a6d2b82-2aaf-4642-98d2-6bcc31c52fb2",
   "nodes": [
     {
       "parameters": {
@@ -55,11 +56,33 @@
         240,
         0
       ]
+    },
+    {
+      "parameters": {},
+      "id": "101d9239-a6c0-40a3-9a9f-67807d29e508",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        160
+      ]
     }
   ],
   "pinData": {},
   "connections": {
     "Daily Schedule": {
+      "main": [
+        [
+          {
+            "node": "Create Control Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow Trigger": {
       "main": [
         [
           {
