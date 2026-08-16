@@ -1,0 +1,26 @@
+# Local secrets and service state
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+secrets/
+credentials/
+
+# n8n local runtime data and exports containing credentials
+n8n_data/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+# Operating system and editor artifacts
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Generated reports and logs
+reports/private/
+logs/
