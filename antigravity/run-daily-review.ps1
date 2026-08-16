@@ -34,7 +34,24 @@ $prompt = Get-Content -Raw -Path $PromptPath
 Push-Location $RepositoryPath
 try {
     $result = & agy -p $prompt --output-format json --json-schema $schema --print-timeout 10m
-    $result | Set-Content -Encoding UTF8 -Path $outputPath
+    $exitCode = $LASTEXITCODE
+    if ($exitCode -ne 0) {
+        throw "Antigravity CLI ('agy') execution failed with exit code $exitCode."
+    }
+
+    $rawContent = if ($result -is [array]) { $result -join "`n" } else { [string]$result }
+    if ([string]::IsNullOrWhiteSpace($rawContent)) {
+        throw "Antigravity CLI ('agy') returned empty output."
+    }
+
+    try {
+        $null = ConvertFrom-Json -InputObject $rawContent -ErrorAction Stop
+    }
+    catch {
+        throw "Antigravity CLI ('agy') output is not valid JSON: $_"
+    }
+
+    $rawContent | Set-Content -Encoding UTF8 -Path $outputPath
     Write-Output "Daily review saved to $outputPath"
 }
 finally {

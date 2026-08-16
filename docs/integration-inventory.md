@@ -47,3 +47,7 @@ A scheduled GitHub Actions workflow named **Automation Control Health** now vali
 ## Latest execution check
 
 On-demand execution confirmed that the private Google Drive report folder remains available through the connected Google Workspace integration. The GitHub Actions workflow **Automation Control Health** was run again on demand and completed successfully: `https://github.com/balajirajput96/automation-control-center/actions/runs/31938484966`. Local n8n, Docker, and Antigravity runtimes remain unavailable because no persistent Windows deployment environment is attached to this task. The active browser session is signed out of Gemini Spark, so the existing Spark schedule cannot be invoked manually from this browser session.
+
+## Antigravity CLI authorization
+
+The official Google Antigravity authorization flow was completed through the user-controlled browser session. The CLI is awaiting the one-time authorization code for final local session setup; no authorization code is stored in this repository.

@@ -26,12 +26,19 @@ jobs:
           set -euo pipefail
           required=(
             "README.md"
+            "deploy/n8n-local/.env.example"
             "deploy/n8n-local/docker-compose.yml"
+            "deploy/n8n-local/README.md"
             "n8n/workflows/daily-automation-control-report.template.json"
+            "n8n/credentials-template/README.md"
             "antigravity/daily-review-prompt.md"
             "antigravity/run-daily-review.ps1"
+            "antigravity/register-daily-review.ps1"
+            "antigravity/README.md"
             "gemini-spark/daily-brief-prompt.md"
             "julius/scheduled-analysis-prompt.md"
+            "scripts/test_gemini.py"
+            "docs/integration-inventory.md"
             "docs/automation-blueprint.md"
             "docs/implementation-status.md"
           )
@@ -43,6 +50,30 @@ jobs:
         shell: bash
         run: |
           python -m json.tool n8n/workflows/daily-automation-control-report.template.json >/dev/null
+
+      - name: Validate Python scripts syntax
+        shell: bash
+        run: |
+          python -m py_compile scripts/test_gemini.py
+
+      - name: Validate local configuration contracts and security
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Check n8n encryption key placeholders
+          grep -q "N8N_ENCRYPTION_KEY" deploy/n8n-local/.env.example
+          grep -q "N8N_ENCRYPTION_KEY" deploy/n8n-local/docker-compose.yml
+
+          # Check Gemini script header-based auth and no key query param
+          grep -q "x-goog-api-key" scripts/test_gemini.py
+          ! grep -q "generateContent?key=" scripts/test_gemini.py
+
+          # Check Antigravity exit-code validation
+          grep -q "LASTEXITCODE" antigravity/run-daily-review.ps1
+
+          # Check private Drive folder ID in scheduled prompts
+          grep -q "1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo" gemini-spark/daily-brief-prompt.md
+          grep -q "1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo" julius/scheduled-analysis-prompt.md
 
       - name: Verify no local secret files are tracked
         shell: bash
@@ -56,6 +87,6 @@ jobs:
           {
             echo "## Automation Control Health"
             echo
-            echo "The repository structure and n8n template JSON passed static validation."
+            echo "The repository structure, prompt contracts, Python syntax, and n8n template JSON passed static validation."
             echo "This workflow is intentionally read-only and does not access credentials or external services."
           } >> "$GITHUB_STEP_SUMMARY"

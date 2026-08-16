@@ -8,7 +8,7 @@ if not api_key:
     print(json.dumps({"ok": False, "error": "GEMINI_API_KEY is unavailable"}))
     sys.exit(2)
 
-url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + api_key
+url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 payload = {
     "contents": [
         {
@@ -22,7 +22,10 @@ payload = {
 req = request.Request(
     url,
     data=json.dumps(payload).encode("utf-8"),
-    headers={"Content-Type": "application/json"},
+    headers={
+        "Content-Type": "application/json",
+        "x-goog-api-key": api_key,
+    },
     method="POST",
 )
 
