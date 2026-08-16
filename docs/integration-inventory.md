@@ -23,3 +23,15 @@ A recurring **Daily Automation Control Review** is active at **09:15 Asia/Kolkat
 ## Automation boundary
 
 The user requested broad automation across services. The immediate build target is therefore a documented, version-controlled automation foundation: a local n8n deployment package, a GitHub project repository, and specific task definitions for Gemini Spark, Julius, and Antigravity. Each service must only be connected when its official integration route exists and its required account access is confirmed.
+
+## Latest browser access check
+
+The Google account chooser currently lists `sellbuildingbazar.in@gmail.com` as **Signed out** in the active browser profile. The account must be signed in again before Gemini Spark can be configured from this session.
+
+## Gemini Spark implementation
+
+The Google account `sellbuildingbazar.in@gmail.com` is now authenticated in Gemini Spark. A task named **Daily Google Workspace Briefing** has been created and Gemini Spark confirmed a daily schedule at approximately **08:00 local time**. The task is restricted to connected Google Workspace apps and is explicitly read-only: it produces priorities, calendar context, urgent items, overdue follow-ups, automation blockers, document-review items, and an approval-needed section without sending messages or modifying data.
+
+## Julius authentication check
+
+Julius still presented a Log In dialog. A Google sign-in attempt was initiated through Julius, but the browser returned to a blank page before any Julius session or permission result could be verified. No Julius schedule or data connection has been created.
