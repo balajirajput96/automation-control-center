@@ -16,6 +16,10 @@
 
 The entries above were validated against official Google Antigravity documentation, Google Gemini Spark documentation and help pages, Julius documentation, and n8n documentation. A read-only Google Drive request succeeded. Browser checks confirm that Gemini is not signed in within this browser session, while Julius shows its workspace interface but has not verified an authenticated account. No unverified browser account action, credential change, public publishing, scheduling change, or external message was performed.
 
+## Daily control schedule
+
+A recurring **Daily Automation Control Review** is active at **09:15 Asia/Kolkata**. It uses the connected GitHub and Google Workspace integrations to review the private automation repository and report deployment readiness, workflow blockers, and safe documentation improvements. It is intentionally restricted from sending messages, altering credentials, exposing services, spending money, deleting data, or creating public repositories.
+
 ## Automation boundary
 
 The user requested broad automation across services. The immediate build target is therefore a documented, version-controlled automation foundation: a local n8n deployment package, a GitHub project repository, and specific task definitions for Gemini Spark, Julius, and Antigravity. Each service must only be connected when its official integration route exists and its required account access is confirmed.
