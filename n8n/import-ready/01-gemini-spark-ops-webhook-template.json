@@ -1,0 +1,63 @@
+{
+  "name": "[Inactive import] Gemini Spark Operations Status — Inactive Template",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gemini-spark-ops-status",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "f6927b80-7b7a-4b3f-bd9b-0ea5139a5c93",
+      "name": "Secure Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        320,
+        300
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"accepted\":true,\"workflow\":\"Gemini Spark Operations Status\",\"message\":\"Request received by the approved n8n webhook.\"}",
+        "options": {
+          "responseCode": 202
+        }
+      },
+      "id": "ea88153f-02d4-4a67-a5d1-4c004db9608f",
+      "name": "Return Accepted Status",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        600,
+        300
+      ],
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "Secure Webhook": {
+      "main": [
+        [
+          {
+            "node": "Return Accepted Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "importSafety": "credentials-removed-and-write-capable-nodes-disabled"
+  }
+}

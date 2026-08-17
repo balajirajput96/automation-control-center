@@ -1,0 +1,104 @@
+{
+  "name": "[Inactive import] My workflow",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        64,
+        112
+      ],
+      "typeVersion": 1,
+      "id": "0a1e8ffc-49ca-4b1e-8bae-bc021d945565",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "67be978c-9a4f-43bd-b61b-9ca4ec66d09f",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "classify",
+        "input": "To connect karo jira administrators all accounts ",
+        "simplify": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        208,
+        0
+      ],
+      "id": "ad2bf8ca-d6bd-4699-b8e5-0542a8742bb9",
+      "name": "Classify text for violations",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "retryOnFail": true,
+      "notesInFlow": true,
+      "onError": "continueRegularOutput",
+      "notes": "To connect fix"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "channel",
+        "operation": "get",
+        "channelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "c561882d-4939-41c6-8623-8bc5d96d8c91",
+      "name": "Get a channel",
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Classify text for violations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify text for violations": {
+      "main": [
+        [
+          {
+            "node": "Get a channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "importSafety": "credentials-removed-and-write-capable-nodes-disabled"
+  }
+}

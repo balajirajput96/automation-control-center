@@ -1,0 +1,154 @@
+[
+  {
+    "source_path": "/home/ubuntu/n8n-import-staging/connectapi/gemini-spark-ops-webhook-template.json",
+    "source_name": "Gemini Spark Operations Status — Inactive Template",
+    "import_path": "/home/ubuntu/n8n-import-staging/import-ready/01-gemini-spark-ops-webhook-template.json",
+    "active": false,
+    "credential_references_removed": true,
+    "disabled_write_capable_nodes": [
+      "Secure Webhook",
+      "Return Accepted Status"
+    ],
+    "next_step": "Import inactive, attach credentials only after service-specific review, and enable nodes only under an approved execution boundary."
+  },
+  {
+    "source_path": "/home/ubuntu/n8n-import-staging/connectapi/rws3u5l1JI6WUVsh-Demo_My_first_AI_Agent_in_n8n.json",
+    "source_name": "Demo: My first AI Agent in n8n",
+    "import_path": "/home/ubuntu/n8n-import-staging/import-ready/02-rws3u5l1JI6WUVsh-Demo_My_first_AI_Agent_in_n8n.json",
+    "active": false,
+    "credential_references_removed": true,
+    "disabled_write_capable_nodes": [],
+    "next_step": "Import inactive, attach credentials only after service-specific review, and enable nodes only under an approved execution boundary."
+  },
+  {
+    "source_path": "/home/ubuntu/n8n-import-staging/control-center/automation-control-center/n8n/workflows/daily-automation-control-report.template.json",
+    "source_name": "Daily Automation Control Report (Template)",
+    "import_path": "/home/ubuntu/n8n-import-staging/import-ready/03-daily-automation-control-report.template.json",
+    "active": false,
+    "credential_references_removed": true,
+    "disabled_write_capable_nodes": [
+      "Execute Workflow Trigger"
+    ],
+    "next_step": "Import inactive, attach credentials only after service-specific review, and enable nodes only under an approved execution boundary."
+  },
+  {
+    "source_path": "/home/ubuntu/n8n-import-staging/workflow-export/balajirajput966-workflows/4CgQuZBOKkV9wi89-OpenAI_Task_Automation.json",
+    "source_name": "OpenAI Task Automation",
+    "import_path": "/home/ubuntu/n8n-import-staging/import-ready/04-4CgQuZBOKkV9wi89-OpenAI_Task_Automation.json",
+    "active": false,
+    "credential_references_removed": true,
+    "disabled_write_capable_nodes": [],
+    "next_step": "Import inactive, attach credentials only after service-specific review, and enable nodes only under an approved execution boundary."
+  },
+  {
+    "source_path": "/home/ubuntu/n8n-import-staging/workflow-export/balajirajput966-workflows/9irlQk6dOVSRxtNC-Comprehensive_SSL_Certificate_Monitoring_with_Discord_Alerts_and_Notion_Integration.json",
+    "source_name": "Comprehensive SSL Certificate Monitoring with Discord Alerts and Notion Integration",
+    "import_path": "/home/ubuntu/n8n-import-staging/import-ready/05-9irlQk6dOVSRxtNC-Comprehensive_SSL_Certificate_Monitoring_with_Discord_Alerts_and_Notion_Integration.json",
+    "active": false,
+    "credential_references_removed": true,
+    "disabled_write_capable_nodes": [
+      "Check SSL",
+      "SSH - Analyze system",
+      "Discord",
+      "Discord1",
+      "Fetch domains to check SSL",
+      "Code - Format output"
+    ],
+    "next_step": "Import inactive, attach credentials only after service-specific review, and enable nodes only under an approved execution boundary."
+  },
+  {
+    "source_path": "/home/ubuntu/n8n-import-staging/workflow-export/balajirajput966-workflows/EaF5ZAyydakbDHEV-Sync_Zendesk_tickets_with_subsequent_comments_to_Asana_tasks.json",
+    "source_name": "Sync Zendesk tickets with subsequent comments to Asana tasks",
+    "import_path": "/home/ubuntu/n8n-import-staging/import-ready/06-EaF5ZAyydakbDHEV-Sync_Zendesk_tickets_with_subsequent_comments_to_Asana_tasks.json",
+    "active": false,
+    "credential_references_removed": true,
+    "disabled_write_capable_nodes": [
+      "Get ticket",
+      "Create task",
+      "Update ticket",
+      "Create comment on existing task",
+      "On new Zendesk ticket"
+    ],
+    "next_step": "Import inactive, attach credentials only after service-specific review, and enable nodes only under an approved execution boundary."
+  },
+  {
+    "source_path": "/home/ubuntu/n8n-import-staging/workflow-export/balajirajput966-workflows/Glss0wj1mqC0VYmz-Version_Control_n8n_Workflows_in_GitLab_with_Customer_Tag_Organization.json",
+    "source_name": "Version Control n8n Workflows in GitLab with Customer Tag Organization",
+    "import_path": "/home/ubuntu/n8n-import-staging/import-ready/07-Glss0wj1mqC0VYmz-Version_Control_n8n_Workflows_in_GitLab_with_Customer_Tag_Organization.json",
+    "active": false,
+    "credential_references_removed": true,
+    "disabled_write_capable_nodes": [
+      "Prepare Workflow JSON for UI-Compatible Export",
+      "Clean & Normalize Workflow Name",
+      "Fetch Existing File from GitLab",
+      "Update Existing File in GitLab",
+      "Create New File in GitLab",
+      "Prepare GitLab File Path",
+      "Summarize Backup Results"
+    ],
+    "next_step": "Import inactive, attach credentials only after service-specific review, and enable nodes only under an approved execution boundary."
+  },
+  {
+    "source_path": "/home/ubuntu/n8n-import-staging/workflow-export/balajirajput966-workflows/MqiF3JfmIjAwdSWT-WordPress_Wix_Shopify_E_commerce_Platform_Integration.json",
+    "source_name": "WordPress Wix Shopify E-commerce Platform Integration",
+    "import_path": "/home/ubuntu/n8n-import-staging/import-ready/08-MqiF3JfmIjAwdSWT-WordPress_Wix_Shopify_E_commerce_Platform_Integration.json",
+    "active": false,
+    "credential_references_removed": true,
+    "disabled_write_capable_nodes": [
+      "Shopify Order Created",
+      "Create WordPress Post",
+      "Send to Wix"
+    ],
+    "next_step": "Import inactive, attach credentials only after service-specific review, and enable nodes only under an approved execution boundary."
+  },
+  {
+    "source_path": "/home/ubuntu/n8n-import-staging/workflow-export/balajirajput966-workflows/WHnxbQRNZbDuawaX-My_workflow.json",
+    "source_name": "My workflow",
+    "import_path": "/home/ubuntu/n8n-import-staging/import-ready/09-WHnxbQRNZbDuawaX-My_workflow.json",
+    "active": false,
+    "credential_references_removed": true,
+    "disabled_write_capable_nodes": [
+      "Get a channel"
+    ],
+    "next_step": "Import inactive, attach credentials only after service-specific review, and enable nodes only under an approved execution boundary."
+  },
+  {
+    "source_path": "/home/ubuntu/n8n-import-staging/workflow-export/balajirajput966-workflows/YW9qDFIShgJ8tiC2-Comprehensive_SSL_Certificate_Monitoring_with_Discord_Alerts_and_Notion_Integration_copy.json",
+    "source_name": "Comprehensive SSL Certificate Monitoring with Discord Alerts and Notion Integration copy",
+    "import_path": "/home/ubuntu/n8n-import-staging/import-ready/10-YW9qDFIShgJ8tiC2-Comprehensive_SSL_Certificate_Monitoring_with_Discord_Alerts_and_Notion_Integration_copy.json",
+    "active": false,
+    "credential_references_removed": true,
+    "disabled_write_capable_nodes": [
+      "Check SSL",
+      "SSH - Analyze system",
+      "Discord",
+      "Discord1",
+      "Fetch domains to check SSL",
+      "Code - Format output"
+    ],
+    "next_step": "Import inactive, attach credentials only after service-specific review, and enable nodes only under an approved execution boundary."
+  },
+  {
+    "source_path": "/home/ubuntu/n8n-import-staging/workflow-export/balajirajput966-workflows/Yup0yound9Aeh5up-MCP_Server_with_AI_Agent_as_a_Tool_Context_Reducer.json",
+    "source_name": "MCP Server with AI Agent as a Tool Context Reducer",
+    "import_path": "/home/ubuntu/n8n-import-staging/import-ready/11-Yup0yound9Aeh5up-MCP_Server_with_AI_Agent_as_a_Tool_Context_Reducer.json",
+    "active": false,
+    "credential_references_removed": true,
+    "disabled_write_capable_nodes": [
+      "When Executed by Another Workflow"
+    ],
+    "next_step": "Import inactive, attach credentials only after service-specific review, and enable nodes only under an approved execution boundary."
+  },
+  {
+    "source_path": "/home/ubuntu/n8n-import-staging/workflow-export/balajirajput966-workflows/eEw8cF1eAEfwyXXK-Knowledge_store_agent_with_Google_Drive_.json",
+    "source_name": "Knowledge store agent (with Google Drive)",
+    "import_path": "/home/ubuntu/n8n-import-staging/import-ready/12-eEw8cF1eAEfwyXXK-Knowledge_store_agent_with_Google_Drive_.json",
+    "active": false,
+    "credential_references_removed": true,
+    "disabled_write_capable_nodes": [
+      "Download file",
+      "File uploaded"
+    ],
+    "next_step": "Import inactive, attach credentials only after service-specific review, and enable nodes only under an approved execution boundary."
+  }
+]

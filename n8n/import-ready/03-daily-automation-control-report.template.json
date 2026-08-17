@@ -1,0 +1,105 @@
+{
+  "name": "[Inactive import] Daily Automation Control Report (Template)",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 15 9 * * *"
+            }
+          ]
+        }
+      },
+      "id": "3c9f49ca-9d3d-4e14-8591-b89d7ed39735",
+      "name": "Daily Schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "db24a14b-0fd8-4c20-a5c3-a7d0996df289",
+              "name": "reportTimestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "f5353066-9fe1-4cee-bb4b-06cdb6e0bd86",
+              "name": "status",
+              "value": "needs_connected_service_checks",
+              "type": "string"
+            },
+            {
+              "id": "51df6f8e-0575-4c42-ab25-3bfbb1485d63",
+              "name": "summary",
+              "value": "This template is active only after GitHub, Google, Gemini Spark, Julius, and local n8n access have been verified.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9a1c97bb-98fd-41f8-9718-215fc2ddae8b",
+      "name": "Create Control Report",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "101d9239-a6c0-40a3-9a9f-67807d29e508",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        160
+      ],
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "Daily Schedule": {
+      "main": [
+        [
+          {
+            "node": "Create Control Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Create Control Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "importSafety": "credentials-removed-and-write-capable-nodes-disabled"
+  }
+}

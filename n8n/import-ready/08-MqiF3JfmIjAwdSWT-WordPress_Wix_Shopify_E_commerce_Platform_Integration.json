@@ -1,0 +1,200 @@
+{
+  "name": "[Inactive import] WordPress Wix Shopify E-commerce Platform Integration",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "topic": "orders/create"
+      },
+      "id": "58022331-20f3-48b5-a868-84f4a9d4d93c",
+      "name": "Shopify Order Created",
+      "type": "n8n-nodes-base.shopifyTrigger",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        112
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "wordpressUrl",
+              "value": "YOUR_WORDPRESS_SITE_URL",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "wixApiUrl",
+              "value": "YOUR_WIX_API_ENDPOINT",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "cc25b950-23dc-4979-bf5b-a5bfcff3e843",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -192,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "orderTitle",
+              "value": "={{ 'Order #' + $json.order_number }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "orderContent",
+              "value": "={{ 'Customer: ' + $json.customer.first_name + ' ' + $json.customer.last_name + '\\nTotal: $' + $json.total_price + '\\nItems: ' + $json.line_items.length }}",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "customerEmail",
+              "value": "={{ $json.customer.email }}",
+              "type": "string"
+            },
+            {
+              "id": "id-4",
+              "name": "orderTotal",
+              "value": "={{ $json.total_price }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "eb653c0d-0e4c-489c-8eb1-f1c3faf6dac6",
+      "name": "Transform Order Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "title": "={{ $json.orderTitle }}",
+        "additionalFields": {
+          "content": "={{ $json.orderContent }}",
+          "status": "publish"
+        }
+      },
+      "id": "5881525f-be1a-49e4-bcbb-764df8febd50",
+      "name": "Create WordPress Post",
+      "type": "n8n-nodes-base.wordpress",
+      "typeVersion": 1,
+      "position": [
+        256,
+        16
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Workflow Configuration').first().json.wixApiUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "orderNumber",
+              "value": "={{ $json.order_number }}"
+            },
+            {
+              "name": "customerEmail",
+              "value": "={{ $json.customerEmail }}"
+            },
+            {
+              "name": "total",
+              "value": "={{ $json.orderTotal }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d25f04fa-3fc8-4fb4-924c-ff414958ef7c",
+      "name": "Send to Wix",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        256,
+        208
+      ],
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "Shopify Order Created": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Transform Order Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Order Data": {
+      "main": [
+        [
+          {
+            "node": "Create WordPress Post",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send to Wix",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "importSafety": "credentials-removed-and-write-capable-nodes-disabled"
+  }
+}
