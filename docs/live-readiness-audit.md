@@ -28,6 +28,10 @@ The user completed the Google authorization attempt. Julius redirected to its ca
 
 The official Google Jules workspace was reached through the authenticated browser and reported: **“Jules is not yet available in your region.”** No region bypass, account change, repository connection, or task creation was attempted.
 
+## Local n8n recovery attempt
+
+Node.js `22.22.0` was installed for an isolated temporary validation attempt. The npm registry confirms that `n8n@2.34.6` exposes the `n8n` executable, but both package-runner invocations in this sandbox returned `n8n: not found`. No localhost service was exposed and no remote n8n data was changed. A durable Docker host remains the reliable recovery path.
+
 ## Gemini Spark schedule verification retry
 
 After restoring the Google session, the Gemini Spark schedules URL and Gemini home URL both loaded with no visible schedule content. The existing 08:00 briefing therefore cannot be confirmed from the current browser rendering context, and no schedule was created, changed, enabled, or disabled.
