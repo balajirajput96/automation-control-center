@@ -38,10 +38,12 @@ jobs:
             "gemini-spark/daily-brief-prompt.md"
             "julius/scheduled-analysis-prompt.md"
             "scripts/test_gemini.py"
+            "scripts/validate_n8n_template.py"
             "docs/integration-inventory.md"
             "docs/automation-blueprint.md"
             "docs/implementation-status.md"
             "docs/gemini-interactions-migration.md"
+            "docs/live-readiness-audit.md"
           )
           for path in "${required[@]}"; do
             test -f "$path"
@@ -50,12 +52,12 @@ jobs:
       - name: Validate n8n workflow JSON
         shell: bash
         run: |
-          python -m json.tool n8n/workflows/daily-automation-control-report.template.json >/dev/null
+          python scripts/validate_n8n_template.py
 
       - name: Validate Python scripts syntax
         shell: bash
         run: |
-          python -m py_compile scripts/test_gemini.py
+          python -m py_compile scripts/test_gemini.py scripts/validate_n8n_template.py
 
       - name: Validate local configuration contracts and security
         shell: bash
