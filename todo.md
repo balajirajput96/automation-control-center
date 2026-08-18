@@ -14,3 +14,6 @@
 - [ ] Import validated workflow assets into n8n one by one and validate internal/read-only execution paths.
 - [ ] Document the n8n import register, active status, blocked providers, and required user-controlled steps.
 - [ ] Obtain the correct n8n Cloud account name or workspace URL; the Cloud entry page requires it before workflows can be imported.
+- [x] Reconfirm the protected audit readiness evidence after the sandbox recovery.
+- [x] Apply only validated low-risk protected-audit improvements and run static checks.
+- [ ] Push the verified protected-audit update to the private repository.

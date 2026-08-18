@@ -39,3 +39,11 @@ After restoring the Google session, the Gemini Spark schedules URL and Gemini ho
 ## Audit boundary
 
 This check was read-only. It did not alter schedules, workflows, credentials, connector settings, Drive content, or third-party data.
+
+## Current browser-session recheck
+
+After the latest sandbox recovery, Gemini Spark schedules again rendered the signed-out Gemini landing page with a **Sign in** control. Julius rendered its workspace shell while displaying **Log In**. Therefore, neither the Spark schedule nor Julius datasets or scheduled analyses can be inspected from this current browser context; no provider data was modified.
+
+## Restored static validation
+
+The staged n8n template contract validator completed successfully, and both local Python validation utilities compiled without error. The repository whitespace check (`git diff --check`) also completed successfully. These checks are local only and did not contact or modify the n8n account.
