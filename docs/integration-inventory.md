@@ -38,7 +38,7 @@ Julius still presented a Log In dialog. A Google sign-in attempt was initiated t
 
 ## Google Drive report destination
 
-A private Google Drive folder named **Automation Control Center** has been created for future runbooks and approved automation reports. Its Drive folder ID is `1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo`. No existing Drive files were modified or shared.
+A private Google Drive folder named **Automation Control Center** has been created for future runbooks and approved automation reports. Its Drive folder ID is `18l-M8C00XpE6l3kxn1tSkp6vNi0SJcOR`. No existing Drive files were modified or shared.
 
 ## GitHub automation validation
 
@@ -67,3 +67,9 @@ The authenticated Antigravity daily review was executed successfully against the
 ## Temporary n8n validation
 
 A temporary, localhost-only n8n Community Edition 2.34.6 instance was initialized with isolated data and a temporary encryption key. The `Daily Automation Control Report (Template)` workflow was imported successfully after adding a stable workflow identifier and a dedicated `Execute Workflow Trigger` for CLI validation. The workflow executed successfully, producing a timestamped control-report item with status `needs_connected_service_checks`. This validates the template structure and local execution path; the temporary service is not a persistent deployment and contains no production credentials.
+
+## Current-task evidence recheck — 2026-08-18
+
+The current task rechecked provider state without mutation. The authenticated Google Workspace account returned Drive data successfully. The verified private **Automation Control Center** folder is `18l-M8C00XpE6l3kxn1tSkp6vNi0SJcOR`; the older folder ID previously recorded in this document returned `404 File not found` and is no longer treated as valid. The stateless Gemini Interactions probe returned `automation-connector-ok` with storage disabled. Gmail read-only label listing succeeded after the user selected `sellbuildingbazar.in@gmail.com`, and a narrow Calendar search for `Automation` returned no events.
+
+The current sandbox PATH does not contain `agy`, `antigravity`, `gemini`, `n8n`, or `docker`, so historical installation/authentication notes are not evidence that those local binaries are executable in this task. Gemini Spark, Julius, Meta publishing, and persistent n8n provider-side state remain unverified; no provider-side schedule is claimed active from this repository document. The current Manus task schedule is separately evidenced by the current task’s schedule-status output and is restricted to read-only automation-control review.

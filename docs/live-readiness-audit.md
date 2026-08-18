@@ -7,7 +7,7 @@
 | GitHub Actions | The five most recent `Automation Control Health` runs completed successfully. The latest run, `31994321361`, completed at `2026-08-17T04:23:46Z` for commit `f305d033d66555d8d3a0da95392ddcc5257d0e8c`. | **Active** |
 | n8n API | The configured endpoint returned the n8n Cloud `404 - No workspace here` response when queried read-only. No workflows or executions are currently available at that endpoint. | **Blocked** |
 | n8n MCP | The configured MCP endpoint rejected initialization with a `4xx` legacy-SSE compatibility error, so no workflow-management tools are currently exposed. | **Blocked** |
-| Google Drive | Folder ID `1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo` exists, is not trashed, and is named **Automation Control Center**. | **Active** |
+| Google Drive | Folder ID `18l-M8C00XpE6l3kxn1tSkp6vNi0SJcOR` exists, is not trashed, and is named **Automation Control Center**. | **Active** |
 | Gemini Spark | The schedules URL loaded without visible schedule content in the current browser session; its active account and schedule state could not be confirmed. | **Blocked** |
 | Julius | The workspace shell is visible, but the page still presents **Log In**, so the session and any scheduled analysis remain unverified. | **Blocked** |
 | Daily control review | The configured **Daily Automation Control and Antigravity Review** remains enabled at `09:15` Asia/Calcutta; its last recorded execution is `2026-08-17T03:48:45.585Z`. | **Active** |
@@ -47,3 +47,11 @@ After the latest sandbox recovery, Gemini Spark schedules again rendered the sig
 ## Restored static validation
 
 The staged n8n template contract validator completed successfully, and both local Python validation utilities compiled without error. The repository whitespace check (`git diff --check`) also completed successfully. These checks are local only and did not contact or modify the n8n account.
+
+## Current-task evidence recheck — 2026-08-18
+
+The current task performed a fresh read-only recheck. Google Workspace Drive access succeeded, and folder `18l-M8C00XpE6l3kxn1tSkp6vNi0SJcOR` was confirmed as a non-trashed folder named **Automation Control Center**. The previously recorded folder ID returned `404 File not found`. The Gemini Interactions health check returned `automation-connector-ok` with `store: false`. Gmail label listing succeeded for the user-selected `sellbuildingbazar.in@gmail.com` account, and a Calendar search for `Automation` returned no events.
+
+The current sandbox does not have `agy`, `antigravity`, `gemini`, `n8n`, or `docker` on PATH. Therefore, Antigravity CLI, Gemini CLI, and persistent n8n execution are not claimed active in this task. The current task’s own read-only Manus schedule is evidenced separately by current schedule status; no Gemini Spark, Julius, Meta, or provider-side schedule is claimed active without current authenticated evidence.
+
+A safe CI batch was triggered and completed successfully for `ai-automation-platform`, `health-reels-automation`, `automation-control-center`, `automation-control-center-app`, and the post-fix `acting-career-automation` toolkit health workflow. The acting-career repository’s workflow permission/comment fix is on `main` at commit `2233448ed8056e75d9b0d9d617c6011f7f077b12`.
