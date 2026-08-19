@@ -50,6 +50,13 @@
       "when": 1787110953284,
       "tag": "0006_violet_the_watchers",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1787112510895,
+      "tag": "0007_cold_scrambler",
+      "breakpoints": true
     }
   ]
 }

@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   addAuditEvent: vi.fn(),
+  createVideoJobForOwner: vi.fn(),
   getDb: vi.fn(),
 }));
 
@@ -23,6 +24,12 @@ function ownerScopedVideoDb(job?: { id: number; title: string; editPlan: unknown
 
 describe("video lifecycle procedure", () => {
   afterEach(() => vi.clearAllMocks());
+
+  it("forwards managed source, thumbnail, and output references into the owner-scoped video plan", async () => {
+    await expect(videoCaller(42).create({ title: "Asset-linked vertical plan", outputFormat: "vertical_9_16", targetDurationSeconds: 60, contentProjectId: 18, sourceAssetId: 3, thumbnailAssetId: 4, outputAssetId: 5, storageMetadata: { source: "managed-media" } })).resolves.toMatchObject({ renderState: "draft" });
+    expect(mocks.createVideoJobForOwner).toHaveBeenCalledWith(42, expect.objectContaining({ contentProjectId: 18, sourceAssetId: 3, thumbnailAssetId: 4, outputAssetId: 5, storageMetadata: { source: "managed-media" } }));
+    expect(mocks.addAuditEvent).toHaveBeenCalledWith(42, expect.objectContaining({ action: "video_job.created" }));
+  });
 
   it("records an owner-scoped external handoff without invoking a renderer", async () => {
     const { db } = ownerScopedVideoDb({ id: 7, title: "Vertical research short", editPlan: {} });

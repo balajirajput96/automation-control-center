@@ -256,10 +256,14 @@ export const videoJobs = mysqlTable("video_jobs", {
   targetDurationSeconds: int("targetDurationSeconds").default(60).notNull(),
   status: mysqlEnum("status", ["draft", "queued", "processing", "needs_review", "exported", "failed"]).default("draft").notNull(),
   editPlan: json("editPlan"),
+  sourceAssetId: int("sourceAssetId"),
+  thumbnailAssetId: int("thumbnailAssetId"),
+  outputAssetId: int("outputAssetId"),
+  storageMetadata: json("storageMetadata"),
   errorMessage: text("errorMessage"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-}, table => [index("video_jobs_owner_status_idx").on(table.ownerId, table.status)]);
+}, table => [index("video_jobs_owner_status_idx").on(table.ownerId, table.status), index("video_jobs_source_asset_idx").on(table.sourceAssetId), index("video_jobs_output_asset_idx").on(table.outputAssetId)]);
 
 export const githubRepositories = mysqlTable("github_repositories", {
   id: int("id").autoincrement().primaryKey(),

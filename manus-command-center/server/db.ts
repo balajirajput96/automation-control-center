@@ -478,11 +478,16 @@ export async function listVideoJobsForOwner(ownerId: number) {
   return db.select().from(videoJobs).where(eq(videoJobs.ownerId, ownerId)).orderBy(desc(videoJobs.updatedAt));
 }
 
-export async function createVideoJobForOwner(ownerId: number, values: { title: string; outputFormat: "vertical_9_16" | "landscape_16_9" | "square_1_1"; targetDurationSeconds: number; contentProjectId?: number | null; editPlan?: unknown }) {
+export async function createVideoJobForOwner(ownerId: number, values: { title: string; outputFormat: "vertical_9_16" | "landscape_16_9" | "square_1_1"; targetDurationSeconds: number; contentProjectId?: number | null; editPlan?: unknown; sourceAssetId?: number | null; thumbnailAssetId?: number | null; outputAssetId?: number | null; storageMetadata?: unknown }) {
   const db = await requireDb();
   if (values.contentProjectId) {
     const owned = await db.select({ id: contentProjects.id }).from(contentProjects).where(and(eq(contentProjects.id, values.contentProjectId), eq(contentProjects.ownerId, ownerId))).limit(1);
     if (!owned[0]) throw new Error("Content project not found");
+  }
+  for (const assetId of [values.sourceAssetId, values.thumbnailAssetId, values.outputAssetId].filter((id): id is number => typeof id === "number")) {
+    const asset = await db.select({ id: mediaAssets.id, contentProjectId: mediaAssets.contentProjectId }).from(mediaAssets).where(and(eq(mediaAssets.id, assetId), eq(mediaAssets.ownerId, ownerId))).limit(1);
+    if (!asset[0]) throw new Error("Managed media asset not found");
+    if (values.contentProjectId && asset[0].contentProjectId !== values.contentProjectId) throw new Error("Managed media asset is not attached to this content project");
   }
   await db.insert(videoJobs).values({ ownerId, ...values, status: "draft" });
 }
