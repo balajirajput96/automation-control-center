@@ -52,6 +52,7 @@
 - [x] Add persisted agent-dispatch history so requested, approved, and denied dispatch states survive refresh in Agents.
 - [ ] Add explicit empty/error states for workflow approvals and agent dispatch history, then capture populated-state UI verification.
 - [ ] Capture desktop/mobile UI verification for dispatch and workflow run approval-resolution controls.
+- [x] Fix the 404 workflow approval route and verify its direct navigation target.
 - [ ] Add production-safe schedule activation prerequisites with idempotent execution records and callback authorization validation.
 - [ ] Complete managed media and vertical-video job state transitions with export readiness and explicit unsupported-render boundaries.
 - [ ] Add credential-backed health-check adapters for configured deployment providers while retaining unavailable states for unconfigured providers.

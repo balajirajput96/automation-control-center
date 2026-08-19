@@ -33,6 +33,7 @@ function Router() {
     <Route path="/logs" component={LogsPage} />
     <Route path="/workflows" component={WorkflowsPage} />
     <Route path="/workflow-approvals" component={WorkflowRunApprovalsPage} />
+    <Route path="/run-approvals" component={WorkflowRunApprovalsPage} />
     <Route path="/schedules" component={SchedulesPage} />
     <Route path="/nifty" component={NiftyPage} />
     <Route path="/github/details" component={GitHubDetailsPage} />
