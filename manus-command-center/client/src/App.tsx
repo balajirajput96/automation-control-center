@@ -16,6 +16,7 @@ import GitHubDetailsPage from "./pages/GitHubDetailsPage";
 import ProjectActivityPage from "./pages/ProjectActivityPage";
 import { WorkflowRunApprovalsPage } from "./components/ApprovalResolutionControls";
 import { ScheduleLifecyclePanel } from "./components/ScheduleLifecyclePanel";
+import { VideoReadinessPanel } from "./components/VideoReadinessPanel";
 
 const modulePaths = ["github", "content", "video", "images", "research", "deployments", "integrations", "logs", "settings"] as const;
 
@@ -28,6 +29,7 @@ function Router() {
     <Route path="/media" component={MediaLibraryPage} />
     <Route path="/research" component={ResearchPage} />
     <Route path="/video" component={VideoStudioPage} />
+    <Route path="/video-readiness">{() => <div className="mx-auto max-w-[1100px] space-y-6"><section className="blueprint-card p-7"><p className="eyebrow">EXTERNAL RENDER GOVERNANCE</p><h1 className="mt-2 text-4xl font-black tracking-[-0.055em] text-slate-950">Video readiness</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Review export readiness and request a human-reviewed external render handoff. These state changes never execute a renderer.</p></section><VideoReadinessPanel /></div>}</Route>
     <Route path="/agents" component={AgentsPage} />
     <Route path="/projects" component={ProjectsPage} />
     <Route path="/projects/activity" component={ProjectActivityPage} />

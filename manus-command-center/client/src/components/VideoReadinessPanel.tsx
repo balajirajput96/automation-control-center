@@ -1,0 +1,19 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { trpc } from "@/lib/trpc";
+import { ClipboardCheck, FileWarning, Send, Video } from "lucide-react";
+import { toast } from "sonner";
+
+function VideoReadinessRow({ job }: { job: { id: number; title: string; status: "draft" | "queued" | "processing" | "needs_review" | "exported" | "failed"; outputFormat: string; targetDurationSeconds: number } }) {
+  const jobs = trpc.video.list.useQuery();
+  const readiness = trpc.video.exportReadiness.useQuery({ id: job.id });
+  const setReadiness = trpc.video.setReadiness.useMutation({ onSuccess: async response => { await Promise.all([jobs.refetch(), readiness.refetch()]); toast.success(`Readiness set to ${response.status}; no render was invoked.`); }, onError: error => toast.error(error.message) });
+  const handoff = trpc.video.requestExternalHandoff.useMutation({ onSuccess: async () => { await Promise.all([jobs.refetch(), readiness.refetch()]); toast.message("External handoff recorded for human review; no renderer was invoked."); }, onError: error => toast.error(error.message) });
+  const busy = setReadiness.isPending || handoff.isPending;
+  return <div className="rounded-xl border border-slate-100 bg-white/70 p-4"><div className="flex flex-wrap items-start justify-between gap-3"><div><p className="font-semibold text-slate-900">{job.title}</p><p className="mt-1 font-mono text-[10px] uppercase tracking-[0.1em] text-cyan-800">{job.outputFormat.replaceAll("_", " ")} · {job.targetDurationSeconds}s · {job.status}</p></div><span className={readiness.data?.ready ? "rounded-full bg-amber-100 px-2 py-1 font-mono text-[10px] text-amber-900" : "rounded-full bg-slate-100 px-2 py-1 font-mono text-[10px] text-slate-600"}>{readiness.isLoading ? "checking" : readiness.data?.ready ? "review ready" : "not export ready"}</span></div><p className="mt-3 text-xs leading-5 text-slate-600">{readiness.data?.reason ?? "Assessing export readiness without invoking a renderer."}</p><div className="mt-4 flex flex-wrap gap-2"><Button size="sm" variant="outline" disabled={busy} onClick={() => setReadiness.mutate({ id: job.id, status: "queued" })}><ClipboardCheck className="mr-1.5 size-3.5" />Queue plan</Button><Button size="sm" variant="outline" disabled={busy} onClick={() => setReadiness.mutate({ id: job.id, status: "draft" })}>Return to draft</Button><Button size="sm" disabled={busy} onClick={() => handoff.mutate({ id: job.id })}><Send className="mr-1.5 size-3.5" />Request review</Button></div></div>;
+}
+
+export function VideoReadinessPanel() {
+  const jobs = trpc.video.list.useQuery();
+  return <Card className="blueprint-card border-0"><CardContent className="p-5"><p className="eyebrow">VERTICAL VIDEO READINESS</p><p className="mt-2 text-sm text-slate-600">Manage planning states and assess export readiness. Any external rendering remains explicitly unsupported until a human-reviewed authorized adapter is connected.</p><div className="mt-4 space-y-3">{jobs.isLoading ? <div className="h-16 animate-pulse rounded-xl bg-slate-100" /> : jobs.isError ? <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">Video jobs could not be loaded. Please retry this page.</div> : jobs.data?.length ? jobs.data.map(job => <VideoReadinessRow key={job.id} job={job} />) : <div className="rounded-xl border border-dashed border-slate-200 p-5 text-center text-sm text-slate-500"><Video className="mx-auto mb-2 size-5 text-slate-300" />No video plans are available for readiness review.</div>}</div><div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-900"><FileWarning className="mr-1 inline size-3.5" />Readiness states are audit controls only. They do not render, export, deliver, or publish video.</div></CardContent></Card>;
+}
