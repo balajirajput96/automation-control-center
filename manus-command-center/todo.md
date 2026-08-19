@@ -20,9 +20,9 @@
 - [ ] Add mode-appropriate schedule definition fields and validation for one-time, weekly, monthly, and event-driven schedules.
 - [ ] Add production-safe scheduled callback foundations with ownership checks, idempotency requirements, pause/resume states, and execution history.
 - [ ] Implement research and content project tracking for sources, outlines, scripts, storyboards, citations, metadata, and exports.
-- [ ] Add structured citation records linked to content projects, with owner-scoped CRUD, section attribution, and regression tests.
+- [x] Add structured citation records linked to content projects, with owner-scoped CRUD, section attribution, and regression tests.
 - [x] Add explicit content export records or history linked to exported assets, rather than relying only on stage labels and freeform notes.
-- [ ] Add owner-scoped citation edit support plus list/remove/update and cross-owner rejection regression coverage.
+- [x] Add owner-scoped citation edit support plus list/remove/update and cross-owner rejection regression coverage.
 - [x] Expose asset-linked content export creation in the UI and validate exported-media attachment ownership.
 - [ ] Capture populated content-artifact UI verification with project, source, citation, and export records.
 - [ ] Implement secure media-asset metadata and storage references for images, audio, video, thumbnails, and vertical-video jobs.

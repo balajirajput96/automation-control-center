@@ -6,11 +6,13 @@ const mocks = vi.hoisted(() => ({
   addContentExportForOwner: vi.fn(),
   addContentSourceForOwner: vi.fn(),
   createContentProjectForOwner: vi.fn(),
+  listContentCitationsForOwner: vi.fn(),
   listContentProjectsForOwner: vi.fn(),
   listContentSourcesForOwner: vi.fn(),
   updateContentProjectArtifactsForOwner: vi.fn(),
   updateContentCitationForOwner: vi.fn(),
   updateContentProjectStageForOwner: vi.fn(),
+  removeContentCitationForOwner: vi.fn(),
 }));
 
 vi.mock("../db", () => mocks);
@@ -50,6 +52,21 @@ describe("content lifecycle ownership procedures", () => {
     await expect(caller(42).updateCitation({ contentProjectId: 18, citationId: 6, section: "outline", claim: "Updated claim", citationText: "Updated citation" })).resolves.toEqual({ success: true });
     expect(mocks.updateContentCitationForOwner).toHaveBeenCalledWith(42, 18, 6, expect.objectContaining({ section: "outline", sourceId: null, claim: "Updated claim" }));
     expect(mocks.addAuditEvent).toHaveBeenCalledWith(42, expect.objectContaining({ action: "content_citation.updated", resourceId: "18" }));
+  });
+
+  it("lists and removes citations only through the authenticated owner boundary", async () => {
+    mocks.listContentCitationsForOwner.mockResolvedValue([{ id: 6, claim: "Claim" }]);
+    await expect(caller(42).citations({ contentProjectId: 18 })).resolves.toEqual([{ id: 6, claim: "Claim" }]);
+    expect(mocks.listContentCitationsForOwner).toHaveBeenCalledWith(42, 18);
+    await expect(caller(42).removeCitation({ contentProjectId: 18, citationId: 6 })).resolves.toEqual({ success: true });
+    expect(mocks.removeContentCitationForOwner).toHaveBeenCalledWith(42, 18, 6);
+    expect(mocks.addAuditEvent).toHaveBeenCalledWith(42, expect.objectContaining({ action: "content_citation.removed", resourceId: "18" }));
+  });
+
+  it("does not mask cross-owner citation update rejection", async () => {
+    mocks.updateContentCitationForOwner.mockRejectedValue(new Error("Content project not found"));
+    await expect(caller(99).updateCitation({ contentProjectId: 18, citationId: 6, section: "script", claim: "Claim", citationText: "Citation" })).rejects.toThrow("Content project not found");
+    expect(mocks.updateContentCitationForOwner).toHaveBeenCalledWith(99, 18, 6, expect.objectContaining({ claim: "Claim" }));
   });
 
   it("records owner-scoped export history with a non-delivery status", async () => {
