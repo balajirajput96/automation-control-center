@@ -156,6 +156,20 @@ export const niftyWatchDefinitions = mysqlTable("nifty_watch_definitions", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, table => [index("nifty_watch_owner_enabled_idx").on(table.ownerId, table.enabled), index("nifty_watch_task_uid_idx").on(table.scheduleCronTaskUid)]);
 
+export const niftyAlertDefinitions = mysqlTable("nifty_alert_definitions", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  name: varchar("name", { length: 160 }).notNull(),
+  thresholdBasisPoints: int("thresholdBasisPoints").notNull(),
+  frequency: mysqlEnum("frequency", ["daily_close"]).default("daily_close").notNull(),
+  timezone: varchar("timezone", { length: 64 }).default("Asia/Kolkata").notNull(),
+  deliveryState: mysqlEnum("deliveryState", ["not_scheduled", "not_delivering"]).default("not_scheduled").notNull(),
+  delayedDataDisclosure: boolean("delayedDataDisclosure").default(true).notNull(),
+  enabled: boolean("enabled").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [index("nifty_alert_owner_enabled_idx").on(table.ownerId, table.enabled)]);
+
 export const integrations = mysqlTable("integrations", {
   id: int("id").autoincrement().primaryKey(),
   ownerId: int("ownerId").notNull(),

@@ -7,6 +7,8 @@ import { registerOAuthRoutes } from "./oauth";
 import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
+import { sdk } from "./sdk";
+import { addAuditEvent, getScheduleForCronTaskUid } from "../db";
 import { serveStatic, setupVite } from "./vite";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -36,6 +38,18 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   registerStorageProxy(app);
   registerOAuthRoutes(app);
+  app.post("/api/scheduled/workflow-run", async (req, res) => {
+    try {
+      const user = await sdk.authenticateRequest(req);
+      if (!user.isCron || !user.taskUid) return res.status(403).json({ error: "cron-only" });
+      const schedule = await getScheduleForCronTaskUid(user.taskUid);
+      if (!schedule) return res.json({ ok: true, skipped: "orphan" });
+      await addAuditEvent(schedule.ownerId, { action: "schedule.callback_blocked", resourceType: "schedule", resourceId: String(schedule.id), outcome: "pending", detail: `Authenticated callback for task ${user.taskUid} was received; execution remains blocked until an idempotent execution adapter is configured.` });
+      return res.json({ ok: true, status: "blocked_pending_execution_adapter", scheduleId: schedule.id });
+    } catch (error) {
+      return res.status(500).json({ error: error instanceof Error ? error.message : "scheduled callback failed", timestamp: new Date().toISOString() });
+    }
+  });
   // tRPC API
   app.use(
     "/api/trpc",

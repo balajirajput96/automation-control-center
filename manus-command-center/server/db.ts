@@ -12,6 +12,7 @@ import {
   mediaAssets,
   deploymentTargets,
   integrations,
+  niftyAlertDefinitions,
   niftyWatchDefinitions,
   schedules,
   users,
@@ -236,9 +237,32 @@ export async function listSchedulesForOwner(ownerId: number) {
   return db.select().from(schedules).where(eq(schedules.ownerId, ownerId)).orderBy(desc(schedules.updatedAt));
 }
 
+export async function getScheduleForCronTaskUid(taskUid: string) {
+  const db = await requireDb();
+  return (await db.select().from(schedules).where(eq(schedules.scheduleCronTaskUid, taskUid)).limit(1))[0] ?? null;
+}
+
 export async function listNiftyWatchDefinitionsForOwner(ownerId: number) {
   const db = await requireDb();
   return db.select().from(niftyWatchDefinitions).where(eq(niftyWatchDefinitions.ownerId, ownerId)).orderBy(desc(niftyWatchDefinitions.updatedAt));
+}
+
+export async function listNiftyAlertDefinitionsForOwner(ownerId: number) {
+  const db = await requireDb();
+  return db.select().from(niftyAlertDefinitions).where(eq(niftyAlertDefinitions.ownerId, ownerId)).orderBy(desc(niftyAlertDefinitions.updatedAt));
+}
+
+export async function createNiftyAlertDefinitionForOwner(ownerId: number, values: { name: string; thresholdBasisPoints: number; timezone: string }) {
+  const db = await requireDb();
+  const inserted = await db.insert(niftyAlertDefinitions).values({ ownerId, name: values.name, thresholdBasisPoints: values.thresholdBasisPoints, timezone: values.timezone, frequency: "daily_close", deliveryState: "not_scheduled", delayedDataDisclosure: true, enabled: true }).$returningId();
+  return inserted[0]?.id;
+}
+
+export async function deleteNiftyAlertDefinitionForOwner(ownerId: number, id: number) {
+  const db = await requireDb();
+  const found = await db.select({ id: niftyAlertDefinitions.id }).from(niftyAlertDefinitions).where(and(eq(niftyAlertDefinitions.id, id), eq(niftyAlertDefinitions.ownerId, ownerId))).limit(1);
+  if (!found[0]) throw new Error("NIFTY alert definition not found");
+  await db.delete(niftyAlertDefinitions).where(eq(niftyAlertDefinitions.id, id));
 }
 
 export async function createNiftyWatchDefinitionForOwner(ownerId: number, values: { name: string; thresholdBasisPoints: number; timezone: string }) {

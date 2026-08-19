@@ -1,9 +1,20 @@
 import { callDataApi } from "../_core/dataApi";
 import { protectedProcedure, router } from "../_core/trpc";
-import { addAuditEvent, createNiftyWatchDefinitionForOwner, deleteNiftyWatchDefinitionForOwner, listNiftyWatchDefinitionsForOwner } from "../db";
+import { addAuditEvent, createNiftyAlertDefinitionForOwner, createNiftyWatchDefinitionForOwner, deleteNiftyAlertDefinitionForOwner, deleteNiftyWatchDefinitionForOwner, listNiftyAlertDefinitionsForOwner, listNiftyWatchDefinitionsForOwner } from "../db";
 import { z } from "zod";
 
 export const marketRouter = router({
+  alerts: protectedProcedure.query(({ ctx }) => listNiftyAlertDefinitionsForOwner(ctx.user.id)),
+  createAlert: protectedProcedure.input(z.object({ name: z.string().trim().min(2).max(160), thresholdPercent: z.number().min(0.1).max(20), timezone: z.string().trim().min(1).max(64).default("Asia/Kolkata") })).mutation(async ({ ctx, input }) => {
+    const id = await createNiftyAlertDefinitionForOwner(ctx.user.id, { name: input.name, thresholdBasisPoints: Math.round(input.thresholdPercent * 100), timezone: input.timezone });
+    await addAuditEvent(ctx.user.id, { action: "nifty_alert.created", resourceType: "nifty_alert", resourceId: String(id ?? ""), outcome: "success", detail: `Created informational daily-close alert definition at ${input.thresholdPercent.toFixed(2)}%; delayed data is disclosed, and delivery is not scheduled or enabled.` });
+    return { id, deliveryState: "not_scheduled" as const };
+  }),
+  removeAlert: protectedProcedure.input(z.object({ id: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
+    await deleteNiftyAlertDefinitionForOwner(ctx.user.id, input.id);
+    await addAuditEvent(ctx.user.id, { action: "nifty_alert.deleted", resourceType: "nifty_alert", resourceId: String(input.id), outcome: "success", detail: "Removed informational NIFTY alert definition; no delivery was scheduled or sent." });
+    return { success: true };
+  }),
   watches: protectedProcedure.query(({ ctx }) => listNiftyWatchDefinitionsForOwner(ctx.user.id)),
   createWatch: protectedProcedure.input(z.object({ name: z.string().trim().min(2).max(160), thresholdPercent: z.number().min(0.1).max(20), timezone: z.string().trim().min(1).max(64).default("Asia/Kolkata") })).mutation(async ({ ctx, input }) => {
     const id = await createNiftyWatchDefinitionForOwner(ctx.user.id, { name: input.name, thresholdBasisPoints: Math.round(input.thresholdPercent * 100), timezone: input.timezone });

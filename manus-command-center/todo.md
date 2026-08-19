@@ -39,10 +39,10 @@
 - [x] Capture and record desktop/mobile verification for an actual authorized GitHub repository detail route.
 - [ ] Create a final checkpoint after all completed TODO items are marked as complete.
 - [x] Add a NIFTY market-data module with source-disclosed index overview, historical chart, and delayed-data status handling.
-- [ ] Add configurable NIFTY watch and alert definitions with explicit non-advisory messaging and production-safe scheduling boundaries.
-- [ ] Add a persisted informational NIFTY alert-definition state distinct from saved daily-close watch records.
-- [ ] Surface NIFTY alert-definition records with explicit delayed-data, not-scheduled, and not-delivering boundaries.
-- [ ] Add regression tests for NIFTY alert-definition creation, listing, deletion, and boundary disclosure.
+- [x] Add configurable NIFTY watch and alert definitions with explicit non-advisory messaging and production-safe scheduling boundaries.
+- [x] Add a persisted informational NIFTY alert-definition state distinct from saved daily-close watch records.
+- [x] Surface NIFTY alert-definition records with explicit delayed-data, not-scheduled, and not-delivering boundaries.
+- [x] Add regression tests for NIFTY alert-definition creation, listing, deletion, and boundary disclosure.
 - [ ] Add an informational NIFTY daily-close percentage-move alert rule with configurable threshold and explicit delayed-data disclosure.
 - [x] Add authenticated GitHub repository selection with issue, pull-request, and commit detail views using the validated read-only credential.
 - [ ] Add approval-gated workflow run requests and agent dispatch controls with auditable requested, approved, and denied states.
@@ -56,7 +56,7 @@
 - [ ] Complete managed media and vertical-video job state transitions with export readiness and explicit unsupported-render boundaries.
 - [ ] Add credential-backed health-check adapters for configured deployment providers while retaining unavailable states for unconfigured providers.
 - [ ] Configure secure Vercel, Cloudflare, and Google Cloud credentials and validate scoped deployment-health endpoints without persisting raw secrets.
-- [ ] Publish the current command-center code to the approved GitHub repository balajirajput96/automation-control-center main branch after preserving remote work.
+- [x] Publish the current command-center code to the approved GitHub repository balajirajput96/automation-control-center main branch after preserving remote work.
 - [ ] Reattach the recovered command-center source to a managed project context with required application secrets and runtime services restored.
 - [x] Add idempotent workflow schedule preflight records and execution-audit prerequisites before enabling any recurring callback.
 - [x] Improve video-job readiness and review states with explicit external-render handoff boundaries.

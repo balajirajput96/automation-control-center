@@ -29,6 +29,13 @@
       "when": 1786959534125,
       "tag": "0003_dizzy_speedball",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1787104050219,
+      "tag": "0004_woozy_maverick",
+      "breakpoints": true
     }
   ]
 }
