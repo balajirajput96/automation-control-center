@@ -34,7 +34,10 @@
 - [ ] Capture populated video job UI verification showing source, thumbnail, output, and validated storage metadata.
 - [ ] Add wrong-kind asset-reference and invalid kind/MIME rejection regression coverage.
 - [x] Add server-side visual asset generation with stored output records, model discovery, loading states, and failure states.
-- [ ] Build a vertical-video pipeline job interface covering clipping, silence-removal, captions, voice-over, subtitles, aspect-ratio conversion, and export readiness; clearly label unsupported render actions.
+- [x] Build a vertical-video pipeline job interface covering clipping, silence-removal, captions, voice-over, subtitles, aspect-ratio conversion, and export readiness; clearly label unsupported render actions.
+- [x] Add user-visible configurable vertical-video pipeline controls for clipping, silence removal, captions, voice-over, subtitles, and aspect-ratio conversion.
+- [ ] Persist and display selected vertical-video pipeline-operation states alongside export readiness and unsupported-render messaging.
+- [ ] Add regression and visual verification for configurable vertical-video pipeline-operation selection and saved-state rendering.
 - [x] Implement GitHub repository, issue, pull-request, commit, and code-review data surfaces using only authorized access.
 - [x] Add an authorized GitHub pull-request review data procedure and a read-only review panel with loading, empty, and error states.
 - [x] Add regression coverage for authorized GitHub review-data retrieval and validate the read-only repository details workspace.
