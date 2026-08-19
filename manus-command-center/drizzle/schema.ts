@@ -132,6 +132,7 @@ export const schedules = mysqlTable("schedules", {
   name: varchar("name", { length: 160 }).notNull(),
   recurrenceType: mysqlEnum("recurrenceType", ["once", "hourly", "daily", "weekly", "monthly", "cron", "event"]).notNull(),
   cronExpression: varchar("cronExpression", { length: 100 }),
+  recurrenceConfig: json("recurrenceConfig"),
   timezone: varchar("timezone", { length: 64 }).default("UTC").notNull(),
   scheduleCronTaskUid: varchar("scheduleCronTaskUid", { length: 65 }),
   status: mysqlEnum("status", ["active", "paused", "failed", "completed"]).default("active").notNull(),

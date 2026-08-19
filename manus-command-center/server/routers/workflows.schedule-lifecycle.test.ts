@@ -41,4 +41,11 @@ describe("schedule lifecycle procedure", () => {
     await expect(scheduleCaller(42).update({ id: 7, workflowId: 3, name: "Cron digest", recurrenceType: "cron", cronExpression: "0 9 *", timezone: "UTC" })).rejects.toThrow("six-field UTC expression");
     expect(mocks.updateScheduleForOwner).toHaveBeenCalledTimes(1);
   });
+
+  it("validates structured weekly and event recurrence definitions when configured", async () => {
+    await expect(scheduleCaller(42).update({ id: 7, workflowId: 3, name: "Weekly digest", recurrenceType: "weekly", timezone: "UTC", recurrenceConfig: { dayOfWeek: 7 } })).rejects.toThrow("dayOfWeek from 0 to 6");
+    await expect(scheduleCaller(42).update({ id: 7, workflowId: 3, name: "Event digest", recurrenceType: "event", timezone: "UTC", recurrenceConfig: {} })).rejects.toThrow("eventName");
+    await scheduleCaller(42).update({ id: 7, workflowId: 3, name: "Weekly digest", recurrenceType: "weekly", timezone: "UTC", recurrenceConfig: { dayOfWeek: 1 } });
+    expect(mocks.updateScheduleForOwner).toHaveBeenCalledWith(42, 7, expect.objectContaining({ recurrenceConfig: { dayOfWeek: 1 } }));
+  });
 });

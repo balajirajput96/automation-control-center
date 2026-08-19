@@ -285,13 +285,13 @@ export async function setScheduleStateForOwner(ownerId: number, scheduleId: numb
   await db.update(schedules).set({ status }).where(eq(schedules.id, scheduleId));
 }
 
-export async function updateScheduleForOwner(ownerId: number, scheduleId: number, values: { workflowId: number; name: string; recurrenceType: "once" | "hourly" | "daily" | "weekly" | "monthly" | "cron" | "event"; cronExpression?: string | null; timezone: string }) {
+export async function updateScheduleForOwner(ownerId: number, scheduleId: number, values: { workflowId: number; name: string; recurrenceType: "once" | "hourly" | "daily" | "weekly" | "monthly" | "cron" | "event"; cronExpression?: string | null; recurrenceConfig?: unknown; timezone: string }) {
   const db = await requireDb();
   const schedule = await db.select({ id: schedules.id }).from(schedules).where(and(eq(schedules.id, scheduleId), eq(schedules.ownerId, ownerId))).limit(1);
   if (!schedule[0]) throw new Error("Schedule not found");
   const workflow = await db.select({ id: workflows.id }).from(workflows).where(and(eq(workflows.id, values.workflowId), eq(workflows.ownerId, ownerId))).limit(1);
   if (!workflow[0]) throw new Error("Workflow not found");
-  await db.update(schedules).set({ ...values, cronExpression: values.cronExpression ?? null, status: "paused", nextExecutionAt: null }).where(eq(schedules.id, scheduleId));
+  await db.update(schedules).set({ ...values, cronExpression: values.cronExpression ?? null, recurrenceConfig: values.recurrenceConfig ?? null, status: "paused", nextExecutionAt: null }).where(eq(schedules.id, scheduleId));
 }
 
 export async function deleteScheduleForOwner(ownerId: number, scheduleId: number) {

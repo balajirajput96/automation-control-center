@@ -44,6 +44,15 @@ export function isSixFieldCron(expression: string) {
   return expression.trim().split(/\s+/).length === 6;
 }
 
+const recurrenceConfigSchema = z.record(z.string(), z.unknown()).optional();
+function validateRecurrenceConfig(recurrenceType: "once" | "hourly" | "daily" | "weekly" | "monthly" | "cron" | "event", config?: Record<string, unknown>) {
+  if (!config) return;
+  if (recurrenceType === "once" && typeof config?.runAt !== "string") throw new Error("One-time schedules require a runAt timestamp");
+  if (recurrenceType === "weekly" && (!config || !Number.isInteger(config.dayOfWeek) || Number(config.dayOfWeek) < 0 || Number(config.dayOfWeek) > 6)) throw new Error("Weekly schedules require dayOfWeek from 0 to 6");
+  if (recurrenceType === "monthly" && (!config || !Number.isInteger(config.dayOfMonth) || Number(config.dayOfMonth) < 1 || Number(config.dayOfMonth) > 31)) throw new Error("Monthly schedules require dayOfMonth from 1 to 31");
+  if (recurrenceType === "event" && (typeof config?.eventName !== "string" || config.eventName.trim().length < 2)) throw new Error("Event-driven schedules require an eventName");
+}
+
 export const workflowRouter = router({
   list: protectedProcedure.query(({ ctx }) => listWorkflowsForOwner(ctx.user.id)),
   runs: protectedProcedure.query(({ ctx }) => listWorkflowRunsForOwner(ctx.user.id)),
@@ -108,6 +117,7 @@ export const scheduleRouter = router({
     name: z.string().trim().min(2).max(160),
     recurrenceType: z.enum(["once", "hourly", "daily", "weekly", "monthly", "cron", "event"]),
     cronExpression: z.string().trim().max(100).optional(),
+    recurrenceConfig: recurrenceConfigSchema,
     timezone: z.string().trim().min(1).max(64).default("UTC"),
   })).mutation(async ({ ctx, input }) => {
     const db = await getDb();
@@ -118,12 +128,14 @@ export const scheduleRouter = router({
     if (input.recurrenceType === "cron" && (!input.cronExpression || !isSixFieldCron(input.cronExpression))) {
       throw new Error("Cron schedules require a six-field UTC expression");
     }
+    validateRecurrenceConfig(input.recurrenceType, input.recurrenceConfig);
     await db.insert(schedules).values({
       ownerId: ctx.user.id,
       workflowId: input.workflowId,
       name: input.name,
       recurrenceType: input.recurrenceType,
       cronExpression: input.cronExpression ?? null,
+      recurrenceConfig: input.recurrenceConfig ?? null,
       timezone: input.timezone,
       status: "paused",
     });
@@ -136,9 +148,11 @@ export const scheduleRouter = router({
     name: z.string().trim().min(2).max(160),
     recurrenceType: z.enum(["once", "hourly", "daily", "weekly", "monthly", "cron", "event"]),
     cronExpression: z.string().trim().max(100).optional(),
+    recurrenceConfig: recurrenceConfigSchema,
     timezone: z.string().trim().min(1).max(64),
   })).mutation(async ({ ctx, input }) => {
     if (input.recurrenceType === "cron" && (!input.cronExpression || !isSixFieldCron(input.cronExpression))) throw new Error("Cron schedules require a six-field UTC expression");
+    validateRecurrenceConfig(input.recurrenceType, input.recurrenceConfig);
     await updateScheduleForOwner(ctx.user.id, input.id, input);
     await addAuditEvent(ctx.user.id, { action: "schedule.updated", resourceType: "schedule", resourceId: String(input.id), outcome: "success", detail: `Updated paused ${input.recurrenceType} schedule ${input.name}; no callback was invoked.` });
     return { success: true, status: "paused" as const };
