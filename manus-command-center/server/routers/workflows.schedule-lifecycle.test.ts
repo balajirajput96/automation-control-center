@@ -4,6 +4,7 @@ const mocks = vi.hoisted(() => ({
   addAuditEvent: vi.fn(),
   deleteScheduleForOwner: vi.fn(),
   setScheduleStateForOwner: vi.fn(),
+  updateScheduleForOwner: vi.fn(),
 }));
 
 vi.mock("../db", () => mocks);
@@ -30,5 +31,14 @@ describe("schedule lifecycle procedure", () => {
     await scheduleCaller(42).remove({ id: 7 });
     expect(mocks.deleteScheduleForOwner).toHaveBeenCalledWith(42, 7);
     expect(mocks.addAuditEvent).toHaveBeenCalledWith(42, expect.objectContaining({ action: "schedule.deleted", resourceId: "7" }));
+  });
+
+  it("updates an owner-scoped schedule as paused and rejects malformed cron expressions", async () => {
+    await scheduleCaller(42).update({ id: 7, workflowId: 3, name: "Morning digest", recurrenceType: "daily", timezone: "UTC" });
+    expect(mocks.updateScheduleForOwner).toHaveBeenCalledWith(42, 7, expect.objectContaining({ workflowId: 3, name: "Morning digest", recurrenceType: "daily", timezone: "UTC" }));
+    expect(mocks.addAuditEvent).toHaveBeenCalledWith(42, expect.objectContaining({ action: "schedule.updated", resourceId: "7", outcome: "success" }));
+
+    await expect(scheduleCaller(42).update({ id: 7, workflowId: 3, name: "Cron digest", recurrenceType: "cron", cronExpression: "0 9 *", timezone: "UTC" })).rejects.toThrow("six-field UTC expression");
+    expect(mocks.updateScheduleForOwner).toHaveBeenCalledTimes(1);
   });
 });

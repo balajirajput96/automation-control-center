@@ -16,6 +16,8 @@
 - [ ] Implement workflow records, reusable templates, node/edge definitions, validation states, and execution history.
 - [ ] Build a true graph-based workflow canvas with editable nodes and edges that visibly represent sequential, parallel, conditional, and loop branches.
 - [ ] Implement schedule CRUD UI for one-time, hourly, daily, weekly, monthly, cron, and event-driven job definitions.
+- [x] Add edit/update UI for existing schedule definitions, including name, workflow, recurrence type, timezone, and cron expression when applicable.
+- [ ] Add mode-appropriate schedule definition fields and validation for one-time, weekly, monthly, and event-driven schedules.
 - [ ] Add production-safe scheduled callback foundations with ownership checks, idempotency requirements, pause/resume states, and execution history.
 - [ ] Implement research and content project tracking for sources, outlines, scripts, storyboards, citations, metadata, and exports.
 - [ ] Implement secure media-asset metadata and storage references for images, audio, video, thumbnails, and vertical-video jobs.

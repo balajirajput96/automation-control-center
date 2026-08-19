@@ -15,6 +15,7 @@ import NiftyPage from "./pages/NiftyPage";
 import GitHubDetailsPage from "./pages/GitHubDetailsPage";
 import ProjectActivityPage from "./pages/ProjectActivityPage";
 import { WorkflowRunApprovalsPage } from "./components/ApprovalResolutionControls";
+import { ScheduleLifecyclePanel } from "./components/ScheduleLifecyclePanel";
 
 const modulePaths = ["github", "content", "video", "images", "research", "deployments", "integrations", "logs", "settings"] as const;
 
@@ -35,6 +36,7 @@ function Router() {
     <Route path="/workflow-approvals" component={WorkflowRunApprovalsPage} />
     <Route path="/run-approvals" component={WorkflowRunApprovalsPage} />
     <Route path="/schedules" component={SchedulesPage} />
+    <Route path="/schedule-lifecycle">{() => <div className="mx-auto max-w-[1100px] space-y-6"><section className="blueprint-card p-7"><p className="eyebrow">SCHEDULE DEFINITION GOVERNANCE</p><h1 className="mt-2 text-4xl font-black tracking-[-0.055em] text-slate-950">Schedule lifecycle</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Review and remove paused owner-scoped schedule definitions. Deletion never invokes a callback or workflow run.</p></section><ScheduleLifecyclePanel /></div>}</Route>
     <Route path="/nifty" component={NiftyPage} />
     <Route path="/github/details" component={GitHubDetailsPage} />
     {modulePaths.map(module => <Route key={module} path={`/${module}`}>{() => <ModulePage module={module} />}</Route>)}

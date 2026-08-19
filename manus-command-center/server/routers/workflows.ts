@@ -1,7 +1,7 @@
 import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { auditLogs, schedules, workflowRuns, workflows } from "../../drizzle/schema";
-import { addAuditEvent, createWorkflowRunForOwner, createWorkflowTemplateForOwner, deleteScheduleForOwner, getDb, listSchedulesForOwner, listWorkflowRunsForOwner, listWorkflowTemplatesForOwner, listWorkflowsForOwner, setScheduleStateForOwner } from "../db";
+import { addAuditEvent, createWorkflowRunForOwner, createWorkflowTemplateForOwner, deleteScheduleForOwner, getDb, listSchedulesForOwner, listWorkflowRunsForOwner, listWorkflowTemplatesForOwner, listWorkflowsForOwner, setScheduleStateForOwner, updateScheduleForOwner } from "../db";
 import { protectedProcedure, router } from "../_core/trpc";
 
 const nodeSchema = z.object({ id: z.string().min(1).max(100), type: z.enum(["trigger", "agent", "http", "condition", "loop", "parallel", "approval", "publish", "deploy", "storage"]), label: z.string().min(1).max(160), config: z.record(z.string(), z.unknown()).default({}) });
@@ -129,6 +129,19 @@ export const scheduleRouter = router({
     });
     await addAuditEvent(ctx.user.id, { action: "schedule.created", resourceType: "schedule", outcome: "pending", detail: `Created paused ${input.recurrenceType} schedule ${input.name}; production activation is required.` });
     return { success: true, activation: "paused_until_production" as const };
+  }),
+  update: protectedProcedure.input(z.object({
+    id: z.number().int().positive(),
+    workflowId: z.number().int().positive(),
+    name: z.string().trim().min(2).max(160),
+    recurrenceType: z.enum(["once", "hourly", "daily", "weekly", "monthly", "cron", "event"]),
+    cronExpression: z.string().trim().max(100).optional(),
+    timezone: z.string().trim().min(1).max(64),
+  })).mutation(async ({ ctx, input }) => {
+    if (input.recurrenceType === "cron" && (!input.cronExpression || !isSixFieldCron(input.cronExpression))) throw new Error("Cron schedules require a six-field UTC expression");
+    await updateScheduleForOwner(ctx.user.id, input.id, input);
+    await addAuditEvent(ctx.user.id, { action: "schedule.updated", resourceType: "schedule", resourceId: String(input.id), outcome: "success", detail: `Updated paused ${input.recurrenceType} schedule ${input.name}; no callback was invoked.` });
+    return { success: true, status: "paused" as const };
   }),
   setState: protectedProcedure.input(z.object({ id: z.number().int().positive(), status: z.enum(["paused", "active"]) })).mutation(async ({ ctx, input }) => {
     if (input.status === "active") return { success: false, status: "paused" as const, reason: "A deployed scheduler callback and idempotent execution handler are required before resuming this schedule." };
