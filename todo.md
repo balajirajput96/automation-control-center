@@ -17,3 +17,22 @@
 - [x] Reconfirm the protected audit readiness evidence after the sandbox recovery.
 - [x] Apply only validated low-risk protected-audit improvements and run static checks.
 - [ ] Push the verified protected-audit update to the private repository.
+- [ ] Resume n8n workspace discovery using only read-only account and connection evidence.
+- [ ] Re-establish authenticated Gemini Spark, Julius, and Antigravity readiness when provider sessions allow it.
+- [ ] Validate recovery results and publish only verified private documentation updates.
+- [ ] Search the connected university Gmail inbox read-only for the n8n recovery link and workspace identifier.
+- [ ] Recover n8n workspace access and inspect existing workflows without execution.
+- [ ] Import the validated credential-free workflow bundle inactive and validate only internal/read-only paths.
+- [ ] Inventory the relevant authorized integrations without exposing token values and use them for private recovery only.
+- [ ] Use Gmail evidence to recover the n8n workspace identifier and inspect it without executing workflows.
+- [ ] Use GitHub, Gemini, Antigravity, and Google Workspace to validate only safe private automation improvements.
+- [ ] Connect n8n and Julius only where provider authentication permits, keeping external-action workflows inactive.
+- [ ] Diagnose and recover the authorized `2203456300001@paruluniversity.ac.in` Gmail connector without exposing tokens or changing account security.
+- [ ] Validate Gmail and Google Workspace read-only access, then document only verified connector-level repair steps.
+- [ ] Use available coding assistants only for safe private automation validation and documentation fixes.
+- [ ] Inventory relevant authorized connectors associated with the user's Gmail and automation accounts.
+- [ ] Use only relevant read-only connector diagnostics to identify Gmail and automation recovery blockers.
+- [ ] Apply only validated low-risk private automation or connector documentation fixes.
+- [ ] Inspect the Zapier/Zapper connector for authorized read-only recovery capabilities.
+- [x] Use the active GitHub, Google Workspace, Gemini, n8n, and Antigravity paths for an alternative low-risk recovery review.
+- [x] Apply and validate only verified private code or documentation repairs from the alternative review.

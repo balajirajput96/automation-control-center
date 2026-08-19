@@ -16,7 +16,8 @@
       "parameters": {
         "path": "5b0e6a8d-f7eb-49ba-ac89-2eb4fc359967"
       },
-      "typeVersion": 1
+      "typeVersion": 1,
+      "disabled": true
     },
     {
       "id": "0c5003ed-20e2-4952-b20a-f01496037a13",
@@ -50,7 +51,8 @@
         "sessionKey": "github",
         "sessionIdType": "customKey"
       },
-      "typeVersion": 1.3
+      "typeVersion": 1.3,
+      "disabled": true
     },
     {
       "id": "2fa49b82-2c86-4076-974c-1ed57be5bdc5",
@@ -69,7 +71,8 @@
         },
         "options": {}
       },
-      "typeVersion": 1.2
+      "typeVersion": 1.2,
+      "disabled": true
     },
     {
       "id": "a7be6db4-25b5-490c-8d1e-91473edf76c7",
@@ -83,9 +86,10 @@
         "color": 4,
         "width": 460,
         "height": 500,
-        "content": "## GitHub AI Agent (Tools Agent)\n🤖 Specialized GitHub Agent\n- Direct connection to GitHub MCP Server\n- Processes natural language GitHub requests\n- Reduces LLM context overhead\n- Handles all GitHub API complexity"
+        "content": "## GitHub AI Agent (Tools Agent)\n\ud83e\udd16 Specialized GitHub Agent\n- Direct connection to GitHub MCP Server\n- Processes natural language GitHub requests\n- Reduces LLM context overhead\n- Handles all GitHub API complexity"
       },
-      "typeVersion": 1
+      "typeVersion": 1,
+      "disabled": true
     },
     {
       "id": "7cdfaa60-61bd-43d1-9aff-f27f2012e9b9",
@@ -99,9 +103,10 @@
         "color": 7,
         "width": 340,
         "height": 500,
-        "content": "## 🖥️  MCP Server Trigger\n🔧 MCP Server Trigger\n- Receives GitHub operation requests\n- Single parameter: \"request\" (natural language)\n- Triggers specialized GitHub agent workflow"
+        "content": "## \ud83d\udda5\ufe0f  MCP Server Trigger\n\ud83d\udd27 MCP Server Trigger\n- Receives GitHub operation requests\n- Single parameter: \"request\" (natural language)\n- Triggers specialized GitHub agent workflow"
       },
-      "typeVersion": 1
+      "typeVersion": 1,
+      "disabled": true
     },
     {
       "id": "94b86861-9993-4de0-a56a-a3d4dd829d9b",
@@ -115,9 +120,10 @@
         "color": 7,
         "width": 600,
         "height": 500,
-        "content": "# 🖥️ MCP Server Github Agent Tool\n\n📋 Architecture Overview\n\nThis workflow implements the MCP Agent pattern:\n\n1. Single entry point (MCP Trigger)\n\n2. Specialized agent (GitHub focus)\n\n3. Context delegation (reduced LLM load)\n\n4. Scalable operations (unlimited GitHub tools)\n\n\nPerfect for complex GitHub automations without overwhelming your main LLM with GitHub API context.\n"
+        "content": "# \ud83d\udda5\ufe0f MCP Server Github Agent Tool\n\n\ud83d\udccb Architecture Overview\n\nThis workflow implements the MCP Agent pattern:\n\n1. Single entry point (MCP Trigger)\n\n2. Specialized agent (GitHub focus)\n\n3. Context delegation (reduced LLM load)\n\n4. Scalable operations (unlimited GitHub tools)\n\n\nPerfect for complex GitHub automations without overwhelming your main LLM with GitHub API context.\n"
       },
-      "typeVersion": 1
+      "typeVersion": 1,
+      "disabled": true
     },
     {
       "id": "4f6833d0-85c7-4035-8a8a-c627b1181d76",
@@ -159,7 +165,8 @@
           "convertFieldsToString": false
         }
       },
-      "typeVersion": 2.2
+      "typeVersion": 2.2,
+      "disabled": true
     },
     {
       "id": "0d381148-29a4-4f0d-abe4-b32a409414d5",
@@ -201,7 +208,8 @@
           "create_pull_request"
         ]
       },
-      "typeVersion": 1
+      "typeVersion": 1,
+      "disabled": true
     },
     {
       "id": "382e14d0-747f-4901-9224-cb7c8fe60958",
@@ -218,7 +226,8 @@
         },
         "promptType": "define"
       },
-      "typeVersion": 1.9
+      "typeVersion": 1.9,
+      "disabled": true
     },
     {
       "id": "47f6acc4-d405-4203-a157-f050f249b37a",
@@ -241,7 +250,8 @@
           ]
         }
       },
-      "typeVersion": 3.4
+      "typeVersion": 3.4,
+      "disabled": true
     },
     {
       "id": "291e3f21-ab26-4a3e-be10-bfb0add9cf76",
@@ -255,9 +265,10 @@
         "color": 7,
         "width": 340,
         "height": 380,
-        "content": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n## Set GitHub Username Node\n⚙️ Configuration Required\n- Replace \"your-github-username\" with actual username\n- Used for GitHub API authentication context\n- Essential for proper API calls"
+        "content": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n## Set GitHub Username Node\n\u2699\ufe0f Configuration Required\n- Replace \"your-github-username\" with actual username\n- Used for GitHub API authentication context\n- Essential for proper API calls"
       },
-      "typeVersion": 1
+      "typeVersion": 1,
+      "disabled": true
     },
     {
       "id": "117bbca5-4a6b-4c11-96bb-98efb561ac1d",
@@ -271,9 +282,10 @@
         "color": 7,
         "width": 360,
         "height": 380,
-        "content": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n## OpenAI Chat Model Node\n🧠 AI Processing Engine\n- Requires OpenAI API key configuration  \n- Powers intelligent GitHub operation understanding\n- Optimized for GitHub-specific tasks"
+        "content": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n## OpenAI Chat Model Node\n\ud83e\udde0 AI Processing Engine\n- Requires OpenAI API key configuration  \n- Powers intelligent GitHub operation understanding\n- Optimized for GitHub-specific tasks"
       },
-      "typeVersion": 1
+      "typeVersion": 1,
+      "disabled": true
     },
     {
       "id": "c6b138ca-a993-4251-ab28-29ba37b93b67",
@@ -287,9 +299,10 @@
         "color": 7,
         "width": 340,
         "height": 380,
-        "content": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n## Simple Memory Node\n💾 Conversation Context\n- Maintains operation history\n- Enables multi-step GitHub workflows\n- Reduces repetitive context processing"
+        "content": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n## Simple Memory Node\n\ud83d\udcbe Conversation Context\n- Maintains operation history\n- Enables multi-step GitHub workflows\n- Reduces repetitive context processing"
       },
-      "typeVersion": 1
+      "typeVersion": 1,
+      "disabled": true
     },
     {
       "id": "d322205a-413c-4c85-a0de-07c996d77733",
@@ -303,9 +316,10 @@
         "color": 7,
         "width": 340,
         "height": 380,
-        "content": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n## MCP Client Node\n💾 Github Tools\n- Handles calls to the Github API\n- Manages repos and issues\n- One node connected to an MCP server"
+        "content": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n## MCP Client Node\n\ud83d\udcbe Github Tools\n- Handles calls to the Github API\n- Manages repos and issues\n- One node connected to an MCP server"
       },
-      "typeVersion": 1
+      "typeVersion": 1,
+      "disabled": true
     }
   ],
   "connections": {

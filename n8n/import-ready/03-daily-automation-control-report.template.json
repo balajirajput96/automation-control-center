@@ -23,7 +23,8 @@
       "position": [
         0,
         0
-      ]
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -58,7 +59,8 @@
       "position": [
         240,
         0
-      ]
+      ],
+      "disabled": true
     },
     {
       "parameters": {},

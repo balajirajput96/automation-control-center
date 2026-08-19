@@ -17,7 +17,8 @@
         256
       ],
       "id": "708d9e4e-6566-4b18-86b8-8301bf0c72dd",
-      "name": "Default Data Loader"
+      "name": "Default Data Loader",
+      "disabled": true
     },
     {
       "parameters": {
@@ -50,7 +51,8 @@
         656
       ],
       "id": "e8db240e-bb3f-43ab-b4ed-527c6c2e8f54",
-      "name": "Embedding model"
+      "name": "Embedding model",
+      "disabled": true
     },
     {
       "parameters": {
@@ -65,7 +67,8 @@
         32
       ],
       "id": "99f9315f-4f3d-48d9-a6f4-8c519b249eba",
-      "name": "AI Agent"
+      "name": "AI Agent",
+      "disabled": true
     },
     {
       "parameters": {
@@ -78,7 +81,8 @@
         32
       ],
       "id": "bedf3615-c8b0-4fa8-afc5-574bca1003d4",
-      "name": "When chat message received"
+      "name": "When chat message received",
+      "disabled": true
     },
     {
       "parameters": {
@@ -97,7 +101,8 @@
         240
       ],
       "id": "9751b75b-50ac-49c8-8f4d-24a8035b6e73",
-      "name": "Model"
+      "name": "Model",
+      "disabled": true
     },
     {
       "parameters": {},
@@ -108,7 +113,8 @@
         240
       ],
       "id": "167d097a-69f6-4f1b-a741-8c8936adb3d2",
-      "name": "Simple Memory"
+      "name": "Simple Memory",
+      "disabled": true
     },
     {
       "parameters": {
@@ -154,7 +160,8 @@
       ],
       "typeVersion": 1,
       "id": "2fa9684d-f20a-4262-9b8b-81babb2fecc5",
-      "name": "Sticky Note3"
+      "name": "Sticky Note3",
+      "disabled": true
     },
     {
       "parameters": {
@@ -173,7 +180,8 @@
         32
       ],
       "id": "64d17551-1637-4a53-a3e0-db45894c12a6",
-      "name": "Insert documents"
+      "name": "Insert documents",
+      "disabled": true
     },
     {
       "parameters": {
@@ -194,7 +202,8 @@
         368
       ],
       "id": "4f8a4a45-28a4-4684-b838-66011cc6a4a5",
-      "name": "Retrieve documents"
+      "name": "Retrieve documents",
+      "disabled": true
     },
     {
       "parameters": {
@@ -210,7 +219,8 @@
       ],
       "typeVersion": 1,
       "id": "d5898954-ea28-4093-86d4-085887e8a34e",
-      "name": "Sticky Note1"
+      "name": "Sticky Note1",
+      "disabled": true
     }
   ],
   "connections": {

@@ -14,7 +14,8 @@
       ],
       "typeVersion": 1,
       "id": "0a1e8ffc-49ca-4b1e-8bae-bc021d945565",
-      "name": "Sticky Note"
+      "name": "Sticky Note",
+      "disabled": true
     },
     {
       "parameters": {},
@@ -25,7 +26,8 @@
         0
       ],
       "id": "67be978c-9a4f-43bd-b61b-9ca4ec66d09f",
-      "name": "When clicking ‘Execute workflow’"
+      "name": "When clicking \u2018Execute workflow\u2019",
+      "disabled": true
     },
     {
       "parameters": {
@@ -47,7 +49,8 @@
       "retryOnFail": true,
       "notesInFlow": true,
       "onError": "continueRegularOutput",
-      "notes": "To connect fix"
+      "notes": "To connect fix",
+      "disabled": true
     },
     {
       "parameters": {
@@ -73,7 +76,7 @@
     }
   ],
   "connections": {
-    "When clicking ‘Execute workflow’": {
+    "When clicking \u2018Execute workflow\u2019": {
       "main": [
         [
           {

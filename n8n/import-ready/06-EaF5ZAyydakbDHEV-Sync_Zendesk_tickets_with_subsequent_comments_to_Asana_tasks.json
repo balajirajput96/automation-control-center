@@ -57,7 +57,8 @@
         912,
         240
       ],
-      "typeVersion": 1
+      "typeVersion": 1,
+      "disabled": true
     },
     {
       "parameters": {
@@ -99,7 +100,8 @@
       ],
       "notesInFlow": true,
       "typeVersion": 1,
-      "notes": "if issue was created already in Jira"
+      "notes": "if issue was created already in Jira",
+      "disabled": true
     },
     {
       "parameters": {

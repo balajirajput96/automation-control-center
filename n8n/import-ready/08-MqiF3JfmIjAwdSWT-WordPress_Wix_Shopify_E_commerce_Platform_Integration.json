@@ -47,7 +47,8 @@
       "position": [
         -192,
         112
-      ]
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -89,7 +90,8 @@
       "position": [
         32,
         112
-      ]
+      ],
+      "disabled": true
     },
     {
       "parameters": {

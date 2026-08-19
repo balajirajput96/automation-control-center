@@ -8,7 +8,7 @@
     {
       "parameters": {},
       "id": "2aaa2725-24b6-46bb-9f9e-153049095183",
-      "name": "When clicking ‘Execute workflow’",
+      "name": "When clicking \u2018Execute workflow\u2019",
       "type": "n8n-nodes-base.manualTrigger",
       "position": [
         496,
@@ -16,7 +16,8 @@
       ],
       "notesInFlow": true,
       "typeVersion": 1,
-      "notes": "Manual trigger for testing the workflow execution."
+      "notes": "Manual trigger for testing the workflow execution.",
+      "disabled": true
     },
     {
       "parameters": {
@@ -37,11 +38,12 @@
       ],
       "notesInFlow": true,
       "typeVersion": 1.2,
-      "notes": "Runs the workflow daily at 03:00 (server time)."
+      "notes": "Runs the workflow daily at 03:00 (server time).",
+      "disabled": true
     },
     {
       "parameters": {
-        "jsCode": "// ---------------------------------------------------------------------------\n// n8n Code Node - Prepare Workflow JSON for UI-Compatible Export\n// ---------------------------------------------------------------------------\n//\n// GOAL: Produce an output *identical* to the workflow JSON downloaded from\n// the n8n UI → Same fields, same structure, same order.\n// ---------------------------------------------------------------------------\n\nreturn $input.all().map(item => {\n    const w = item.json;\n\n    // Keep exactly the fields that appear in a native n8n export\n    // And ensure they are in the correct order\n    const cleaned = {\n        name: w.name,                        // Workflow name\n        nodes: w.nodes || [],               // Workflow nodes\n        pinData: w.pinData || {},           // Pinned node data (empty if not set)\n        connections: w.connections || {},   // Workflow connections\n        active: w.active ?? false,          // Default false like exported UI\n        settings: w.settings || {},         // Workflow-level settings\n        versionId: w.versionId || \"\",       // Keep version ID if present\n        meta: w.meta || {},                 // Additional meta info\n        id: w.id,                           // Workflow unique ID\n        tags: w.tags || []                  // Array of tags\n    };\n\n    // Return the cleaned JSON, ready for export or GitLab storage\n    return {\n        json: cleaned\n    };\n});"
+        "jsCode": "// ---------------------------------------------------------------------------\n// n8n Code Node - Prepare Workflow JSON for UI-Compatible Export\n// ---------------------------------------------------------------------------\n//\n// GOAL: Produce an output *identical* to the workflow JSON downloaded from\n// the n8n UI \u2192 Same fields, same structure, same order.\n// ---------------------------------------------------------------------------\n\nreturn $input.all().map(item => {\n    const w = item.json;\n\n    // Keep exactly the fields that appear in a native n8n export\n    // And ensure they are in the correct order\n    const cleaned = {\n        name: w.name,                        // Workflow name\n        nodes: w.nodes || [],               // Workflow nodes\n        pinData: w.pinData || {},           // Pinned node data (empty if not set)\n        connections: w.connections || {},   // Workflow connections\n        active: w.active ?? false,          // Default false like exported UI\n        settings: w.settings || {},         // Workflow-level settings\n        versionId: w.versionId || \"\",       // Keep version ID if present\n        meta: w.meta || {},                 // Additional meta info\n        id: w.id,                           // Workflow unique ID\n        tags: w.tags || []                  // Array of tags\n    };\n\n    // Return the cleaned JSON, ready for export or GitLab storage\n    return {\n        json: cleaned\n    };\n});"
       },
       "id": "da551fd3-0e10-47f8-8325-5ca0b7bd375d",
       "name": "Prepare Workflow JSON for UI-Compatible Export",
@@ -57,7 +59,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// ---------------------------------------------------------------------------\n// n8n Code Node - Clean & Normalize Workflow Name\n// ---------------------------------------------------------------------------\n//\n// GOAL: Standardize workflow names by properly formatting [client] tags.\n//\n// - Detects any existing [client] tags in the name.\n// - If a client value exists → Normalize to `[client : NAME]`.\n// - If the tag exists but is empty → Remove it completely.\n// - If no tag is present → Leave the name unchanged.\n//\n// Output structure matches the original item, only the `name` is updated.\n// ---------------------------------------------------------------------------\n\nreturn $input.all().map(item => {\n    const w = item.json;\n\n    // Regex to match patterns like:\n    // [clientXYZ], [client: XYZ], [client : xyz], [client xyz]\n    // [ Client: XYZ] with optional space after [\n    // Also matches empty tags: [client], [client:], [client : ]\n    const clientTag = /\\[\\s*client\\s*:?\\s*([^\\]\\r\\n]*)\\]/i;\n\n    let name = String(w.name || \"\").trim();\n    const match = name.match(clientTag);\n\n    if (match) {\n        // Extract raw client value from the tag\n        const rawClient = match[1] ? match[1].trim() : \"\";\n\n        if (rawClient) {\n            // Normalize client name to uppercase\n            const clientName = rawClient.toUpperCase();\n\n            // Remove the original tag completely\n            name = name.replace(clientTag, \"\").trim();\n\n            // Rebuild the name with the normalized format\n            name = `[client : ${clientName}] ${name}`;\n        } else {\n            // If tag exists but has no value → remove it entirely\n            name = name.replace(clientTag, \"\").trim();\n        }\n    }\n\n    // Return the updated workflow JSON (only name is modified)\n    return {\n        json: {\n            ...w,\n            name\n        }\n    };\n});"
+        "jsCode": "// ---------------------------------------------------------------------------\n// n8n Code Node - Clean & Normalize Workflow Name\n// ---------------------------------------------------------------------------\n//\n// GOAL: Standardize workflow names by properly formatting [client] tags.\n//\n// - Detects any existing [client] tags in the name.\n// - If a client value exists \u2192 Normalize to `[client : NAME]`.\n// - If the tag exists but is empty \u2192 Remove it completely.\n// - If no tag is present \u2192 Leave the name unchanged.\n//\n// Output structure matches the original item, only the `name` is updated.\n// ---------------------------------------------------------------------------\n\nreturn $input.all().map(item => {\n    const w = item.json;\n\n    // Regex to match patterns like:\n    // [clientXYZ], [client: XYZ], [client : xyz], [client xyz]\n    // [ Client: XYZ] with optional space after [\n    // Also matches empty tags: [client], [client:], [client : ]\n    const clientTag = /\\[\\s*client\\s*:?\\s*([^\\]\\r\\n]*)\\]/i;\n\n    let name = String(w.name || \"\").trim();\n    const match = name.match(clientTag);\n\n    if (match) {\n        // Extract raw client value from the tag\n        const rawClient = match[1] ? match[1].trim() : \"\";\n\n        if (rawClient) {\n            // Normalize client name to uppercase\n            const clientName = rawClient.toUpperCase();\n\n            // Remove the original tag completely\n            name = name.replace(clientTag, \"\").trim();\n\n            // Rebuild the name with the normalized format\n            name = `[client : ${clientName}] ${name}`;\n        } else {\n            // If tag exists but has no value \u2192 remove it entirely\n            name = name.replace(clientTag, \"\").trim();\n        }\n    }\n\n    // Return the updated workflow JSON (only name is modified)\n    return {\n        json: {\n            ...w,\n            name\n        }\n    };\n});"
       },
       "id": "092317f4-3c1e-4c9b-af35-fdeabc9e578f",
       "name": "Clean & Normalize Workflow Name",
@@ -73,7 +75,7 @@
     },
     {
       "parameters": {
-        "content": "\n\n## 🟨 Prepare Workflow Data 🛠️\n\n### 🎯 Goal\nClean and prepare workflow data for a consistent and stable GitLab export.  \nThe GitLab file path is always based on the workflow **ID** (rename-proof).  \nThe normalized name is only used for readability and commit messages.\n\n### 🔗 Nodes\n- **Normalize Workflow Name** → standardizes the workflow name and `[client: ...]` tag for readability and logging.  \n- **Prepare Workflow JSON for UI-Compatible Export** → outputs the workflow JSON in the same format as an n8n UI export (includes `id`, `name`, nodes, tags, etc.).  \n- **Prepare GitLab File Path** → generates the final storage path for GitLab backups using the workflow **ID** (e.g. `workflow_definitions/<workflowId>.json`).\n\n### ✅ Best Practices\n- 📂 Always use the workflow ID for file naming to ensure stability, even if names change.  \n- 👀 Keep JSON human-readable and re-import friendly.  \n\n### 📤 Key Outputs\n- `id` (from exported workflow JSON)  \n- `gitlab_file_path` (constructed path based on workflow ID)  \n- Full workflow JSON ready for GitLab commit\n",
+        "content": "\n\n## \ud83d\udfe8 Prepare Workflow Data \ud83d\udee0\ufe0f\n\n### \ud83c\udfaf Goal\nClean and prepare workflow data for a consistent and stable GitLab export.  \nThe GitLab file path is always based on the workflow **ID** (rename-proof).  \nThe normalized name is only used for readability and commit messages.\n\n### \ud83d\udd17 Nodes\n- **Normalize Workflow Name** \u2192 standardizes the workflow name and `[client: ...]` tag for readability and logging.  \n- **Prepare Workflow JSON for UI-Compatible Export** \u2192 outputs the workflow JSON in the same format as an n8n UI export (includes `id`, `name`, nodes, tags, etc.).  \n- **Prepare GitLab File Path** \u2192 generates the final storage path for GitLab backups using the workflow **ID** (e.g. `workflow_definitions/<workflowId>.json`).\n\n### \u2705 Best Practices\n- \ud83d\udcc2 Always use the workflow ID for file naming to ensure stability, even if names change.  \n- \ud83d\udc40 Keep JSON human-readable and re-import friendly.  \n\n### \ud83d\udce4 Key Outputs\n- `id` (from exported workflow JSON)  \n- `gitlab_file_path` (constructed path based on workflow ID)  \n- Full workflow JSON ready for GitLab commit\n",
         "height": 912,
         "width": 912
       },
@@ -84,11 +86,12 @@
         2288,
         1248
       ],
-      "typeVersion": 1
+      "typeVersion": 1,
+      "disabled": true
     },
     {
       "parameters": {
-        "content": "\n\n## 🟩 Gather Workflows from n8n 📂\n\n### 🎯 Goal  \nIdentify which workflows should be backed up, using tag-based filtering directly in the API call.\n\n### 🔗 Node  \nFetch Workflows from n8n → retrieves only workflows tagged with backup-workflows (filter applied via Tags).\n\n### ✅ Best practices  \n🏷️ Tag all critical workflows with backup-workflows to include them in backups.  \n🔍 Audit tags regularly for naming consistency and completeness.  \n\n### 📤 Key outputs  \nFiltered list of workflows selected for backup.\n",
+        "content": "\n\n## \ud83d\udfe9 Gather Workflows from n8n \ud83d\udcc2\n\n### \ud83c\udfaf Goal  \nIdentify which workflows should be backed up, using tag-based filtering directly in the API call.\n\n### \ud83d\udd17 Node  \nFetch Workflows from n8n \u2192 retrieves only workflows tagged with backup-workflows (filter applied via Tags).\n\n### \u2705 Best practices  \n\ud83c\udff7\ufe0f Tag all critical workflows with backup-workflows to include them in backups.  \n\ud83d\udd0d Audit tags regularly for naming consistency and completeness.  \n\n### \ud83d\udce4 Key outputs  \nFiltered list of workflows selected for backup.\n",
         "height": 912,
         "width": 806,
         "color": 4
@@ -100,11 +103,12 @@
         1392,
         1248
       ],
-      "typeVersion": 1
+      "typeVersion": 1,
+      "disabled": true
     },
     {
       "parameters": {
-        "content": "\n\n## 🟪 Start / Trigger & Configure ⚡\n\n### 🎯 Goal\nStart the backup manually or via CRON schedule and initialize GitLab + execution variables.  \n\n### 🔗 Nodes\n- **When clicking 'Execute workflow'** → manual run.  \n- **Schedule Trigger** → scheduled execution (e.g. `0 3 * * *`).  \n- **Set Global GitLab Variables** → defines owner, project, storage path, tag filter, execution type & timestamp.  \n\n### ✅ Best practices\n- 🧪 Run manually once after workflow changes.  \n- 🔐 Keep GitLab credentials encrypted in n8n.  \n\n### 📤 Key outputs\n- `execution_type` = `Manual` | `Scheduled`  \n- `execution_time` = ISO timestamp  \n- [ISO timestamp](https://crontab.guru/examples.html)\n",
+        "content": "\n\n## \ud83d\udfea Start / Trigger & Configure \u26a1\n\n### \ud83c\udfaf Goal\nStart the backup manually or via CRON schedule and initialize GitLab + execution variables.  \n\n### \ud83d\udd17 Nodes\n- **When clicking 'Execute workflow'** \u2192 manual run.  \n- **Schedule Trigger** \u2192 scheduled execution (e.g. `0 3 * * *`).  \n- **Set Global GitLab Variables** \u2192 defines owner, project, storage path, tag filter, execution type & timestamp.  \n\n### \u2705 Best practices\n- \ud83e\uddea Run manually once after workflow changes.  \n- \ud83d\udd10 Keep GitLab credentials encrypted in n8n.  \n\n### \ud83d\udce4 Key outputs\n- `execution_type` = `Manual` | `Scheduled`  \n- `execution_time` = ISO timestamp  \n- [ISO timestamp](https://crontab.guru/examples.html)\n",
         "height": 912,
         "width": 934,
         "color": 6
@@ -116,11 +120,12 @@
         368,
         1248
       ],
-      "typeVersion": 1
+      "typeVersion": 1,
+      "disabled": true
     },
     {
       "parameters": {
-        "content": "\n\n## 🟩 GitLab File Management 📑\n\n### 🎯 Goal\nCompare the current workflow version with the GitLab repository and decide whether to create, update, or skip.  \nThe GitLab file path is always derived from the **workflow ID**, ensuring stability even if names change.\n\n### 🔗 Nodes\n- **Fetch Existing File in GitLab** → tries to read the current file.  \n  - If it exists → passes to **Compare Workflow with GitLab Version**.  \n  - If it does not exist → uses the *error output* (On Error → Continue) and passes directly to **Create New File in GitLab**.  \n- **Compare Workflow with GitLab Version** → checks for JSON content differences.  \n- **Create New File in GitLab** → creates the file if not found.  \n- **Update Existing File in GitLab** → updates only if JSON content differs.\n\n### ✅ Best practices\n- 📝 Use one commit per workflow for better traceability.  \n- 🚫 Avoid unnecessary commits with strict JSON comparison.  \n- 🔒 Always rely on the workflow **ID** for file paths, never on the workflow name.\n\n### 📤 Key outputs\n- Action performed: `created` | `updated` | `unchanged`\n",
+        "content": "\n\n## \ud83d\udfe9 GitLab File Management \ud83d\udcd1\n\n### \ud83c\udfaf Goal\nCompare the current workflow version with the GitLab repository and decide whether to create, update, or skip.  \nThe GitLab file path is always derived from the **workflow ID**, ensuring stability even if names change.\n\n### \ud83d\udd17 Nodes\n- **Fetch Existing File in GitLab** \u2192 tries to read the current file.  \n  - If it exists \u2192 passes to **Compare Workflow with GitLab Version**.  \n  - If it does not exist \u2192 uses the *error output* (On Error \u2192 Continue) and passes directly to **Create New File in GitLab**.  \n- **Compare Workflow with GitLab Version** \u2192 checks for JSON content differences.  \n- **Create New File in GitLab** \u2192 creates the file if not found.  \n- **Update Existing File in GitLab** \u2192 updates only if JSON content differs.\n\n### \u2705 Best practices\n- \ud83d\udcdd Use one commit per workflow for better traceability.  \n- \ud83d\udeab Avoid unnecessary commits with strict JSON comparison.  \n- \ud83d\udd12 Always rely on the workflow **ID** for file paths, never on the workflow name.\n\n### \ud83d\udce4 Key outputs\n- Action performed: `created` | `updated` | `unchanged`\n",
         "height": 1920,
         "width": 896,
         "color": 4
@@ -132,7 +137,8 @@
         3296,
         240
       ],
-      "typeVersion": 1
+      "typeVersion": 1,
+      "disabled": true
     },
     {
       "parameters": {
@@ -150,7 +156,8 @@
       ],
       "notesInFlow": true,
       "typeVersion": 1,
-      "notes": "Fetches only workflows tagged \"backup-workflows\" via n8n API."
+      "notes": "Fetches only workflows tagged \"backup-workflows\" via n8n API.",
+      "disabled": true
     },
     {
       "parameters": {
@@ -290,7 +297,8 @@
       ],
       "notesInFlow": true,
       "typeVersion": 3.4,
-      "notes": "Normalizes backup output: adds GitLab path, branch, owner, project, execution type & timestamp."
+      "notes": "Normalizes backup output: adds GitLab path, branch, owner, project, execution type & timestamp.",
+      "disabled": true
     },
     {
       "parameters": {
@@ -345,7 +353,8 @@
       ],
       "notesInFlow": true,
       "typeVersion": 3.4,
-      "notes": "Defines global GitLab variables (owner, project, branch, paths, tags, execution type) for reuse across the workflow."
+      "notes": "Defines global GitLab variables (owner, project, branch, paths, tags, execution type) for reuse across the workflow.",
+      "disabled": true
     },
     {
       "parameters": {
@@ -396,11 +405,12 @@
       ],
       "notesInFlow": true,
       "typeVersion": 2.2,
-      "notes": "Compares exported workflow JSON with the GitLab version to detect changes."
+      "notes": "Compares exported workflow JSON with the GitLab version to detect changes.",
+      "disabled": true
     },
     {
       "parameters": {
-        "content": "\n\n## 🟦 Output & Logging 📊\n\n### 🎯 Goal\nStandardize results for reporting and monitoring.  \n\n### 🔗 Nodes\n- **Mark as Created** → enriches each workflow output with `status = created`.  \n- **Mark as Updated** → enriches each workflow output with `status = updated`.  \n- **Mark as Unchanged** → enriches each workflow output with `status = unchanged`.  \n- **Merge Backup Results** → combines all outputs (`created`, `updated`, `unchanged`) into a single flow.  \n- **Normalize Backup Output** → consolidates merged data into a standardized schema for logging and reporting.  \n- **Summarize Backup Results** → aggregates counts per status and adds execution context (manual/scheduled + timestamp).  \n\n### ✅ Best practices\n- 📢 Use consistent logging for dashboards, Slack alerts, or monitoring systems.  \n- ✅ Ensure all cases (`created`, `updated`, `unchanged`) are tracked.  \n- 🧩 Keep outputs normalized to simplify downstream processing.  \n- 📊 Provide a final recap (`created`, `updated`, `unchanged`, `total`) for monitoring and auditing.  \n\n### 📤 Key outputs\n- `status` = `created` | `updated` | `unchanged`  \n- `workflow_name`  \n- `file_path`  \n- `execution_type`, `execution_time`  \n- `recap` = `{ created, updated, unchanged, total }`\n",
+        "content": "\n\n## \ud83d\udfe6 Output & Logging \ud83d\udcca\n\n### \ud83c\udfaf Goal\nStandardize results for reporting and monitoring.  \n\n### \ud83d\udd17 Nodes\n- **Mark as Created** \u2192 enriches each workflow output with `status = created`.  \n- **Mark as Updated** \u2192 enriches each workflow output with `status = updated`.  \n- **Mark as Unchanged** \u2192 enriches each workflow output with `status = unchanged`.  \n- **Merge Backup Results** \u2192 combines all outputs (`created`, `updated`, `unchanged`) into a single flow.  \n- **Normalize Backup Output** \u2192 consolidates merged data into a standardized schema for logging and reporting.  \n- **Summarize Backup Results** \u2192 aggregates counts per status and adds execution context (manual/scheduled + timestamp).  \n\n### \u2705 Best practices\n- \ud83d\udce2 Use consistent logging for dashboards, Slack alerts, or monitoring systems.  \n- \u2705 Ensure all cases (`created`, `updated`, `unchanged`) are tracked.  \n- \ud83e\udde9 Keep outputs normalized to simplify downstream processing.  \n- \ud83d\udcca Provide a final recap (`created`, `updated`, `unchanged`, `total`) for monitoring and auditing.  \n\n### \ud83d\udce4 Key outputs\n- `status` = `created` | `updated` | `unchanged`  \n- `workflow_name`  \n- `file_path`  \n- `execution_type`, `execution_time`  \n- `recap` = `{ created, updated, unchanged, total }`\n",
         "height": 1920,
         "width": 1280,
         "color": 5
@@ -412,11 +422,12 @@
         4384,
         288
       ],
-      "typeVersion": 1
+      "typeVersion": 1,
+      "disabled": true
     },
     {
       "parameters": {
-        "content": "\n\n# 📘 n8n → GitLab Backup (with `[client]`) — Cheat Sheet\n\n## 1️⃣ Purpose\n- Versioned history, centralized repo, internal vs client separation.\n\n## 2️⃣ Client Management\n- Default path: `workflow_definitions/<file>.json`  \n- If name contains `[client: Acme]` → `workflow_definitions/acme/<file>.json`\n\n## 3️⃣ Setup\n- Create tag: **`backup-workflows`**  \n- Tag target workflows  \n- Triggers:  \n  - ⚡ Manual  \n  - ⏰ Schedule (daily 03:00) — or cron example: `30 21 * * 6` (Sat 21:30)\n\n## 4️⃣ Initialization (Globals)\n- GitLab owner/project  \n- Root path: `workflow_definitions/`  \n- Tag filter: `backup-workflows`  \n- `execution_type` (Manual | Scheduled), `execution_time` (ISO)\n\n## 5️⃣ Selection\n- Fetch Workflows → retrieve only workflows tagged `backup-workflows`\n\n",
+        "content": "\n\n# \ud83d\udcd8 n8n \u2192 GitLab Backup (with `[client]`) \u2014 Cheat Sheet\n\n## 1\ufe0f\u20e3 Purpose\n- Versioned history, centralized repo, internal vs client separation.\n\n## 2\ufe0f\u20e3 Client Management\n- Default path: `workflow_definitions/<file>.json`  \n- If name contains `[client: Acme]` \u2192 `workflow_definitions/acme/<file>.json`\n\n## 3\ufe0f\u20e3 Setup\n- Create tag: **`backup-workflows`**  \n- Tag target workflows  \n- Triggers:  \n  - \u26a1 Manual  \n  - \u23f0 Schedule (daily 03:00) \u2014 or cron example: `30 21 * * 6` (Sat 21:30)\n\n## 4\ufe0f\u20e3 Initialization (Globals)\n- GitLab owner/project  \n- Root path: `workflow_definitions/`  \n- Tag filter: `backup-workflows`  \n- `execution_type` (Manual | Scheduled), `execution_time` (ISO)\n\n## 5\ufe0f\u20e3 Selection\n- Fetch Workflows \u2192 retrieve only workflows tagged `backup-workflows`\n\n",
         "height": 912,
         "width": 1328,
         "color": 3
@@ -428,11 +439,12 @@
         368,
         240
       ],
-      "typeVersion": 1
+      "typeVersion": 1,
+      "disabled": true
     },
     {
       "parameters": {
-        "content": "\n\n## 6️⃣ Name Normalization\n- Extract `[client: Name]` tag → route file to subfolder `<client>/` (or `unassigned/` if none).  \n- File name is fixed to `<workflowId>.json` to preserve history across renames.  \n- Generate a `display_slug` (optional, from the workflow name) for documentation or index files.\n\n## 7️⃣ GitLab Verification\n- Check if file already exists in GitLab.\n  - 🆕 No → **Create** (status = `created`, via *Mark as Created*).\n  - 🔄 Yes + content differs → **Update** (status = `updated`, via *Mark as Updated*).\n  - ⏭️ Yes + unchanged → **Skip** (status = `unchanged`, via *Mark as Unchanged*).\n\n## 8️⃣ Backup Actions\n- **Create New File(s)** → first commit of a workflow.  \n- **Update Existing File(s)** → commit only if JSON content changed.  \n- **Skip Unchanged File(s)** → prevent unnecessary commits.  \n- Commit message: \"Add/Update backup for workflow: <name> (<path>)\".\n\n## 9️⃣ Best Practices\n- 🔐 Limit GitLab token scope (repo-only).  \n- 🏷️ Standardize client names (`acme`, not `Acme Corp` vs `ACME`).  \n- 📊 Add a final recap (`created`, `updated`, `unchanged`).  \n- 🛠️ Compare JSON **object-to-object** (avoid false positives due to indentation or line breaks).  \n\n## 🔟 Expected Results\n- Only workflows tagged with `backup-workflows` are auto-saved.  \n- Internal workflows → `workflow_definitions/`.  \n- Client workflows → `workflow_definitions/<client>/`.  \n- Clean, structured Git history with meaningful commits and standardized statuses. ",
+        "content": "\n\n## 6\ufe0f\u20e3 Name Normalization\n- Extract `[client: Name]` tag \u2192 route file to subfolder `<client>/` (or `unassigned/` if none).  \n- File name is fixed to `<workflowId>.json` to preserve history across renames.  \n- Generate a `display_slug` (optional, from the workflow name) for documentation or index files.\n\n## 7\ufe0f\u20e3 GitLab Verification\n- Check if file already exists in GitLab.\n  - \ud83c\udd95 No \u2192 **Create** (status = `created`, via *Mark as Created*).\n  - \ud83d\udd04 Yes + content differs \u2192 **Update** (status = `updated`, via *Mark as Updated*).\n  - \u23ed\ufe0f Yes + unchanged \u2192 **Skip** (status = `unchanged`, via *Mark as Unchanged*).\n\n## 8\ufe0f\u20e3 Backup Actions\n- **Create New File(s)** \u2192 first commit of a workflow.  \n- **Update Existing File(s)** \u2192 commit only if JSON content changed.  \n- **Skip Unchanged File(s)** \u2192 prevent unnecessary commits.  \n- Commit message: \"Add/Update backup for workflow: <name> (<path>)\".\n\n## 9\ufe0f\u20e3 Best Practices\n- \ud83d\udd10 Limit GitLab token scope (repo-only).  \n- \ud83c\udff7\ufe0f Standardize client names (`acme`, not `Acme Corp` vs `ACME`).  \n- \ud83d\udcca Add a final recap (`created`, `updated`, `unchanged`).  \n- \ud83d\udee0\ufe0f Compare JSON **object-to-object** (avoid false positives due to indentation or line breaks).  \n\n## \ud83d\udd1f Expected Results\n- Only workflows tagged with `backup-workflows` are auto-saved.  \n- Internal workflows \u2192 `workflow_definitions/`.  \n- Client workflows \u2192 `workflow_definitions/<client>/`.  \n- Clean, structured Git history with meaningful commits and standardized statuses. ",
         "height": 912,
         "width": 1504,
         "color": 3
@@ -444,7 +456,8 @@
         1696,
         240
       ],
-      "typeVersion": 1
+      "typeVersion": 1,
+      "disabled": true
     },
     {
       "parameters": {
@@ -468,7 +481,8 @@
         2152
       ],
       "typeVersion": 3.4,
-      "notes": "Tags workflow as \"created\" (new file added in GitLab)."
+      "notes": "Tags workflow as \"created\" (new file added in GitLab).",
+      "disabled": true
     },
     {
       "parameters": {
@@ -493,7 +507,8 @@
       ],
       "notesInFlow": true,
       "typeVersion": 3.4,
-      "notes": "Tags workflow as \"updated\" after backup comparison."
+      "notes": "Tags workflow as \"updated\" after backup comparison.",
+      "disabled": true
     },
     {
       "parameters": {
@@ -518,11 +533,12 @@
       ],
       "notesInFlow": true,
       "typeVersion": 3.4,
-      "notes": "Tags workflow as \"unchanged\" (no differences found)."
+      "notes": "Tags workflow as \"unchanged\" (no differences found).",
+      "disabled": true
     },
     {
       "parameters": {
-        "jsCode": "// n8n Code Node — Summarize Backup Results\n// ----------------------------------------\n\nconst items = $input.all();\n\n// Init counters\nlet recap = {\n  created: 0,\n  updated: 0,\n  unchanged: 0,\n  total: items.length,\n};\n\nfor (const item of items) {\n  const status = item.json.status;\n  if (status && recap.hasOwnProperty(status)) {\n    recap[status]++;\n  }\n}\n\n// Build output\nreturn [\n  {\n    json: {\n      execution_type: items[0]?.json.execution_type || \"unknown\",\n      execution_time: items[0]?.json.execution_time || new Date().toISOString(),\n      recap,\n    },\n  },\n];"
+        "jsCode": "// n8n Code Node \u2014 Summarize Backup Results\n// ----------------------------------------\n\nconst items = $input.all();\n\n// Init counters\nlet recap = {\n  created: 0,\n  updated: 0,\n  unchanged: 0,\n  total: items.length,\n};\n\nfor (const item of items) {\n  const status = item.json.status;\n  if (status && recap.hasOwnProperty(status)) {\n    recap[status]++;\n  }\n}\n\n// Build output\nreturn [\n  {\n    json: {\n      execution_type: items[0]?.json.execution_type || \"unknown\",\n      execution_time: items[0]?.json.execution_time || new Date().toISOString(),\n      recap,\n    },\n  },\n];"
       },
       "id": "7af2d653-0358-4b5a-847c-8b1851aa2721",
       "name": "Summarize Backup Results",
@@ -549,7 +565,8 @@
       ],
       "notesInFlow": true,
       "typeVersion": 3.2,
-      "notes": "Merges outputs from \"Mark as Updated/Unchanged/Created\" into a single stream.\n"
+      "notes": "Merges outputs from \"Mark as Updated/Unchanged/Created\" into a single stream.\n",
+      "disabled": true
     }
   ],
   "connections": {
@@ -721,7 +738,7 @@
         ]
       ]
     },
-    "When clicking ‘Execute workflow’": {
+    "When clicking \u2018Execute workflow\u2019": {
       "main": [
         [
           {
