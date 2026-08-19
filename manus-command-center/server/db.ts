@@ -484,10 +484,13 @@ export async function createVideoJobForOwner(ownerId: number, values: { title: s
     const owned = await db.select({ id: contentProjects.id }).from(contentProjects).where(and(eq(contentProjects.id, values.contentProjectId), eq(contentProjects.ownerId, ownerId))).limit(1);
     if (!owned[0]) throw new Error("Content project not found");
   }
-  for (const assetId of [values.sourceAssetId, values.thumbnailAssetId, values.outputAssetId].filter((id): id is number => typeof id === "number")) {
-    const asset = await db.select({ id: mediaAssets.id, contentProjectId: mediaAssets.contentProjectId }).from(mediaAssets).where(and(eq(mediaAssets.id, assetId), eq(mediaAssets.ownerId, ownerId))).limit(1);
+  for (const [slot, assetId] of [["source", values.sourceAssetId], ["thumbnail", values.thumbnailAssetId], ["output", values.outputAssetId]] as const) {
+    if (typeof assetId !== "number") continue;
+    const asset = await db.select({ id: mediaAssets.id, contentProjectId: mediaAssets.contentProjectId, kind: mediaAssets.kind }).from(mediaAssets).where(and(eq(mediaAssets.id, assetId), eq(mediaAssets.ownerId, ownerId))).limit(1);
     if (!asset[0]) throw new Error("Managed media asset not found");
     if (values.contentProjectId && asset[0].contentProjectId !== values.contentProjectId) throw new Error("Managed media asset is not attached to this content project");
+    if (slot === "thumbnail" && !["image", "thumbnail"].includes(asset[0].kind)) throw new Error("Thumbnail slot requires an image or thumbnail asset");
+    if ((slot === "source" || slot === "output") && asset[0].kind !== "video") throw new Error(`${slot === "source" ? "Source" : "Output"} slot requires a video asset`);
   }
   await db.insert(videoJobs).values({ ownerId, ...values, status: "draft" });
 }
