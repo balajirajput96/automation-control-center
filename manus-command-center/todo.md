@@ -26,9 +26,9 @@
 - [x] Expose asset-linked content export creation in the UI and validate exported-media attachment ownership.
 - [ ] Capture populated content-artifact UI verification with project, source, citation, and export records.
 - [ ] Implement secure media-asset metadata and storage references for images, audio, video, thumbnails, and vertical-video jobs.
-- [ ] Add owner-scoped managed asset references and storage metadata to vertical-video jobs, including source, thumbnail, and output slots.
+- [x] Add owner-scoped managed asset references and storage metadata to vertical-video jobs, including source, thumbnail, and output slots.
 - [ ] Add vertical-video asset-reference ownership and storage-metadata regression coverage.
-- [ ] Enforce media upload kind/MIME compatibility and vertical-video slot-compatible asset kinds.
+- [x] Enforce media upload kind/MIME compatibility and vertical-video slot-compatible asset kinds.
 - [ ] Constrain vertical-video storage metadata to an explicit schema and surface validated slot metadata in the job UI.
 - [ ] Add wrong-kind asset-reference and invalid kind/MIME rejection regression coverage.
 - [x] Add server-side visual asset generation with stored output records, model discovery, loading states, and failure states.

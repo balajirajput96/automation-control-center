@@ -26,8 +26,8 @@ describe("video lifecycle procedure", () => {
   afterEach(() => vi.clearAllMocks());
 
   it("forwards managed source, thumbnail, and output references into the owner-scoped video plan", async () => {
-    await expect(videoCaller(42).create({ title: "Asset-linked vertical plan", outputFormat: "vertical_9_16", targetDurationSeconds: 60, contentProjectId: 18, sourceAssetId: 3, thumbnailAssetId: 4, outputAssetId: 5, storageMetadata: { source: "managed-media" } })).resolves.toMatchObject({ renderState: "draft" });
-    expect(mocks.createVideoJobForOwner).toHaveBeenCalledWith(42, expect.objectContaining({ contentProjectId: 18, sourceAssetId: 3, thumbnailAssetId: 4, outputAssetId: 5, storageMetadata: { source: "managed-media" } }));
+    await expect(videoCaller(42).create({ title: "Asset-linked vertical plan", outputFormat: "vertical_9_16", targetDurationSeconds: 60, contentProjectId: 18, sourceAssetId: 3, thumbnailAssetId: 4, outputAssetId: 5, storageMetadata: { attachmentMode: "owner_scoped_managed_asset", sourceLabel: "managed-media" } })).resolves.toMatchObject({ renderState: "draft" });
+    expect(mocks.createVideoJobForOwner).toHaveBeenCalledWith(42, expect.objectContaining({ contentProjectId: 18, sourceAssetId: 3, thumbnailAssetId: 4, outputAssetId: 5, storageMetadata: { attachmentMode: "owner_scoped_managed_asset", sourceLabel: "managed-media" } }));
     expect(mocks.addAuditEvent).toHaveBeenCalledWith(42, expect.objectContaining({ action: "video_job.created" }));
   });
 
