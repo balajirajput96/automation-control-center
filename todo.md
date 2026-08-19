@@ -35,4 +35,7 @@
 - [ ] Apply only validated low-risk private automation or connector documentation fixes.
 - [ ] Inspect the Zapier/Zapper connector for authorized read-only recovery capabilities.
 - [x] Use the active GitHub, Google Workspace, Gemini, n8n, and Antigravity paths for an alternative low-risk recovery review.
-- [x] Apply and validate only verified private code or documentation repairs from the alternative review.
+- [ ] Apply and validate only verified private code or documentation repairs from the alternative review.
+- [x] Recheck protected n8n readiness, workflow errors, GitHub Actions, Google Drive, Gemini Spark, and Julius signals.
+- [x] Check for a scoped read-only Antigravity audit; the `agy` executable is unavailable in this sandbox.
+- [x] Apply only validated low-risk local improvements and static validation; private publication remains pending.
