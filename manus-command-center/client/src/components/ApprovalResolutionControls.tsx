@@ -1,0 +1,38 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { trpc } from "@/lib/trpc";
+import { Check, Send, X } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+
+const dispatchActions = ["plan", "research", "generate_content", "publish", "deploy", "delete", "credential_change"] as const;
+
+export function AgentDispatchControl({ agentId, agentName }: { agentId: number; agentName: string }) {
+  const [task, setTask] = useState("");
+  const [action, setAction] = useState<(typeof dispatchActions)[number]>("research");
+  const [status, setStatus] = useState<"idle" | "needs_approval" | "queued" | "approved" | "denied">("idle");
+  const request = trpc.agents.requestDispatch.useMutation({ onSuccess: result => { setStatus(result.status); toast.message(result.status === "needs_approval" ? "Dispatch recorded for review." : "Dispatch was recorded as queued; no external action was invoked."); }, onError: error => toast.error(error.message) });
+  const resolve = trpc.agents.resolveDispatch.useMutation({ onSuccess: result => { setStatus(result.status); toast.success(result.status === "approved" ? "Dispatch approval recorded. No external action was invoked." : "Dispatch denial recorded."); }, onError: error => toast.error(error.message) });
+  const busy = request.isPending || resolve.isPending;
+  return <Card className="border border-cyan-100 bg-cyan-50/40 shadow-none"><CardContent className="space-y-3 p-4"><div><p className="font-mono text-[10px] uppercase tracking-[0.12em] text-cyan-800">Governed dispatch</p><p className="mt-1 text-xs text-slate-600">Record a scoped task for <span className="font-semibold">{agentName}</span>. Approval never invokes an external action.</p></div><div className="grid gap-2 sm:grid-cols-[1fr_150px_auto]"><div className="space-y-1"><Label className="sr-only" htmlFor={`dispatch-task-${agentId}`}>Task</Label><Input id={`dispatch-task-${agentId}`} value={task} onChange={event => setTask(event.target.value)} placeholder="Describe the intended task" /></div><Select value={action} onValueChange={value => setAction(value as typeof action)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{dispatchActions.map(item => <SelectItem key={item} value={item}>{item.replace("_", " ")}</SelectItem>)}</SelectContent></Select><Button size="sm" disabled={busy || task.trim().length < 3} onClick={() => request.mutate({ agentId, task, action })}><Send className="mr-1.5 size-3.5" />Request</Button></div>{status === "needs_approval" ? <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3"><span className="text-xs text-amber-950">Requested · approval is required before any authorized adapter could continue.</span><div className="flex gap-2"><Button size="sm" disabled={busy} onClick={() => resolve.mutate({ agentId, task, decision: "approved" })}><Check className="mr-1 size-3.5" />Approve</Button><Button size="sm" variant="outline" disabled={busy} className="border-rose-200 text-rose-700" onClick={() => resolve.mutate({ agentId, task, decision: "denied" })}><X className="mr-1 size-3.5" />Deny</Button></div></div> : status !== "idle" ? <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate-500">{status.replace("_", " ")} · audit event recorded</p> : null}</CardContent></Card>;
+}
+
+export function AgentDispatchHistory() {
+  const history = trpc.commandCenter.logs.useQuery({ query: "agent_dispatch" });
+  return <Card className="blueprint-card border-0"><CardContent className="p-5"><p className="eyebrow">PERSISTED DISPATCH HISTORY</p><p className="mt-2 text-sm text-slate-600">Requested, approved, denied, and queued dispatch records remain owner-scoped and survive refresh.</p><div className="mt-4 space-y-2">{history.isLoading ? <div className="h-14 animate-pulse rounded-xl bg-slate-100" /> : history.isError ? <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">Dispatch history could not be loaded. Please retry this page.</div> : history.data?.length ? history.data.slice(0, 8).map(event => <div key={event.id} className="flex items-center justify-between gap-4 rounded-xl border border-slate-100 bg-white/70 p-3"><div><p className="text-sm font-medium">{event.action.replace("agent_dispatch.", "Dispatch · ")}</p><p className="mt-1 line-clamp-1 text-xs text-slate-500">{event.detail || "No detail recorded"}</p></div><span className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate-500">{event.outcome}</span></div>) : <div className="rounded-xl border border-dashed border-slate-200 p-5 text-center text-sm text-slate-500">No dispatch history recorded. Request a governed agent task to create an auditable record.</div>}</div></CardContent></Card>;
+}
+
+export function WorkflowRunApprovals() {
+  const utils = trpc.useUtils();
+  const runs = trpc.workflows.runs.useQuery();
+  const resolve = trpc.workflows.resolveRun.useMutation({ onSuccess: async result => { await runs.refetch(); await utils.commandCenter.dashboard.invalidate(); toast.success(result.status === "queued" ? "Run approval recorded. No execution adapter was invoked." : "Run denial recorded."); }, onError: error => toast.error(error.message) });
+  const pending = runs.data?.filter(run => run.status === "needs_approval") ?? [];
+  return <Card className="blueprint-card border-0"><CardContent className="p-5"><p className="eyebrow">RUN RESOLUTION QUEUE</p><p className="mt-2 text-sm text-slate-600">Approve queues an authorization record only; it does not start external execution. Deny cancels the request.</p><div className="mt-4 space-y-2">{runs.isLoading ? <div className="h-16 animate-pulse rounded-xl bg-slate-100" /> : runs.isError ? <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">Workflow run requests could not be loaded. Please retry this page.</div> : pending.length ? pending.map(run => <div key={run.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50/60 p-4"><div><p className="font-semibold text-slate-900">Run #{run.id} · Workflow #{run.workflowId}</p><p className="mt-1 text-xs text-amber-900">Requested {new Date(run.createdAt).toLocaleString()} · awaiting resolution</p></div><div className="flex gap-2"><Button size="sm" disabled={resolve.isPending} onClick={() => resolve.mutate({ runId: run.id, decision: "approved" })}><Check className="mr-1 size-3.5" />Approve</Button><Button size="sm" variant="outline" disabled={resolve.isPending} className="border-rose-200 text-rose-700" onClick={() => resolve.mutate({ runId: run.id, decision: "denied" })}><X className="mr-1 size-3.5" />Deny</Button></div></div>) : <div className="rounded-xl border border-dashed border-slate-200 p-5 text-center text-sm text-slate-500">No workflow runs are awaiting approval.</div>}</div></CardContent></Card>;
+}
+
+export function WorkflowRunApprovalsPage() {
+  return <div className="mx-auto max-w-[1100px] space-y-6"><section className="blueprint-card p-7"><p className="eyebrow">WORKFLOW EXECUTION GOVERNANCE</p><h1 className="mt-2 text-4xl font-black tracking-[-0.055em] text-slate-950">Run approvals</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Review owner-scoped workflow run requests. Approval creates a queued authorization record only; an external execution adapter remains intentionally disabled.</p></section><WorkflowRunApprovals /></div>;
+}

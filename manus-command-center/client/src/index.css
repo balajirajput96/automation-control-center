@@ -68,6 +68,10 @@
   --sidebar-ring: oklch(0.68 0.12 211);
 }
 
+[data-slot="badge"].font-mono {
+  text-transform: capitalize;
+}
+
 .dark {
   --background: oklch(0.16 0.018 248);
   --foreground: oklch(0.94 0.005 225);

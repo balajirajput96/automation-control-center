@@ -15,4 +15,18 @@ describe("evaluateExecutionPolicy", () => {
     expect(evaluateExecutionPolicy("autonomous", "research").decision).toBe("allowed");
     expect(evaluateExecutionPolicy("autonomous", "delete").decision).toBe("needs_approval");
   });
+
+  it("keeps every sensitive action approval-gated across all autonomy levels", () => {
+    for (const level of ["manual", "assisted", "autonomous"] as const) {
+      for (const action of ["publish", "deploy", "delete", "credential_change"] as const) {
+        expect(evaluateExecutionPolicy(level, action).decision).toBe("needs_approval");
+      }
+    }
+  });
+
+  it("allows only low-risk work to bypass review for Autonomous agents", () => {
+    expect(evaluateExecutionPolicy("autonomous", "plan").decision).toBe("allowed");
+    expect(evaluateExecutionPolicy("autonomous", "generate_content").decision).toBe("allowed");
+    expect(evaluateExecutionPolicy("autonomous", "credential_change").decision).toBe("needs_approval");
+  });
 });

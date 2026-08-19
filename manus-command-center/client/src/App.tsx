@@ -13,6 +13,8 @@ import { AgentsPage, LogsPage, ProjectsPage } from "./pages/OperationsPages";
 import { SchedulesPage, WorkflowsPage } from "./pages/WorkflowPages";
 import NiftyPage from "./pages/NiftyPage";
 import GitHubDetailsPage from "./pages/GitHubDetailsPage";
+import ProjectActivityPage from "./pages/ProjectActivityPage";
+import { WorkflowRunApprovalsPage } from "./components/ApprovalResolutionControls";
 
 const modulePaths = ["github", "content", "video", "images", "research", "deployments", "integrations", "logs", "settings"] as const;
 
@@ -27,8 +29,10 @@ function Router() {
     <Route path="/video" component={VideoStudioPage} />
     <Route path="/agents" component={AgentsPage} />
     <Route path="/projects" component={ProjectsPage} />
+    <Route path="/projects/activity" component={ProjectActivityPage} />
     <Route path="/logs" component={LogsPage} />
     <Route path="/workflows" component={WorkflowsPage} />
+    <Route path="/workflow-approvals" component={WorkflowRunApprovalsPage} />
     <Route path="/schedules" component={SchedulesPage} />
     <Route path="/nifty" component={NiftyPage} />
     <Route path="/github/details" component={GitHubDetailsPage} />

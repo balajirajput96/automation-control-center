@@ -2,8 +2,9 @@ import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 
 const repoName = z.string().trim().regex(/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/, "Use owner/repository format");
+export const githubReviewInput = z.object({ repository: repoName, pullNumber: z.number().int().positive() });
 
-async function githubGet(path: string) {
+export async function githubGet(path: string) {
   const token = process.env.GITHUB_TOKEN;
   if (!token) throw new Error("GitHub application credential is not configured");
   const response = await fetch(`https://api.github.com${path}`, {
@@ -11,6 +12,17 @@ async function githubGet(path: string) {
   });
   if (!response.ok) throw new Error(`GitHub request failed (${response.status})`);
   return response.json() as Promise<unknown>;
+}
+
+export function mapGithubReviewRow(row: Record<string, unknown>, repository: string, pullNumber: number) {
+  return {
+    id: Number(row.id),
+    state: String(row.state || "PENDING"),
+    reviewer: String((row.user as Record<string, unknown> | undefined)?.login || "Unknown reviewer"),
+    submittedAt: String(row.submitted_at || ""),
+    body: typeof row.body === "string" ? row.body : "",
+    url: String(row.html_url || `https://github.com/${repository}/pull/${pullNumber}`),
+  };
 }
 
 export const githubRouter = router({
@@ -25,6 +37,10 @@ export const githubRouter = router({
   pulls: protectedProcedure.input(z.object({ repository: repoName })).query(async ({ input }) => {
     const rows = await githubGet(`/repos/${input.repository}/pulls?state=open&per_page=50`) as Array<Record<string, unknown>>;
     return rows.map(row => ({ number: Number(row.number), title: String(row.title), state: String(row.state), draft: Boolean(row.draft), url: String(row.html_url), updatedAt: String(row.updated_at || "") }));
+  }),
+  reviews: protectedProcedure.input(githubReviewInput).query(async ({ input }) => {
+    const rows = await githubGet(`/repos/${input.repository}/pulls/${input.pullNumber}/reviews?per_page=100`) as Array<Record<string, unknown>>;
+    return rows.map(row => mapGithubReviewRow(row, input.repository, input.pullNumber));
   }),
   commits: protectedProcedure.input(z.object({ repository: repoName })).query(async ({ input }) => {
     const rows = await githubGet(`/repos/${input.repository}/commits?per_page=30`) as Array<Record<string, unknown>>;

@@ -4,11 +4,12 @@
 - [x] Add database migrations and typed server query helpers for the core command-center entities.
 - [x] Build a responsive blueprint-inspired authenticated command-center shell with the complete module navigation.
 - [x] Complete the dashboard overview with a persisted agent-activity stream and deployment-summary widget alongside live metrics, execution timeline, and integration health.
-- [ ] Complete integration verification state management by distinguishing seeded defaults from provider-verified connection results.
-- [ ] Implement actual authorized health checks or explicit unavailable-state transitions for GitHub, Gmail, Instagram, Vercel, Cloudflare, and Google Cloud, with persisted timestamps and result detail.
-- [ ] Complete project CRUD with update/delete controls and a project-specific activity-history view backed by audit events.
-- [ ] Complete editable agent profiles with persisted tool policies and server-enforced Manual, Assisted, and Autonomous execution guards.
-- [ ] Add tests covering project ownership, project mutations, and autonomy-policy enforcement.
+- [x] Complete integration verification state management by distinguishing seeded defaults from provider-verified connection results.
+- [x] Implement actual authorized health checks or explicit unavailable-state transitions for GitHub, Gmail, Instagram, Vercel, Cloudflare, and Google Cloud, with persisted timestamps and result detail.
+- [x] Complete project CRUD with update/delete controls and a project-specific activity-history view backed by audit events.
+- [x] Complete editable agent profiles with persisted tool policies and server-enforced Manual, Assisted, and Autonomous execution guards.
+- [x] Add tests covering project ownership, project mutations, and autonomy-policy enforcement.
+- [x] Add procedure-level project create/update audit tests and a cross-owner project activity or mutation rejection test.
 - [x] Implement persistent multi-model conversation and message storage with user-scoped history.
 - [x] Implement server-side model catalog discovery and a multi-model chat endpoint using authorized built-in providers.
 - [x] Reuse and adapt the supplied chat component for model selection, conversation selection, send states, and error states.
@@ -20,20 +21,43 @@
 - [ ] Implement secure media-asset metadata and storage references for images, audio, video, thumbnails, and vertical-video jobs.
 - [x] Add server-side visual asset generation with stored output records, model discovery, loading states, and failure states.
 - [ ] Build a vertical-video pipeline job interface covering clipping, silence-removal, captions, voice-over, subtitles, aspect-ratio conversion, and export readiness; clearly label unsupported render actions.
-- [ ] Implement GitHub repository, issue, pull-request, commit, and code-review data surfaces using only authorized access.
+- [x] Implement GitHub repository, issue, pull-request, commit, and code-review data surfaces using only authorized access.
+- [x] Add an authorized GitHub pull-request review data procedure and a read-only review panel with loading, empty, and error states.
+- [x] Add regression coverage for authorized GitHub review-data retrieval and validate the read-only repository details workspace.
+- [x] Add a mocked procedure-level GitHub review retrieval test covering response mapping, invalid inputs, and upstream failure handling.
+- [x] Execute the GitHub review procedure with mocked successful, invalid-input, and upstream-failure scenarios.
 - [ ] Complete deployment target detail views and health-refresh logic for GitHub, Vercel, Cloudflare, and Google Cloud, with exact disconnected and unavailable states.
 - [ ] Implement searchable logs, task traces, errors, retries, permission audit events, and system usage records.
 - [ ] Add responsive loading, empty, error, and authorization states for every implemented module.
-- [ ] Add Vitest coverage for server procedures, policy validation, model routing, workflow validation, and schedule state changes.
-- [ ] Run type checks, test suite, production build, desktop/mobile visual verification, and document real integration limitations.
+- [x] Add Vitest coverage for server procedures, policy validation, model routing, workflow validation, and schedule state changes.
+- [x] Run type checks, test suite, production build, desktop/mobile visual verification, and document real integration limitations.
+- [x] Perform and record a comprehensive desktop verification sweep across the remaining core modules/pages.
+- [x] Perform and record a comprehensive mobile verification sweep across the remaining core modules/pages.
+- [x] Update the connected-services limitations documentation with the latest build, test, and visual-validation timestamp.
+- [x] Perform and record desktop/mobile visual verification for Chat, NIFTY, Integrations, Deployments, Logs, and GitHub detail routes.
+- [x] Re-read the validation documentation and confirm the latest build, test, and complete route coverage details are persisted.
+- [x] Capture and record desktop/mobile verification for an actual authorized GitHub repository detail route.
 - [ ] Create a final checkpoint after all completed TODO items are marked as complete.
 - [x] Add a NIFTY market-data module with source-disclosed index overview, historical chart, and delayed-data status handling.
 - [ ] Add configurable NIFTY watch and alert definitions with explicit non-advisory messaging and production-safe scheduling boundaries.
+- [ ] Add a persisted informational NIFTY alert-definition state distinct from saved daily-close watch records.
+- [ ] Surface NIFTY alert-definition records with explicit delayed-data, not-scheduled, and not-delivering boundaries.
+- [ ] Add regression tests for NIFTY alert-definition creation, listing, deletion, and boundary disclosure.
 - [ ] Add an informational NIFTY daily-close percentage-move alert rule with configurable threshold and explicit delayed-data disclosure.
-- [ ] Add authenticated GitHub repository selection with issue, pull-request, and commit detail views using the validated read-only credential.
+- [x] Add authenticated GitHub repository selection with issue, pull-request, and commit detail views using the validated read-only credential.
 - [ ] Add approval-gated workflow run requests and agent dispatch controls with auditable requested, approved, and denied states.
+- [ ] Add UI controls for approved and denied agent dispatch and workflow run requests, wired to owner-scoped resolution procedures.
+- [ ] Surface requested, approved, and denied execution states with loading/error feedback in Workflow and Agents interfaces.
+- [ ] Render the workflow approval queue directly inside Workflows and verify approve/deny actions there.
+- [x] Add persisted agent-dispatch history so requested, approved, and denied dispatch states survive refresh in Agents.
+- [ ] Add explicit empty/error states for workflow approvals and agent dispatch history, then capture populated-state UI verification.
+- [ ] Capture desktop/mobile UI verification for dispatch and workflow run approval-resolution controls.
 - [ ] Add production-safe schedule activation prerequisites with idempotent execution records and callback authorization validation.
 - [ ] Complete managed media and vertical-video job state transitions with export readiness and explicit unsupported-render boundaries.
 - [ ] Add credential-backed health-check adapters for configured deployment providers while retaining unavailable states for unconfigured providers.
 - [ ] Configure secure Vercel, Cloudflare, and Google Cloud credentials and validate scoped deployment-health endpoints without persisting raw secrets.
 - [ ] Publish the current command-center code to the approved GitHub repository balajirajput96/automation-control-center main branch after preserving remote work.
+- [ ] Reattach the recovered command-center source to a managed project context with required application secrets and runtime services restored.
+- [x] Add idempotent workflow schedule preflight records and execution-audit prerequisites before enabling any recurring callback.
+- [x] Improve video-job readiness and review states with explicit external-render handoff boundaries.
+- [x] Surface schedule preflight and video external-handoff audit states in the workflow and video control interfaces.

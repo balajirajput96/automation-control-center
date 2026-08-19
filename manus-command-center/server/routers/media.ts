@@ -2,7 +2,7 @@ import { z } from "zod";
 import { and, eq } from "drizzle-orm";
 import { videoJobs } from "../../drizzle/schema";
 import { generateImage, listImageModels } from "../_core/imageGeneration";
-import { addAuditEvent, addContentSourceForOwner, addMediaAssetForOwner, createContentProjectForOwner, createVideoJobForOwner, getDb, listContentProjectsForOwner, listContentSourcesForOwner, listMediaAssetsForOwner, listVideoJobsForOwner } from "../db";
+import { addAuditEvent, addContentSourceForOwner, addMediaAssetForOwner, createContentProjectForOwner, createVideoJobForOwner, getDb, listContentProjectsForOwner, listContentSourcesForOwner, listMediaAssetsForOwner, listVideoJobsForOwner, updateContentProjectStageForOwner } from "../db";
 import { protectedProcedure, router } from "../_core/trpc";
 import { storagePut } from "../storage";
 
@@ -14,6 +14,11 @@ export const contentRouter = router({
     const id = await createContentProjectForOwner(ctx.user.id, input);
     await addAuditEvent(ctx.user.id, { action: "content_project.created", resourceType: "content_project", resourceId: String(id ?? ""), outcome: "success", detail: `Created content project ${input.title}.` });
     return { id };
+  }),
+  setStage: protectedProcedure.input(z.object({ contentProjectId: z.number().int().positive(), stage: z.enum(["research", "outline", "script", "storyboard", "production", "review", "exported"]) })).mutation(async ({ ctx, input }) => {
+    await updateContentProjectStageForOwner(ctx.user.id, input.contentProjectId, input.stage);
+    await addAuditEvent(ctx.user.id, { action: "content_project.stage_updated", resourceType: "content_project", resourceId: String(input.contentProjectId), outcome: "success", detail: `Set content project stage to ${input.stage}.` });
+    return { success: true, stage: input.stage };
   }),
   sources: protectedProcedure.input(z.object({ contentProjectId: z.number().int().positive() })).query(({ ctx, input }) => listContentSourcesForOwner(ctx.user.id, input.contentProjectId)),
   addSource: protectedProcedure.input(z.object({ contentProjectId: z.number().int().positive(), title: z.string().trim().min(2).max(500), url: z.string().url().max(2000), sourceType: z.string().trim().min(2).max(80), credibility: z.enum(credibility), notes: z.string().trim().max(4000).optional() })).mutation(async ({ ctx, input }) => {
@@ -31,7 +36,7 @@ export const mediaRouter = router({
     if (!bytes.length || bytes.length > 5 * 1024 * 1024) throw new Error("Uploads must be between 1 byte and 5 MB");
     const safeName = input.name.replace(/[^a-zA-Z0-9._-]+/g, "-").replace(/^-+|-+$/g, "") || "asset";
     const stored = await storagePut(`command-center/${ctx.user.id}/media/${safeName}`, bytes, input.mimeType);
-    await addMediaAssetForOwner(ctx.user.id, { contentProjectId: input.contentProjectId ?? null, kind: input.kind, name: input.name, storageKey: stored.key, storageUrl: stored.url, mimeType: input.mimeType, metadata: { uploaded: true, byteLength: bytes.length } });
+    await addMediaAssetForOwner(ctx.user.id, { contentProjectId: input.contentProjectId ?? null, kind: input.kind, name: input.name, storageKey: stored.key, storageUrl: stored.url, mimeType: input.mimeType, bytes: bytes.length, metadata: { uploaded: true, byteLength: bytes.length } });
     await addAuditEvent(ctx.user.id, { action: "media.uploaded", resourceType: "media_asset", outcome: "success", detail: `Stored ${input.kind} asset ${input.name}.` });
     return { url: stored.url, key: stored.key };
   }),
@@ -58,8 +63,26 @@ export const videoRouter = router({
   }),
   setReadiness: protectedProcedure.input(z.object({ id: z.number().int().positive(), status: z.enum(["draft", "queued", "needs_review"]) })).mutation(async ({ ctx, input }) => {
     const db = await getDb(); if (!db) throw new Error("Database is unavailable");
-    await db.update(videoJobs).set({ status: input.status }).where(and(eq(videoJobs.id, input.id), eq(videoJobs.ownerId, ctx.user.id)));
+    const existing = await db.select({ id: videoJobs.id, title: videoJobs.title, editPlan: videoJobs.editPlan }).from(videoJobs).where(and(eq(videoJobs.id, input.id), eq(videoJobs.ownerId, ctx.user.id))).limit(1);
+    if (!existing[0]) throw new Error("Video job not found");
+    await db.update(videoJobs).set({ status: input.status }).where(eq(videoJobs.id, existing[0].id));
     await addAuditEvent(ctx.user.id, { action: "video_job.readiness_updated", resourceType: "video_job", resourceId: String(input.id), outcome: input.status === "queued" ? "pending" : "success", detail: input.status === "queued" ? "Queued for an external render adapter; no render was simulated." : `Set video job readiness to ${input.status}.` });
     return { success: true, status: input.status };
+  }),
+  exportReadiness: protectedProcedure.input(z.object({ id: z.number().int().positive() })).query(async ({ ctx, input }) => {
+    const db = await getDb(); if (!db) throw new Error("Database is unavailable");
+    const job = await db.select({ id: videoJobs.id, status: videoJobs.status, editPlan: videoJobs.editPlan }).from(videoJobs).where(and(eq(videoJobs.id, input.id), eq(videoJobs.ownerId, ctx.user.id))).limit(1);
+    if (!job[0]) throw new Error("Video job not found");
+    const plan = job[0].editPlan as { execution?: string } | null;
+    const ready = job[0].status === "needs_review" && plan?.execution === "external_render_required";
+    return { ready, status: job[0].status, nextStep: ready ? "review_external_renderer" as const : "complete_edit_plan_and_request_handoff" as const, reason: ready ? "Ready for human review before an external renderer is selected." : "Export is not ready until the edit plan is submitted for external-render review." };
+  }),
+  requestExternalHandoff: protectedProcedure.input(z.object({ id: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
+    const db = await getDb(); if (!db) throw new Error("Database is unavailable");
+    const existing = await db.select({ id: videoJobs.id, title: videoJobs.title, editPlan: videoJobs.editPlan }).from(videoJobs).where(and(eq(videoJobs.id, input.id), eq(videoJobs.ownerId, ctx.user.id))).limit(1);
+    if (!existing[0]) throw new Error("Video job not found");
+    await db.update(videoJobs).set({ status: "needs_review" }).where(eq(videoJobs.id, existing[0].id));
+    await addAuditEvent(ctx.user.id, { action: "video_job.external_handoff_requested", resourceType: "video_job", resourceId: String(existing[0].id), outcome: "pending", detail: `External render handoff for ${existing[0].title} is ready for human review; no external render service was invoked.` });
+    return { success: true, status: "needs_review" as const, nextStep: "review_external_renderer" as const };
   }),
 });

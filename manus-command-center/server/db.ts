@@ -12,6 +12,7 @@ import {
   mediaAssets,
   deploymentTargets,
   integrations,
+  niftyWatchDefinitions,
   schedules,
   users,
   workflowRunEvents,
@@ -187,6 +188,7 @@ export async function createAgentForOwner(ownerId: number, values: {
   autonomyLevel: "manual" | "assisted" | "autonomous";
   modelPreference?: string | null;
   instructions?: string | null;
+  toolPolicy?: unknown;
 }) {
   const db = await requireDb();
   await db.insert(agents).values({ ownerId, ...values, enabled: true });
@@ -224,9 +226,32 @@ export async function createWorkflowRunForOwner(ownerId: number, workflowId: num
   return runId;
 }
 
+export async function listWorkflowRunsForOwner(ownerId: number) {
+  const db = await requireDb();
+  return db.select().from(workflowRuns).where(eq(workflowRuns.ownerId, ownerId)).orderBy(desc(workflowRuns.createdAt)).limit(100);
+}
+
 export async function listSchedulesForOwner(ownerId: number) {
   const db = await requireDb();
   return db.select().from(schedules).where(eq(schedules.ownerId, ownerId)).orderBy(desc(schedules.updatedAt));
+}
+
+export async function listNiftyWatchDefinitionsForOwner(ownerId: number) {
+  const db = await requireDb();
+  return db.select().from(niftyWatchDefinitions).where(eq(niftyWatchDefinitions.ownerId, ownerId)).orderBy(desc(niftyWatchDefinitions.updatedAt));
+}
+
+export async function createNiftyWatchDefinitionForOwner(ownerId: number, values: { name: string; thresholdBasisPoints: number; timezone: string }) {
+  const db = await requireDb();
+  const inserted = await db.insert(niftyWatchDefinitions).values({ ownerId, name: values.name, thresholdBasisPoints: values.thresholdBasisPoints, timezone: values.timezone, frequency: "daily_close", enabled: true }).$returningId();
+  return inserted[0]?.id;
+}
+
+export async function deleteNiftyWatchDefinitionForOwner(ownerId: number, id: number) {
+  const db = await requireDb();
+  const found = await db.select({ id: niftyWatchDefinitions.id }).from(niftyWatchDefinitions).where(and(eq(niftyWatchDefinitions.id, id), eq(niftyWatchDefinitions.ownerId, ownerId))).limit(1);
+  if (!found[0]) throw new Error("NIFTY watch definition not found");
+  await db.delete(niftyWatchDefinitions).where(eq(niftyWatchDefinitions.id, id));
 }
 
 export async function setScheduleStateForOwner(ownerId: number, scheduleId: number, status: "paused" | "active") {
@@ -234,6 +259,13 @@ export async function setScheduleStateForOwner(ownerId: number, scheduleId: numb
   const schedule = await db.select({ id: schedules.id }).from(schedules).where(and(eq(schedules.id, scheduleId), eq(schedules.ownerId, ownerId))).limit(1);
   if (!schedule[0]) throw new Error("Schedule not found");
   await db.update(schedules).set({ status }).where(eq(schedules.id, scheduleId));
+}
+
+export async function deleteScheduleForOwner(ownerId: number, scheduleId: number) {
+  const db = await requireDb();
+  const schedule = await db.select({ id: schedules.id }).from(schedules).where(and(eq(schedules.id, scheduleId), eq(schedules.ownerId, ownerId))).limit(1);
+  if (!schedule[0]) throw new Error("Schedule not found");
+  await db.delete(schedules).where(eq(schedules.id, scheduleId));
 }
 
 export async function listConversationsForOwner(ownerId: number) {
@@ -278,11 +310,24 @@ export async function addAuditEvent(ownerId: number, values: {
   await db.insert(auditLogs).values({ ownerId, ...values });
 }
 
-export async function searchAuditEventsForOwner(ownerId: number, query?: string) {
+export async function searchAuditEventsForOwner(ownerId: number, options?: { query?: string; outcome?: "success" | "pending" | "failure" | "denied" }) {
   const db = await requireDb();
-  const needle = query?.trim();
-  const condition = needle ? and(eq(auditLogs.ownerId, ownerId), or(like(auditLogs.action, `%${needle}%`), like(auditLogs.resourceType, `%${needle}%`), like(auditLogs.detail, `%${needle}%`))) : eq(auditLogs.ownerId, ownerId);
+  const needle = options?.query?.trim();
+  const conditions = [eq(auditLogs.ownerId, ownerId)];
+  if (needle) {
+    const textCondition = or(like(auditLogs.action, `%${needle}%`), like(auditLogs.resourceType, `%${needle}%`), like(auditLogs.detail, `%${needle}%`));
+    if (textCondition) conditions.push(textCondition);
+  }
+  if (options?.outcome) conditions.push(eq(auditLogs.outcome, options.outcome));
+  const condition = and(...conditions);
   return db.select().from(auditLogs).where(condition).orderBy(desc(auditLogs.createdAt)).limit(100);
+}
+
+export async function listProjectAuditEventsForOwner(ownerId: number, projectId: number) {
+  const db = await requireDb();
+  const owned = await db.select({ id: projects.id }).from(projects).where(and(eq(projects.id, projectId), eq(projects.ownerId, ownerId))).limit(1);
+  if (!owned[0]) throw new Error("Project not found");
+  return db.select().from(auditLogs).where(and(eq(auditLogs.ownerId, ownerId), eq(auditLogs.resourceType, "project"), eq(auditLogs.resourceId, String(projectId)))).orderBy(desc(auditLogs.createdAt)).limit(30);
 }
 
 export async function listContentProjectsForOwner(ownerId: number) {
@@ -294,6 +339,12 @@ export async function createContentProjectForOwner(ownerId: number, values: { ti
   const db = await requireDb();
   const inserted = await db.insert(contentProjects).values({ ownerId, title: values.title, brief: values.brief ?? null }).$returningId();
   return inserted[0]?.id;
+}
+
+export async function updateContentProjectStageForOwner(ownerId: number, contentProjectId: number, stage: "research" | "outline" | "script" | "storyboard" | "production" | "review" | "exported") {
+  const db = await requireDb();
+  const result = await db.update(contentProjects).set({ stage }).where(and(eq(contentProjects.id, contentProjectId), eq(contentProjects.ownerId, ownerId)));
+  if (!result[0]?.affectedRows) throw new Error("Content project not found");
 }
 
 export async function listContentSourcesForOwner(ownerId: number, contentProjectId: number) {
@@ -315,8 +366,12 @@ export async function listMediaAssetsForOwner(ownerId: number) {
   return db.select().from(mediaAssets).where(eq(mediaAssets.ownerId, ownerId)).orderBy(desc(mediaAssets.createdAt));
 }
 
-export async function addMediaAssetForOwner(ownerId: number, values: { contentProjectId?: number | null; kind: "image" | "audio" | "video" | "thumbnail" | "document" | "other"; name: string; storageKey: string; storageUrl: string; mimeType?: string | null; metadata?: unknown }) {
+export async function addMediaAssetForOwner(ownerId: number, values: { contentProjectId?: number | null; kind: "image" | "audio" | "video" | "thumbnail" | "document" | "other"; name: string; storageKey: string; storageUrl: string; mimeType?: string | null; bytes?: number | null; metadata?: unknown }) {
   const db = await requireDb();
+  if (values.contentProjectId) {
+    const owned = await db.select({ id: contentProjects.id }).from(contentProjects).where(and(eq(contentProjects.id, values.contentProjectId), eq(contentProjects.ownerId, ownerId))).limit(1);
+    if (!owned[0]) throw new Error("Content project not found");
+  }
   await db.insert(mediaAssets).values({ ownerId, ...values });
 }
 
@@ -327,6 +382,10 @@ export async function listVideoJobsForOwner(ownerId: number) {
 
 export async function createVideoJobForOwner(ownerId: number, values: { title: string; outputFormat: "vertical_9_16" | "landscape_16_9" | "square_1_1"; targetDurationSeconds: number; contentProjectId?: number | null; editPlan?: unknown }) {
   const db = await requireDb();
+  if (values.contentProjectId) {
+    const owned = await db.select({ id: contentProjects.id }).from(contentProjects).where(and(eq(contentProjects.id, values.contentProjectId), eq(contentProjects.ownerId, ownerId))).limit(1);
+    if (!owned[0]) throw new Error("Content project not found");
+  }
   await db.insert(videoJobs).values({ ownerId, ...values, status: "draft" });
 }
 
@@ -369,6 +428,11 @@ export async function listDeploymentTargetsForOwner(ownerId: number) {
   const db = await requireDb();
   await ensureIntegrationRegistry(ownerId);
   return db.select().from(deploymentTargets).where(eq(deploymentTargets.ownerId, ownerId)).orderBy(deploymentTargets.provider);
+}
+
+export async function updateDeploymentTargetHealth(ownerId: number, provider: "github" | "vercel" | "cloudflare" | "google_cloud", values: { status: "healthy" | "failed"; detail: string }) {
+  const db = await requireDb();
+  await db.update(deploymentTargets).set({ status: values.status, lastHealthCheckAt: new Date(), metadata: { verification: "provider_verified", detail: values.detail } }).where(and(eq(deploymentTargets.ownerId, ownerId), eq(deploymentTargets.provider, provider)));
 }
 
 export async function updateIntegrationHealth(ownerId: number, service: string, values: { connectionStatus: "available" | "connected" | "action_required" | "unavailable" | "error"; lastError?: string | null; permissionSummary?: string | null }) {

@@ -142,6 +142,20 @@ export const schedules = mysqlTable("schedules", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, table => [index("schedules_owner_status_idx").on(table.ownerId, table.status), index("schedules_task_uid_idx").on(table.scheduleCronTaskUid)]);
 
+export const niftyWatchDefinitions = mysqlTable("nifty_watch_definitions", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  name: varchar("name", { length: 160 }).notNull(),
+  thresholdBasisPoints: int("thresholdBasisPoints").notNull(),
+  frequency: mysqlEnum("frequency", ["daily_close"]).default("daily_close").notNull(),
+  timezone: varchar("timezone", { length: 64 }).default("Asia/Kolkata").notNull(),
+  enabled: boolean("enabled").default(true).notNull(),
+  scheduleCronTaskUid: varchar("scheduleCronTaskUid", { length: 65 }),
+  lastObservedAt: timestamp("lastObservedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [index("nifty_watch_owner_enabled_idx").on(table.ownerId, table.enabled), index("nifty_watch_task_uid_idx").on(table.scheduleCronTaskUid)]);
+
 export const integrations = mysqlTable("integrations", {
   id: int("id").autoincrement().primaryKey(),
   ownerId: int("ownerId").notNull(),
