@@ -28,6 +28,9 @@
 - [ ] Implement secure media-asset metadata and storage references for images, audio, video, thumbnails, and vertical-video jobs.
 - [ ] Add owner-scoped managed asset references and storage metadata to vertical-video jobs, including source, thumbnail, and output slots.
 - [ ] Add vertical-video asset-reference ownership and storage-metadata regression coverage.
+- [ ] Enforce media upload kind/MIME compatibility and vertical-video slot-compatible asset kinds.
+- [ ] Constrain vertical-video storage metadata to an explicit schema and surface validated slot metadata in the job UI.
+- [ ] Add wrong-kind asset-reference and invalid kind/MIME rejection regression coverage.
 - [x] Add server-side visual asset generation with stored output records, model discovery, loading states, and failure states.
 - [ ] Build a vertical-video pipeline job interface covering clipping, silence-removal, captions, voice-over, subtitles, aspect-ratio conversion, and export readiness; clearly label unsupported render actions.
 - [x] Implement GitHub repository, issue, pull-request, commit, and code-review data surfaces using only authorized access.
