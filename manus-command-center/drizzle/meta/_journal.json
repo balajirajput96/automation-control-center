@@ -43,6 +43,13 @@
       "when": 1787108956211,
       "tag": "0005_careless_boomer",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1787110953284,
+      "tag": "0006_violet_the_watchers",
+      "breakpoints": true
     }
   ]
 }

@@ -18,6 +18,7 @@ import { WorkflowRunApprovalsPage } from "./components/ApprovalResolutionControl
 import { ScheduleLifecyclePanel } from "./components/ScheduleLifecyclePanel";
 import { VideoReadinessPanel } from "./components/VideoReadinessPanel";
 import { ContentArtifactPanel } from "./components/ContentArtifactPanel";
+import { ContentRecordsPanel } from "./components/ContentRecordsPanel";
 
 const modulePaths = ["github", "content", "video", "images", "research", "deployments", "integrations", "logs", "settings"] as const;
 
@@ -27,6 +28,7 @@ function Router() {
     <Route path="/chat" component={ChatPage} />
     <Route path="/content" component={ContentStudioPage} />
     <Route path="/content-artifacts">{() => <div className="mx-auto max-w-[1100px] space-y-6"><section className="blueprint-card p-7"><p className="eyebrow">SOURCE → OUTLINE → SCRIPT → STORYBOARD → EXPORT</p><h1 className="mt-2 text-4xl font-black tracking-[-0.055em] text-slate-950">Content artifacts</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Maintain structured production artifacts and lifecycle state without detaching them from their source-backed content project.</p></section><ContentArtifactPanel /></div>}</Route>
+    <Route path="/content-records">{() => <div className="mx-auto max-w-[1100px] space-y-6"><section className="blueprint-card p-7"><p className="eyebrow">CONTENT EVIDENCE / DELIVERY HISTORY</p><h1 className="mt-2 text-4xl font-black tracking-[-0.055em] text-slate-950">Citations & exports</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Record section-specific citations and output history without publishing or delivering content.</p></section><ContentRecordsPanel /></div>}</Route>
     <Route path="/images" component={ImageStudioPage} />
     <Route path="/media" component={MediaLibraryPage} />
     <Route path="/research" component={ResearchPage} />

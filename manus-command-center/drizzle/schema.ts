@@ -210,6 +210,29 @@ export const contentSources = mysqlTable("content_sources", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 }, table => [index("content_sources_project_idx").on(table.contentProjectId)]);
 
+export const contentCitations = mysqlTable("content_citations", {
+  id: int("id").autoincrement().primaryKey(),
+  contentProjectId: int("contentProjectId").notNull(),
+  sourceId: int("sourceId"),
+  section: mysqlEnum("section", ["outline", "script", "storyboard", "export_notes"]).notNull(),
+  locator: varchar("locator", { length: 500 }),
+  claim: text("claim").notNull(),
+  citationText: text("citationText").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, table => [index("content_citations_project_idx").on(table.contentProjectId), index("content_citations_source_idx").on(table.sourceId)]);
+
+export const contentExports = mysqlTable("content_exports", {
+  id: int("id").autoincrement().primaryKey(),
+  contentProjectId: int("contentProjectId").notNull(),
+  assetId: int("assetId"),
+  format: varchar("format", { length: 100 }).notNull(),
+  status: mysqlEnum("status", ["planned", "ready", "exported", "failed"]).default("planned").notNull(),
+  destination: varchar("destination", { length: 500 }),
+  notes: text("notes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [index("content_exports_project_idx").on(table.contentProjectId), index("content_exports_asset_idx").on(table.assetId)]);
+
 export const mediaAssets = mysqlTable("media_assets", {
   id: int("id").autoincrement().primaryKey(),
   ownerId: int("ownerId").notNull(),

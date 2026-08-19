@@ -2,6 +2,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   addAuditEvent: vi.fn(),
+  addContentCitationForOwner: vi.fn(),
+  addContentExportForOwner: vi.fn(),
   addContentSourceForOwner: vi.fn(),
   createContentProjectForOwner: vi.fn(),
   listContentProjectsForOwner: vi.fn(),
@@ -35,6 +37,18 @@ describe("content lifecycle ownership procedures", () => {
     await expect(caller(42).updateArtifacts({ contentProjectId: 18, outline: "Source-backed outline", script: "Narration draft", tags: ["research", "vertical-video"] })).resolves.toEqual({ success: true });
     expect(mocks.updateContentProjectArtifactsForOwner).toHaveBeenCalledWith(42, 18, { outline: "Source-backed outline", script: "Narration draft", tags: ["research", "vertical-video"] });
     expect(mocks.addAuditEvent).toHaveBeenCalledWith(42, expect.objectContaining({ action: "content_project.artifacts_updated", resourceId: "18" }));
+  });
+
+  it("records owner-scoped citations with section attribution", async () => {
+    await expect(caller(42).addCitation({ contentProjectId: 18, section: "script", claim: "The source supports this claim", citationText: "Primary source, section 2" })).resolves.toEqual({ success: true });
+    expect(mocks.addContentCitationForOwner).toHaveBeenCalledWith(42, expect.objectContaining({ contentProjectId: 18, section: "script", sourceId: null }));
+    expect(mocks.addAuditEvent).toHaveBeenCalledWith(42, expect.objectContaining({ action: "content_citation.added", resourceId: "18" }));
+  });
+
+  it("records owner-scoped export history with a non-delivery status", async () => {
+    await expect(caller(42).addExport({ contentProjectId: 18, format: "markdown", status: "ready", destination: "editorial-review" })).resolves.toEqual({ success: true });
+    expect(mocks.addContentExportForOwner).toHaveBeenCalledWith(42, expect.objectContaining({ contentProjectId: 18, format: "markdown", status: "ready", assetId: null }));
+    expect(mocks.addAuditEvent).toHaveBeenCalledWith(42, expect.objectContaining({ action: "content_export.recorded", resourceId: "18", outcome: "success" }));
   });
 
   it("does not mask cross-owner stage rejection from the ownership helper", async () => {

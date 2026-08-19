@@ -3,6 +3,8 @@ import { drizzle } from "drizzle-orm/mysql2";
 import {
   agents,
   auditLogs,
+  contentCitations,
+  contentExports,
   contentProjects,
   contentSources,
   conversations,
@@ -398,6 +400,53 @@ export async function addContentSourceForOwner(ownerId: number, values: { conten
   const owned = await db.select({ id: contentProjects.id }).from(contentProjects).where(and(eq(contentProjects.id, values.contentProjectId), eq(contentProjects.ownerId, ownerId))).limit(1);
   if (!owned[0]) throw new Error("Content project not found");
   await db.insert(contentSources).values(values);
+}
+
+async function ensureOwnedContentProject(ownerId: number, contentProjectId: number) {
+  const db = await requireDb();
+  const owned = await db.select({ id: contentProjects.id }).from(contentProjects).where(and(eq(contentProjects.id, contentProjectId), eq(contentProjects.ownerId, ownerId))).limit(1);
+  if (!owned[0]) throw new Error("Content project not found");
+  return db;
+}
+
+export async function listContentCitationsForOwner(ownerId: number, contentProjectId: number) {
+  const db = await ensureOwnedContentProject(ownerId, contentProjectId);
+  return db.select().from(contentCitations).where(eq(contentCitations.contentProjectId, contentProjectId)).orderBy(desc(contentCitations.createdAt));
+}
+
+export async function addContentCitationForOwner(ownerId: number, values: { contentProjectId: number; sourceId?: number | null; section: "outline" | "script" | "storyboard" | "export_notes"; locator?: string | null; claim: string; citationText: string }) {
+  const db = await ensureOwnedContentProject(ownerId, values.contentProjectId);
+  if (values.sourceId) {
+    const source = await db.select({ id: contentSources.id }).from(contentSources).where(and(eq(contentSources.id, values.sourceId), eq(contentSources.contentProjectId, values.contentProjectId))).limit(1);
+    if (!source[0]) throw new Error("Content source not found");
+  }
+  await db.insert(contentCitations).values(values);
+}
+
+export async function removeContentCitationForOwner(ownerId: number, contentProjectId: number, citationId: number) {
+  const db = await ensureOwnedContentProject(ownerId, contentProjectId);
+  const result = await db.delete(contentCitations).where(and(eq(contentCitations.id, citationId), eq(contentCitations.contentProjectId, contentProjectId)));
+  if (!result[0]?.affectedRows) throw new Error("Citation not found");
+}
+
+export async function listContentExportsForOwner(ownerId: number, contentProjectId: number) {
+  const db = await ensureOwnedContentProject(ownerId, contentProjectId);
+  return db.select().from(contentExports).where(eq(contentExports.contentProjectId, contentProjectId)).orderBy(desc(contentExports.updatedAt));
+}
+
+export async function addContentExportForOwner(ownerId: number, values: { contentProjectId: number; assetId?: number | null; format: string; status: "planned" | "ready" | "exported" | "failed"; destination?: string | null; notes?: string | null }) {
+  const db = await ensureOwnedContentProject(ownerId, values.contentProjectId);
+  if (values.assetId) {
+    const asset = await db.select({ id: mediaAssets.id }).from(mediaAssets).where(and(eq(mediaAssets.id, values.assetId), eq(mediaAssets.ownerId, ownerId), eq(mediaAssets.contentProjectId, values.contentProjectId))).limit(1);
+    if (!asset[0]) throw new Error("Content asset not found");
+  }
+  await db.insert(contentExports).values(values);
+}
+
+export async function removeContentExportForOwner(ownerId: number, contentProjectId: number, exportId: number) {
+  const db = await ensureOwnedContentProject(ownerId, contentProjectId);
+  const result = await db.delete(contentExports).where(and(eq(contentExports.id, exportId), eq(contentExports.contentProjectId, contentProjectId)));
+  if (!result[0]?.affectedRows) throw new Error("Content export not found");
 }
 
 export async function listMediaAssetsForOwner(ownerId: number) {
