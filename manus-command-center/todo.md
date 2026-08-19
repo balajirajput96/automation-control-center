@@ -45,11 +45,11 @@
 - [x] Add a persisted informational NIFTY alert-definition state distinct from saved daily-close watch records.
 - [x] Surface NIFTY alert-definition records with explicit delayed-data, not-scheduled, and not-delivering boundaries.
 - [x] Add regression tests for NIFTY alert-definition creation, listing, deletion, and boundary disclosure.
-- [ ] Add an informational NIFTY daily-close percentage-move alert rule with configurable threshold and explicit delayed-data disclosure.
+- [x] Add an informational NIFTY daily-close percentage-move alert rule with configurable threshold and explicit delayed-data disclosure.
 - [x] Add authenticated GitHub repository selection with issue, pull-request, and commit detail views using the validated read-only credential.
-- [ ] Add approval-gated workflow run requests and agent dispatch controls with auditable requested, approved, and denied states.
-- [ ] Add UI controls for approved and denied agent dispatch and workflow run requests, wired to owner-scoped resolution procedures.
-- [ ] Surface requested, approved, and denied execution states with loading/error feedback in Workflow and Agents interfaces.
+- [x] Add approval-gated workflow run requests and agent dispatch controls with auditable requested, approved, and denied states.
+- [x] Add UI controls for approved and denied agent dispatch and workflow run requests, wired to owner-scoped resolution procedures.
+- [x] Surface requested, approved, and denied execution states with loading/error feedback in Workflow and Agents interfaces.
 - [ ] Render the workflow approval queue directly inside Workflows and verify approve/deny actions there.
 - [x] Add persisted agent-dispatch history so requested, approved, and denied dispatch states survive refresh in Agents.
 - [ ] Add explicit empty/error states for workflow approvals and agent dispatch history, then capture populated-state UI verification.

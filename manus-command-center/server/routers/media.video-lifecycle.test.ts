@@ -39,4 +39,12 @@ describe("video lifecycle procedure", () => {
     await expect(videoCaller(99).requestExternalHandoff({ id: 7 })).rejects.toThrow("Video job not found");
     expect(mocks.addAuditEvent).not.toHaveBeenCalled();
   });
+
+  it("records an owner-scoped blocked video plan without invoking a renderer", async () => {
+    const { db } = ownerScopedVideoDb({ id: 7, title: "Vertical research short", editPlan: {} });
+    mocks.getDb.mockResolvedValue(db);
+
+    await expect(videoCaller(42).setReadiness({ id: 7, status: "failed", errorMessage: "Blocked for review" })).resolves.toMatchObject({ status: "failed" });
+    expect(mocks.addAuditEvent).toHaveBeenCalledWith(42, expect.objectContaining({ action: "video_job.readiness_updated", resourceId: "7", outcome: "failure", detail: expect.stringContaining("Blocked for review") }));
+  });
 });

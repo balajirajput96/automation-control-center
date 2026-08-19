@@ -61,12 +61,13 @@ export const videoRouter = router({
     await addAuditEvent(ctx.user.id, { action: "video_job.created", resourceType: "video_job", outcome: "pending", detail: `Created ${input.outputFormat} render plan with ${input.editPlan ? "explicit edit operations" : "default operations"} for ${input.title}.` });
     return { success: true, renderState: "draft" as const };
   }),
-  setReadiness: protectedProcedure.input(z.object({ id: z.number().int().positive(), status: z.enum(["draft", "queued", "needs_review"]) })).mutation(async ({ ctx, input }) => {
+  setReadiness: protectedProcedure.input(z.object({ id: z.number().int().positive(), status: z.enum(["draft", "queued", "needs_review", "failed"]), errorMessage: z.string().trim().min(3).max(4000).optional() })).mutation(async ({ ctx, input }) => {
     const db = await getDb(); if (!db) throw new Error("Database is unavailable");
     const existing = await db.select({ id: videoJobs.id, title: videoJobs.title, editPlan: videoJobs.editPlan }).from(videoJobs).where(and(eq(videoJobs.id, input.id), eq(videoJobs.ownerId, ctx.user.id))).limit(1);
     if (!existing[0]) throw new Error("Video job not found");
-    await db.update(videoJobs).set({ status: input.status }).where(eq(videoJobs.id, existing[0].id));
-    await addAuditEvent(ctx.user.id, { action: "video_job.readiness_updated", resourceType: "video_job", resourceId: String(input.id), outcome: input.status === "queued" ? "pending" : "success", detail: input.status === "queued" ? "Queued for an external render adapter; no render was simulated." : `Set video job readiness to ${input.status}.` });
+    const errorMessage = input.status === "failed" ? (input.errorMessage || "Video plan blocked before external rendering.") : null;
+    await db.update(videoJobs).set({ status: input.status, errorMessage }).where(eq(videoJobs.id, existing[0].id));
+    await addAuditEvent(ctx.user.id, { action: "video_job.readiness_updated", resourceType: "video_job", resourceId: String(input.id), outcome: input.status === "queued" ? "pending" : input.status === "failed" ? "failure" : "success", detail: input.status === "queued" ? "Queued for an external render adapter; no render was simulated." : input.status === "failed" ? `Marked blocked before rendering: ${errorMessage}` : `Set video job readiness to ${input.status}.` });
     return { success: true, status: input.status };
   }),
   exportReadiness: protectedProcedure.input(z.object({ id: z.number().int().positive() })).query(async ({ ctx, input }) => {
