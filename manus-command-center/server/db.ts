@@ -209,6 +209,13 @@ export async function listWorkflowsForOwner(ownerId: number) {
   return db.select().from(workflows).where(eq(workflows.ownerId, ownerId)).orderBy(desc(workflows.updatedAt));
 }
 
+export async function updateWorkflowDefinitionForOwner(ownerId: number, workflowId: number, definition: unknown, validationState: "valid" | "warning" | "invalid") {
+  const db = await requireDb();
+  const found = await db.select({ id: workflows.id }).from(workflows).where(and(eq(workflows.id, workflowId), eq(workflows.ownerId, ownerId))).limit(1);
+  if (!found[0]) throw new Error("Workflow not found");
+  await db.update(workflows).set({ definition, validationState }).where(eq(workflows.id, workflowId));
+}
+
 export async function listWorkflowTemplatesForOwner(ownerId: number) {
   const db = await requireDb();
   return db.select().from(workflowTemplates).where(eq(workflowTemplates.ownerId, ownerId)).orderBy(desc(workflowTemplates.updatedAt));

@@ -1,7 +1,7 @@
 import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { auditLogs, schedules, workflowRuns, workflows } from "../../drizzle/schema";
-import { addAuditEvent, createWorkflowRunForOwner, createWorkflowTemplateForOwner, deleteScheduleForOwner, getDb, listSchedulesForOwner, listWorkflowRunsForOwner, listWorkflowTemplatesForOwner, listWorkflowsForOwner, setScheduleStateForOwner, updateScheduleForOwner } from "../db";
+import { addAuditEvent, createWorkflowRunForOwner, createWorkflowTemplateForOwner, deleteScheduleForOwner, getDb, listSchedulesForOwner, listWorkflowRunsForOwner, listWorkflowTemplatesForOwner, listWorkflowsForOwner, setScheduleStateForOwner, updateScheduleForOwner, updateWorkflowDefinitionForOwner } from "../db";
 import { protectedProcedure, router } from "../_core/trpc";
 
 const nodeSchema = z.object({ id: z.string().min(1).max(100), type: z.enum(["trigger", "agent", "http", "condition", "loop", "parallel", "approval", "publish", "deploy", "storage"]), label: z.string().min(1).max(160), config: z.record(z.string(), z.unknown()).default({}) });
@@ -79,6 +79,12 @@ export const workflowRouter = router({
     return { success: true, validation };
   }),
   validate: protectedProcedure.input(workflowDefinitionSchema).query(({ input }) => validateWorkflowDefinition(input)),
+  updateDefinition: protectedProcedure.input(z.object({ workflowId: z.number().int().positive(), definition: workflowDefinitionSchema })).mutation(async ({ ctx, input }) => {
+    const validation = validateWorkflowDefinition(input.definition);
+    await updateWorkflowDefinitionForOwner(ctx.user.id, input.workflowId, input.definition, validation.state);
+    await addAuditEvent(ctx.user.id, { action: "workflow.definition_updated", resourceType: "workflow", resourceId: String(input.workflowId), outcome: validation.state === "invalid" ? "failure" : "success", detail: validation.message });
+    return { success: validation.state !== "invalid", validation };
+  }),
   saveTemplate: protectedProcedure.input(z.object({ name: z.string().trim().min(2).max(160), category: z.string().trim().min(2).max(100), description: z.string().trim().max(4000).optional(), definition: workflowDefinitionSchema })).mutation(async ({ ctx, input }) => {
     await createWorkflowTemplateForOwner(ctx.user.id, input);
     await addAuditEvent(ctx.user.id, { action: "workflow_template.created", resourceType: "workflow_template", outcome: "success", detail: `Saved reusable template ${input.name}.` });
