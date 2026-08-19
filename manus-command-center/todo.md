@@ -41,6 +41,9 @@
 - [x] Add a mocked procedure-level GitHub review retrieval test covering response mapping, invalid inputs, and upstream failure handling.
 - [x] Execute the GitHub review procedure with mocked successful, invalid-input, and upstream-failure scenarios.
 - [ ] Complete deployment target detail views and health-refresh logic for GitHub, Vercel, Cloudflare, and Google Cloud, with exact disconnected and unavailable states.
+- [x] Refetch deployment target state alongside integration health through the Deployments refresh control.
+- [ ] Add provider-specific deployment target detail views for GitHub, Vercel, Cloudflare, and Google Cloud.
+- [ ] Verify refresh behavior across connected, disconnected, and unavailable deployment target states.
 - [ ] Implement searchable logs, task traces, errors, retries, permission audit events, and system usage records.
 - [ ] Add responsive loading, empty, error, and authorization states for every implemented module.
 - [x] Add Vitest coverage for server procedures, policy validation, model routing, workflow validation, and schedule state changes.
