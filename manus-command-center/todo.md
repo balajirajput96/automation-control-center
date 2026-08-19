@@ -30,6 +30,8 @@
 - [ ] Add vertical-video asset-reference ownership and storage-metadata regression coverage.
 - [x] Enforce media upload kind/MIME compatibility and vertical-video slot-compatible asset kinds.
 - [ ] Constrain vertical-video storage metadata to an explicit schema and surface validated slot metadata in the job UI.
+- [ ] Surface validated vertical-video metadata notes alongside asset-slot references in the video job UI.
+- [ ] Capture populated video job UI verification showing source, thumbnail, output, and validated storage metadata.
 - [ ] Add wrong-kind asset-reference and invalid kind/MIME rejection regression coverage.
 - [x] Add server-side visual asset generation with stored output records, model discovery, loading states, and failure states.
 - [ ] Build a vertical-video pipeline job interface covering clipping, silence-removal, captions, voice-over, subtitles, aspect-ratio conversion, and export readiness; clearly label unsupported render actions.
