@@ -2,7 +2,7 @@ import { z } from "zod";
 import { and, eq } from "drizzle-orm";
 import { videoJobs } from "../../drizzle/schema";
 import { generateImage, listImageModels } from "../_core/imageGeneration";
-import { addAuditEvent, addContentCitationForOwner, addContentExportForOwner, addContentSourceForOwner, addMediaAssetForOwner, createContentProjectForOwner, createVideoJobForOwner, getDb, listContentCitationsForOwner, listContentExportsForOwner, listContentProjectsForOwner, listContentSourcesForOwner, listMediaAssetsForOwner, listVideoJobsForOwner, removeContentCitationForOwner, removeContentExportForOwner, updateContentProjectArtifactsForOwner, updateContentProjectStageForOwner } from "../db";
+import { addAuditEvent, addContentCitationForOwner, addContentExportForOwner, addContentSourceForOwner, addMediaAssetForOwner, createContentProjectForOwner, createVideoJobForOwner, getDb, listContentCitationsForOwner, listContentExportsForOwner, listContentProjectsForOwner, listContentSourcesForOwner, listMediaAssetsForOwner, listVideoJobsForOwner, removeContentCitationForOwner, removeContentExportForOwner, updateContentCitationForOwner, updateContentProjectArtifactsForOwner, updateContentProjectStageForOwner } from "../db";
 import { protectedProcedure, router } from "../_core/trpc";
 import { storagePut } from "../storage";
 
@@ -41,6 +41,12 @@ export const contentRouter = router({
   removeCitation: protectedProcedure.input(z.object({ contentProjectId: z.number().int().positive(), citationId: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
     await removeContentCitationForOwner(ctx.user.id, input.contentProjectId, input.citationId);
     await addAuditEvent(ctx.user.id, { action: "content_citation.removed", resourceType: "content_project", resourceId: String(input.contentProjectId), outcome: "success", detail: `Removed citation ${input.citationId}.` });
+    return { success: true };
+  }),
+  updateCitation: protectedProcedure.input(z.object({ contentProjectId: z.number().int().positive(), citationId: z.number().int().positive(), sourceId: z.number().int().positive().optional(), section: z.enum(["outline", "script", "storyboard", "export_notes"]), locator: z.string().trim().max(500).optional(), claim: z.string().trim().min(2).max(24000), citationText: z.string().trim().min(2).max(24000) })).mutation(async ({ ctx, input }) => {
+    const { contentProjectId, citationId, ...values } = input;
+    await updateContentCitationForOwner(ctx.user.id, contentProjectId, citationId, { ...values, sourceId: values.sourceId ?? null, locator: values.locator || null });
+    await addAuditEvent(ctx.user.id, { action: "content_citation.updated", resourceType: "content_project", resourceId: String(contentProjectId), outcome: "success", detail: `Updated citation ${citationId}.` });
     return { success: true };
   }),
   exports: protectedProcedure.input(z.object({ contentProjectId: z.number().int().positive() })).query(({ ctx, input }) => listContentExportsForOwner(ctx.user.id, input.contentProjectId)),

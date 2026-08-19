@@ -429,6 +429,16 @@ export async function removeContentCitationForOwner(ownerId: number, contentProj
   if (!result[0]?.affectedRows) throw new Error("Citation not found");
 }
 
+export async function updateContentCitationForOwner(ownerId: number, contentProjectId: number, citationId: number, values: { sourceId?: number | null; section: "outline" | "script" | "storyboard" | "export_notes"; locator?: string | null; claim: string; citationText: string }) {
+  const db = await ensureOwnedContentProject(ownerId, contentProjectId);
+  if (values.sourceId) {
+    const source = await db.select({ id: contentSources.id }).from(contentSources).where(and(eq(contentSources.id, values.sourceId), eq(contentSources.contentProjectId, contentProjectId))).limit(1);
+    if (!source[0]) throw new Error("Content source not found");
+  }
+  const result = await db.update(contentCitations).set(values).where(and(eq(contentCitations.id, citationId), eq(contentCitations.contentProjectId, contentProjectId)));
+  if (!result[0]?.affectedRows) throw new Error("Citation not found");
+}
+
 export async function listContentExportsForOwner(ownerId: number, contentProjectId: number) {
   const db = await ensureOwnedContentProject(ownerId, contentProjectId);
   return db.select().from(contentExports).where(eq(contentExports.contentProjectId, contentProjectId)).orderBy(desc(contentExports.updatedAt));

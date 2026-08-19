@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   listContentProjectsForOwner: vi.fn(),
   listContentSourcesForOwner: vi.fn(),
   updateContentProjectArtifactsForOwner: vi.fn(),
+  updateContentCitationForOwner: vi.fn(),
   updateContentProjectStageForOwner: vi.fn(),
 }));
 
@@ -43,6 +44,12 @@ describe("content lifecycle ownership procedures", () => {
     await expect(caller(42).addCitation({ contentProjectId: 18, section: "script", claim: "The source supports this claim", citationText: "Primary source, section 2" })).resolves.toEqual({ success: true });
     expect(mocks.addContentCitationForOwner).toHaveBeenCalledWith(42, expect.objectContaining({ contentProjectId: 18, section: "script", sourceId: null }));
     expect(mocks.addAuditEvent).toHaveBeenCalledWith(42, expect.objectContaining({ action: "content_citation.added", resourceId: "18" }));
+  });
+
+  it("updates an owner-scoped citation and records the audit event", async () => {
+    await expect(caller(42).updateCitation({ contentProjectId: 18, citationId: 6, section: "outline", claim: "Updated claim", citationText: "Updated citation" })).resolves.toEqual({ success: true });
+    expect(mocks.updateContentCitationForOwner).toHaveBeenCalledWith(42, 18, 6, expect.objectContaining({ section: "outline", sourceId: null, claim: "Updated claim" }));
+    expect(mocks.addAuditEvent).toHaveBeenCalledWith(42, expect.objectContaining({ action: "content_citation.updated", resourceId: "18" }));
   });
 
   it("records owner-scoped export history with a non-delivery status", async () => {
