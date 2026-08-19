@@ -380,6 +380,12 @@ export async function updateContentProjectStageForOwner(ownerId: number, content
   if (!result[0]?.affectedRows) throw new Error("Content project not found");
 }
 
+export async function updateContentProjectArtifactsForOwner(ownerId: number, contentProjectId: number, metadata: { outline?: string; script?: string; storyboard?: string; exportNotes?: string; tags?: string[] }) {
+  const db = await requireDb();
+  const result = await db.update(contentProjects).set({ metadata }).where(and(eq(contentProjects.id, contentProjectId), eq(contentProjects.ownerId, ownerId)));
+  if (!result[0]?.affectedRows) throw new Error("Content project not found");
+}
+
 export async function listContentSourcesForOwner(ownerId: number, contentProjectId: number) {
   const db = await requireDb();
   const owned = await db.select({ id: contentProjects.id }).from(contentProjects).where(and(eq(contentProjects.id, contentProjectId), eq(contentProjects.ownerId, ownerId))).limit(1);

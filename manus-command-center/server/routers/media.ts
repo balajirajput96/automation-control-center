@@ -2,7 +2,7 @@ import { z } from "zod";
 import { and, eq } from "drizzle-orm";
 import { videoJobs } from "../../drizzle/schema";
 import { generateImage, listImageModels } from "../_core/imageGeneration";
-import { addAuditEvent, addContentSourceForOwner, addMediaAssetForOwner, createContentProjectForOwner, createVideoJobForOwner, getDb, listContentProjectsForOwner, listContentSourcesForOwner, listMediaAssetsForOwner, listVideoJobsForOwner, updateContentProjectStageForOwner } from "../db";
+import { addAuditEvent, addContentSourceForOwner, addMediaAssetForOwner, createContentProjectForOwner, createVideoJobForOwner, getDb, listContentProjectsForOwner, listContentSourcesForOwner, listMediaAssetsForOwner, listVideoJobsForOwner, updateContentProjectArtifactsForOwner, updateContentProjectStageForOwner } from "../db";
 import { protectedProcedure, router } from "../_core/trpc";
 import { storagePut } from "../storage";
 
@@ -19,6 +19,12 @@ export const contentRouter = router({
     await updateContentProjectStageForOwner(ctx.user.id, input.contentProjectId, input.stage);
     await addAuditEvent(ctx.user.id, { action: "content_project.stage_updated", resourceType: "content_project", resourceId: String(input.contentProjectId), outcome: "success", detail: `Set content project stage to ${input.stage}.` });
     return { success: true, stage: input.stage };
+  }),
+  updateArtifacts: protectedProcedure.input(z.object({ contentProjectId: z.number().int().positive(), outline: z.string().trim().max(24000).optional(), script: z.string().trim().max(48000).optional(), storyboard: z.string().trim().max(24000).optional(), exportNotes: z.string().trim().max(12000).optional(), tags: z.array(z.string().trim().min(1).max(40)).max(20).optional() })).mutation(async ({ ctx, input }) => {
+    const { contentProjectId, ...metadata } = input;
+    await updateContentProjectArtifactsForOwner(ctx.user.id, contentProjectId, metadata);
+    await addAuditEvent(ctx.user.id, { action: "content_project.artifacts_updated", resourceType: "content_project", resourceId: String(contentProjectId), outcome: "success", detail: "Updated structured outline, script, storyboard, metadata, or export notes." });
+    return { success: true };
   }),
   sources: protectedProcedure.input(z.object({ contentProjectId: z.number().int().positive() })).query(({ ctx, input }) => listContentSourcesForOwner(ctx.user.id, input.contentProjectId)),
   addSource: protectedProcedure.input(z.object({ contentProjectId: z.number().int().positive(), title: z.string().trim().min(2).max(500), url: z.string().url().max(2000), sourceType: z.string().trim().min(2).max(80), credibility: z.enum(credibility), notes: z.string().trim().max(4000).optional() })).mutation(async ({ ctx, input }) => {

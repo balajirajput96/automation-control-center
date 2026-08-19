@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   createContentProjectForOwner: vi.fn(),
   listContentProjectsForOwner: vi.fn(),
   listContentSourcesForOwner: vi.fn(),
+  updateContentProjectArtifactsForOwner: vi.fn(),
   updateContentProjectStageForOwner: vi.fn(),
 }));
 
@@ -28,6 +29,12 @@ describe("content lifecycle ownership procedures", () => {
     await expect(caller(42).setStage({ contentProjectId: 18, stage: "storyboard" })).resolves.toMatchObject({ success: true, stage: "storyboard" });
     expect(mocks.updateContentProjectStageForOwner).toHaveBeenCalledWith(42, 18, "storyboard");
     expect(mocks.addAuditEvent).toHaveBeenCalledWith(42, expect.objectContaining({ action: "content_project.stage_updated", resourceId: "18" }));
+  });
+
+  it("persists owner-scoped structured content artifacts and records the audit boundary", async () => {
+    await expect(caller(42).updateArtifacts({ contentProjectId: 18, outline: "Source-backed outline", script: "Narration draft", tags: ["research", "vertical-video"] })).resolves.toEqual({ success: true });
+    expect(mocks.updateContentProjectArtifactsForOwner).toHaveBeenCalledWith(42, 18, { outline: "Source-backed outline", script: "Narration draft", tags: ["research", "vertical-video"] });
+    expect(mocks.addAuditEvent).toHaveBeenCalledWith(42, expect.objectContaining({ action: "content_project.artifacts_updated", resourceId: "18" }));
   });
 
   it("does not mask cross-owner stage rejection from the ownership helper", async () => {
