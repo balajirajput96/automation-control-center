@@ -8,6 +8,14 @@ import { storagePut } from "../storage";
 
 const credibility = ["established", "emerging", "opinion", "hypothesis", "unreviewed"] as const;
 
+export function mediaKindMatchesMime(kind: "image" | "audio" | "video" | "thumbnail" | "document" | "other", mimeType: string) {
+  if (kind === "image" || kind === "thumbnail") return mimeType.startsWith("image/");
+  if (kind === "audio") return mimeType.startsWith("audio/");
+  if (kind === "video") return mimeType.startsWith("video/");
+  if (kind === "document") return ["application/pdf", "application/json", "application/octet-stream"].includes(mimeType);
+  return kind === "other";
+}
+
 export const contentRouter = router({
   list: protectedProcedure.query(({ ctx }) => listContentProjectsForOwner(ctx.user.id)),
   create: protectedProcedure.input(z.object({ title: z.string().trim().min(2).max(255), brief: z.string().trim().max(12000).optional() })).mutation(async ({ ctx, input }) => {
@@ -66,8 +74,7 @@ export const mediaRouter = router({
   list: protectedProcedure.query(({ ctx }) => listMediaAssetsForOwner(ctx.user.id)),
   upload: protectedProcedure.input(z.object({ name: z.string().trim().min(1).max(255), kind: z.enum(["image", "audio", "video", "thumbnail", "document", "other"]), mimeType: z.string().trim().min(3).max(160), dataBase64: z.string().min(4).max(8_000_000), contentProjectId: z.number().int().positive().optional() })).mutation(async ({ ctx, input }) => {
     if (!/^(image|audio|video)\/[a-z0-9.+-]+$|^application\/(pdf|json|octet-stream)$/i.test(input.mimeType)) throw new Error("Unsupported media MIME type");
-    const compatible = input.kind === "image" || input.kind === "thumbnail" ? input.mimeType.startsWith("image/") : input.kind === "audio" ? input.mimeType.startsWith("audio/") : input.kind === "video" ? input.mimeType.startsWith("video/") : input.kind === "document" ? input.mimeType === "application/pdf" || input.mimeType === "application/json" || input.mimeType === "application/octet-stream" : input.kind === "other";
-    if (!compatible) throw new Error(`Media kind ${input.kind} is not compatible with MIME type ${input.mimeType}`);
+    if (!mediaKindMatchesMime(input.kind, input.mimeType)) throw new Error(`Media kind ${input.kind} is not compatible with MIME type ${input.mimeType}`);
     const bytes = Buffer.from(input.dataBase64, "base64");
     if (!bytes.length || bytes.length > 5 * 1024 * 1024) throw new Error("Uploads must be between 1 byte and 5 MB");
     const safeName = input.name.replace(/[^a-zA-Z0-9._-]+/g, "-").replace(/^-+|-+$/g, "") || "asset";
