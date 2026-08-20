@@ -38,7 +38,24 @@ jobs:
             printf '{"execution_number":0}\n' > "$RUNNER_TEMP/previous-state.json"
           fi
 
+      - name: Enforce 2,400 execution limit
+        id: cycle-guard
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          execution_number=$(jq -r '.execution_number // 0' "$RUNNER_TEMP/previous-state.json")
+          if ! [[ "$execution_number" =~ ^[0-9]+$ ]]; then
+            execution_number=0
+          fi
+          if [ "$execution_number" -ge 2400 ]; then
+            echo 'continue=false' >> "$GITHUB_OUTPUT"
+            echo "Execution limit reached at $execution_number; no further audit work will run."
+          else
+            echo 'continue=true' >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Run secret-safe repository inventory
+        if: steps.cycle-guard.outputs.continue == 'true'
         env:
           GH_TOKEN: ${{ secrets.AUDIT_GH_TOKEN || github.token }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -50,6 +67,7 @@ jobs:
           scripts/github-account-audit/run_audit.sh "$RUNNER_TEMP/audit" "$RUNNER_TEMP/previous-state.json"
 
       - name: Publish audit artifacts
+        if: steps.cycle-guard.outputs.continue == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: hourly-audit-${{ github.run_number }}
@@ -58,6 +76,7 @@ jobs:
           retention-days: 30
 
       - name: Persist execution state on dedicated branch
+        if: steps.cycle-guard.outputs.continue == 'true'
         env:
           GH_TOKEN: ${{ secrets.AUDIT_GH_TOKEN || github.token }}
         shell: bash
