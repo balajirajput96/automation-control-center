@@ -19,7 +19,19 @@ elif [ -s /tmp/b_pr_err ]; then
 else
   record open-prs pass 'no open pull requests'
 fi
-if command -v jules >/dev/null 2>&1; then jules remote list --repo balajirajput96/B >/tmp/b_jules_out 2>/tmp/b_jules_err; jrc=$?; if [ "$jrc" -eq 0 ]; then record jules pass 'remote list succeeded'; else record jules warn "exit=$jrc; $(tr '\n' ' ' < /tmp/b_jules_err)"; fi; else record jules skipped 'CLI unavailable'; fi
+if command -v jules >/dev/null 2>&1; then
+  jules_output="$(jules remote list --repo balajirajput96/B 2>&1)"
+  jrc=$?
+  if printf '%s' "$jules_output" | grep -qiE '(without a valid client|did you forget to login|not logged in|oauth)'; then
+    record jules deferred 'OAuth session unavailable; interactive login required'
+  elif [ "$jrc" -eq 0 ]; then
+    record jules pass 'remote list succeeded'
+  else
+    record jules warn "remote probe failed; exit=$jrc"
+  fi
+else
+  record jules skipped 'CLI unavailable'
+fi
 if command -v agy >/dev/null 2>&1; then record antigravity deferred 'CLI present; account login intentionally deferred by user'; else record antigravity deferred 'CLI unavailable after reset; account login intentionally deferred by user'; fi
 if command -v gemini >/dev/null 2>&1; then record gemini deferred 'Gemini command present; account mode not reauthorized'; else record gemini deferred 'Gemini CLI not present; account mode not reauthorized'; fi
 if command -v datadog >/dev/null 2>&1 || command -v ddog >/dev/null 2>&1; then record datadog available 'CLI present'; else record datadog unavailable 'no Datadog CLI or configured connector detected'; fi
