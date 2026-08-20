@@ -1,9 +1,7 @@
-name: Hourly GitHub audit continuation
+name: GitHub audit continuation
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 * * * *"
 
 permissions:
   contents: write
