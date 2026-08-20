@@ -83,14 +83,8 @@ jobs:
         run: |
           set -Eeuo pipefail
           git fetch --no-tags origin automation-state:refs/remotes/origin/automation-state || true
-          if git show-ref --verify --quiet refs/remotes/origin/automation-state; then
-            git switch --create automation-state --track origin/automation-state
-          else
-            git switch --orphan automation-state
-            # A newly created orphan branch has no index entries; clean both the empty index and checkout safely.
-            git rm -rf --cached . 2>/dev/null || true
-            git clean -fdx
-          fi
+          chmod +x scripts/github-account-audit/bootstrap_state_branch.sh
+          scripts/github-account-audit/bootstrap_state_branch.sh automation-state
           rm -rf state artifacts
           mkdir -p state artifacts
           cp "$RUNNER_TEMP/audit/execution-state.json" state/execution-state.json

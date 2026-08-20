@@ -60,17 +60,24 @@ else
   printf 'Gemini analysis skipped because GEMINI_API_KEY is not configured or no failure rows were present.\n' > "$analysis"
 fi
 
+result_value="completed"
+if [ -s "$out_dir/blocker.txt" ]; then result_value="completed_with_blocker"; fi
+
 jq -n \
   --argjson execution_number "$execution_number" \
   --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+  --arg repository "$owner/automation-control-center" \
   --arg repository_owner "$owner" \
+  --arg task "hourly_github_audit_continuation" \
+  --arg workflow "Hourly GitHub audit continuation" \
+  --arg cli_connector_api_used "GitHub Actions; gh REST API; optional Gemini REST API" \
   --arg action "inventory_active_nonfork_repositories_open_prs_and_recent_workflows" \
-  --arg result "completed" \
+  --arg result "$result_value" \
   --arg failure_category "$(if [ -s "$out_dir/blocker.txt" ]; then printf 'external_or_inventory_blocker'; else printf 'none_or_classified_in_artifacts'; fi)" \
   --arg recovery_attempt "bounded_api_calls_and_secret_safe_artifact_capture" \
   --arg validation_status "inventory_artifacts_written" \
   --arg remaining_blocker "$(if [ -f "$out_dir/blocker.txt" ]; then tr '\n' ' ' < "$out_dir/blocker.txt"; else printf 'none_recorded_by_inventory_runner'; fi)" \
-  --arg next_action "inspect_current_failure_rows_and_repair_only_reproducible_issues" \
-  '{execution_number:$execution_number,timestamp:$timestamp,repository_owner:$repository_owner,action:$action,result:$result,failure_category:$failure_category,recovery_attempt:$recovery_attempt,validation_status:$validation_status,remaining_blocker:$remaining_blocker,next_action:$next_action}' > "$state"
+  --arg next_recommended_action "inspect_current_failure_rows_and_repair_only_reproducible_issues" \
+  '{execution_number:$execution_number,timestamp:$timestamp,repository:$repository,repository_owner:$repository_owner,task:$task,workflow:$workflow,cli_connector_api_used:$cli_connector_api_used,action:$action,result:$result,failure_category:$failure_category,recovery_attempt:$recovery_attempt,validation_status:$validation_status,remaining_blocker:$remaining_blocker,next_recommended_action:$next_recommended_action}' > "$state"
 
 printf 'execution_number=%s\nrepos=%s\nopen_pr_rows=%s\nrecent_failure_rows=%s\n' "$execution_number" "$(($(wc -l < "$repos")-1))" "$(($(wc -l < "$prs")-1))" "$(($(wc -l < "$fails")-1))"

@@ -15,3 +15,9 @@ The workflow never writes to the default branch, never stores credentials in the
 Each execution increments `execution_number` from 1 through 2,400 and records the UTC timestamp, repository/workflow actions, results, failure categories, recovery attempts, validation status, blockers, and next action. The state is stored on `automation-state`, not `main`, so scheduled persistence does not bypass protected default-branch review.
 
 The workflow is intentionally bounded and idempotent. It reads the previous state before creating the next record, keeps only current audit artifacts plus the latest state, and never attempts destructive operations or automatic merges.
+
+## First-run state bootstrap
+
+The persistence step uses `scripts/github-account-audit/bootstrap_state_branch.sh` to create the orphan `automation-state` branch with an empty Git index on first use. This avoids relying on a pathspec against an orphan branch whose index is not populated. Subsequent runs track the existing state branch and replace only the `state/` and `artifacts/` contents.
+
+The execution record includes `execution_number`, `timestamp`, `repository`, `task`, `workflow`, `cli_connector_api_used`, `action`, `result`, `failure_category`, `recovery_attempt`, `validation_status`, `remaining_blocker`, and `next_recommended_action`. These fields are machine-readable and contain no secret values.
