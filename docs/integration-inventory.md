@@ -38,7 +38,7 @@ Julius still presented a Log In dialog. A Google sign-in attempt was initiated t
 
 ## Google Drive report destination
 
-A private Google Drive folder named **Automation Control Center** has been created for future runbooks and approved automation reports. Its Drive folder ID is `18l-M8C00XpE6l3kxn1tSkp6vNi0SJcOR`. No existing Drive files were modified or shared.
+A private Google Drive folder named **Automation Control Center** has been created for future runbooks and approved automation reports. Its verified Drive folder ID is `1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo`; an earlier stale reference was retired after a read-only verification. No existing Drive files were modified or shared.
 
 ## GitHub automation validation
 
@@ -70,6 +70,6 @@ A temporary, localhost-only n8n Community Edition 2.34.6 instance was initialize
 
 ## Current-task evidence recheck — 2026-08-18
 
-The current task rechecked provider state without mutation. The authenticated Google Workspace account returned Drive data successfully. The verified private **Automation Control Center** folder is `18l-M8C00XpE6l3kxn1tSkp6vNi0SJcOR`; the older folder ID previously recorded in this document returned `404 File not found` and is no longer treated as valid. The stateless Gemini Interactions probe returned `automation-connector-ok` with storage disabled. Gmail read-only label listing succeeded after the user selected `sellbuildingbazar.in@gmail.com`, and a narrow Calendar search for `Automation` returned no events.
+The current task rechecked provider state without mutation. The authenticated Google Workspace account returned Drive data successfully. The verified private **Automation Control Center** folder is `1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo`; the previously recorded folder ID returned `404 File not found` and is no longer treated as valid. The stateless Gemini Interactions probe returned `automation-connector-ok` with storage disabled. Gmail read-only label listing succeeded after the user selected `sellbuildingbazar.in@gmail.com`, and a narrow Calendar search for `Automation` returned no events.
 
 The current task recheck on 2026-08-18 confirms that `agy` v1.1.14 is executable and authenticated, `agy models` exits successfully, Gemini CLI v0.55.1 is installed but its individual OAuth client is rejected by the provider, GitHub CLI is authenticated as `balajirajput96`, and Google Workspace Drive access is live. The current Manus read-only health schedule is active at 09:15 Asia/Calcutta. Gemini Spark is signed in as `ba9724188739@gmail.com`, but the GitHub read-only MCP custom-app flow remains blocked because Spark requires a user-created GitHub OAuth Client ID and Client Secret; none was guessed or entered by the agent. Antigravity runner output is written to the Git-ignored `reports/private` directory, Gemini CLI output is not persisted by default, and Google Jules provider-side history is not available through this repository. No provider-side schedule or logging claim is made without current authenticated evidence.

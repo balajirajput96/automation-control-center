@@ -44,6 +44,9 @@ jobs:
             "docs/implementation-status.md"
             "docs/gemini-interactions-migration.md"
             "docs/live-readiness-audit.md"
+            "docs/historical-automation-inventory.md"
+            "scripts/record_automation_run.py"
+            "scripts/test_record_automation_run.py"
           )
           for path in "${required[@]}"; do
             test -f "$path"
@@ -57,7 +60,12 @@ jobs:
       - name: Validate Python scripts syntax
         shell: bash
         run: |
-          python -m py_compile scripts/test_gemini.py scripts/validate_n8n_template.py
+          python -m py_compile scripts/test_gemini.py scripts/validate_n8n_template.py scripts/record_automation_run.py scripts/test_record_automation_run.py
+
+      - name: Validate execution record contract
+        shell: bash
+        run: |
+          python scripts/test_record_automation_run.py
 
       - name: Validate local configuration contracts and security
         shell: bash
@@ -77,14 +85,66 @@ jobs:
           grep -q "LASTEXITCODE" antigravity/run-daily-review.ps1
 
           # Check private Drive folder ID in scheduled prompts
-          grep -q "18l-M8C00XpE6l3kxn1tSkp6vNi0SJcOR" gemini-spark/daily-brief-prompt.md
-          grep -q "18l-M8C00XpE6l3kxn1tSkp6vNi0SJcOR" julius/scheduled-analysis-prompt.md
+          grep -q "1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo" gemini-spark/daily-brief-prompt.md
+          grep -q "1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo" julius/scheduled-analysis-prompt.md
 
       - name: Verify no local secret files are tracked
         shell: bash
         run: |
           set -euo pipefail
           ! git ls-files | grep -E '(^|/)(\.env|.*\.(key|pem|p12|pfx))$'
+
+      - name: Write secret-safe execution record
+        if: always()
+        shell: bash
+        env:
+          EXECUTION_STATUS: ${{ job.status }}
+          REPOSITORY_NAME: ${{ github.repository }}
+          WORKFLOW_NAME: ${{ github.workflow }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          mkdir -p reports/public
+          python - <<'PY'
+          import json
+          import os
+          from datetime import UTC, datetime
+          from pathlib import Path
+
+          status = os.environ["EXECUTION_STATUS"]
+          record = {
+              "schema_version": 1,
+              "timestamp": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+              "repository": os.environ["REPOSITORY_NAME"],
+              "task": "automation-control-health",
+              "used": ["github-action:automation-control-health"],
+              "action": "static-validation",
+              "result": "success" if status == "success" else "failure",
+              "failure_category": "none" if status == "success" else "workflow-validation",
+              "recovery_attempt": "none",
+              "validation_status": "passed" if status == "success" else "failed",
+              "remaining_blocker": "none" if status == "success" else "inspect-workflow-log",
+              "github": {
+                  "workflow": os.environ["WORKFLOW_NAME"],
+                  "run_id": os.environ["RUN_ID"],
+                  "attempt": os.environ["RUN_ATTEMPT"],
+              },
+          }
+          Path("reports/public/automation-execution.json").write_text(
+              json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload execution record
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: automation-execution-record-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reports/public/automation-execution.json
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Publish validation summary
         shell: bash
@@ -94,4 +154,5 @@ jobs:
             echo
             echo "The repository structure, prompt contracts, Python syntax, and n8n template JSON passed static validation."
             echo "This workflow is intentionally read-only and does not access credentials or external services."
+            echo "A non-secret machine-readable execution record is retained as a workflow artifact for 30 days."
           } >> "$GITHUB_STEP_SUMMARY"

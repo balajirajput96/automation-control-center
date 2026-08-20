@@ -16,7 +16,7 @@
 - [ ] Obtain the correct n8n Cloud account name or workspace URL; the Cloud entry page requires it before workflows can be imported.
 - [x] Reconfirm the protected audit readiness evidence after the sandbox recovery.
 - [x] Apply only validated low-risk protected-audit improvements and run static checks.
-- [ ] Push the verified protected-audit update to the private repository.
+- [x] Push the verified protected-audit update to the private repository.
 - [ ] Resume n8n workspace discovery using only read-only account and connection evidence.
 - [ ] Re-establish authenticated Gemini Spark, Julius, and Antigravity readiness when provider sessions allow it.
 - [ ] Validate recovery results and publish only verified private documentation updates.
@@ -38,7 +38,7 @@
 - [ ] Apply and validate only verified private code or documentation repairs from the alternative review.
 - [x] Recheck protected n8n readiness, workflow errors, GitHub Actions, Google Drive, Gemini Spark, and Julius signals.
 - [x] Check for a scoped read-only Antigravity audit; the `agy` executable is unavailable in this sandbox.
-- [x] Apply only validated low-risk local improvements and static validation; private publication remains pending.
+- [x] Apply only validated low-risk local improvements and static validation; private publication was completed in commit `f381264`.
 - [x] Inventory repository branches, scripts, workflows, dependencies, TODOs, and incomplete integration paths.
 - [x] Run practical build, test, workflow, runtime, GitHub, Gemini, Google, n8n, and connector diagnostics.
 - [x] Inspect Antigravity, Gemini CLI, Datadog, and other repository-declared integrations where available.
@@ -46,3 +46,9 @@
 - [x] Restore the requested daily automation schedule because its current status is paused.
 - [x] Verify Antigravity, Jules, Gemini CLI, and GitHub CLI authentication, requesting browser takeover only where an interactive login is required.
 - [x] Restore supported Gemini, Jules, and Antigravity CLI availability where compatible with this environment, then request takeover only for an opened OAuth sign-in flow.
+- [x] Create a secret-safe inventory of accessible historical automation assets, repositories, schedules, and CLI integration state.
+- [x] Classify reusable automation components and identify validated low-risk gaps in execution recording, self-healing, and scheduled maintenance.
+- [ ] Implement, test, document, and privately publish approved low-risk persistence improvements without exposing credentials.
+- [x] Replace stale Google Drive folder references in scheduled prompts and static validation with the currently verified private Automation Control Center folder.
+- [x] Restore Gemini CLI's supported API-key execution path after its persisted individual OAuth profile was rejected by the provider.
+- [ ] Publish a non-secret machine-readable execution record from the existing GitHub Actions health workflow.
