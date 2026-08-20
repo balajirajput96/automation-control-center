@@ -52,3 +52,5 @@
 - [x] Replace stale Google Drive folder references in scheduled prompts and static validation with the currently verified private Automation Control Center folder.
 - [x] Restore Gemini CLI's supported API-key execution path after its persisted individual OAuth profile was rejected by the provider.
 - [x] Publish a non-secret machine-readable execution record from the existing GitHub Actions health workflow.
+- [x] Assess the private repository's reported dependency alerts and apply only low-risk, test-validated remediation; the available major-toolchain Dependabot update was deliberately not merged.
+- [ ] Revalidate Dependabot pull request #5 on a runner that can complete the command-center production build before approving its Vite and pnpm major-version changes.
