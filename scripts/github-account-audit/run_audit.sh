@@ -18,8 +18,23 @@ printf 'repo\tdefault_branch\tupdated_at\thtml_url\n' > "$repos"
 printf 'repo\tpr_number\ttitle\thead_ref\tbase_ref\thead_sha\tdraft\tmergeable_state\tupdated_at\turl\texcluded_jules\n' > "$prs"
 printf 'repo\trun_id\tstatus\tconclusion\tcreated_at\tupdated_at\thead_branch\tworkflow\tevent\turl\n' > "$runs"
 
-if ! gh api --paginate 'user/repos?per_page=100&affiliation=owner' --jq '.[] | select(.fork == false and .archived == false and .owner.login == "'"$owner"'") | [.name,.default_branch,.updated_at,.html_url] | @tsv' > "$repos.raw"; then
-  printf 'Authentication or repository inventory unavailable to this workflow token.\n' > "$out_dir/blocker.txt"
+inventory_error="$out_dir/inventory-error.txt"
+inventory_blocker_category=""
+if ! gh api --paginate 'user/repos?per_page=100&affiliation=owner' --jq '.[] | select(.fork == false and .archived == false and .owner.login == "'"$owner"'") | [.name,.default_branch,.updated_at,.html_url] | @tsv' > "$repos.raw" 2> "$inventory_error"; then
+  if grep -Eq 'HTTP 401|HTTP 403|Resource not accessible|Bad credentials|Requires authentication' "$inventory_error"; then
+    inventory_blocker_category="authorization_scope_blocker"
+    blocker_message="GitHub owner-repository inventory requires an authorized token with owner-repository read access; the default workflow token is scoped to the current repository."
+  else
+    inventory_blocker_category="external_inventory_blocker"
+    blocker_message="GitHub owner-repository inventory failed at the authorized API endpoint; inspect the sanitized diagnostic below."
+  fi
+  {
+    printf '%s\n' "$blocker_message"
+    printf 'category=%s\n' "$inventory_blocker_category"
+    printf 'diagnostic='
+    sed -E 's/(ghp_|github_pat_|x-access-token:)[^[:space:]"'"'"']+/[REDACTED]/g' "$inventory_error" | tr '\n' ' '
+    printf '\n'
+  } > "$out_dir/blocker.txt"
   : > "$repos.raw"
 fi
 cat "$repos.raw" >> "$repos"
@@ -74,11 +89,11 @@ jq -n \
   --arg cli_connector_api_used "GitHub Actions; gh REST API; optional Gemini REST API" \
   --arg action "inventory_active_nonfork_repositories_open_prs_and_recent_workflows" \
   --arg result "$result_value" \
-  --arg failure_category "$(if [ -s "$out_dir/blocker.txt" ]; then printf 'external_or_inventory_blocker'; else printf 'none_or_classified_in_artifacts'; fi)" \
+  --arg failure_category "$(if [ -n "$inventory_blocker_category" ]; then printf '%s' "$inventory_blocker_category"; elif [ -s "$out_dir/blocker.txt" ]; then printf 'external_or_inventory_blocker'; else printf 'none_or_classified_in_artifacts'; fi)" \
   --arg recovery_attempt "bounded_api_calls_and_secret_safe_artifact_capture" \
   --arg validation_status "inventory_artifacts_written" \
   --arg remaining_blocker "$(if [ -f "$out_dir/blocker.txt" ]; then tr '\n' ' ' < "$out_dir/blocker.txt"; else printf 'none_recorded_by_inventory_runner'; fi)" \
-  --arg next_recommended_action "inspect_current_failure_rows_and_repair_only_reproducible_issues" \
+  --arg next_recommended_action "$(if [ "$inventory_blocker_category" = "authorization_scope_blocker" ]; then printf 'provide_a_supported_read_only_repository_inventory_credential_to_the_workflow_or_keep_scope_limited_to_the_current_repository'; else printf 'inspect_current_failure_rows_and_repair_only_reproducible_issues'; fi)" \
   '{execution_number:$execution_number,timestamp:$timestamp,repository:$repository,repository_owner:$repository_owner,task:$task,workflow:$workflow,cli_connector_api_used:$cli_connector_api_used,action:$action,result:$result,failure_category:$failure_category,recovery_attempt:$recovery_attempt,validation_status:$validation_status,remaining_blocker:$remaining_blocker,next_recommended_action:$next_recommended_action}' > "$state"
 
 printf 'execution_number=%s\nrepos=%s\nopen_pr_rows=%s\nrecent_failure_rows=%s\n' "$execution_number" "$(($(wc -l < "$repos")-1))" "$(($(wc -l < "$prs")-1))" "$(($(wc -l < "$fails")-1))"

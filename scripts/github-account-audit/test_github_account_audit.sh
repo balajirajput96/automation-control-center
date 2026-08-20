@@ -55,6 +55,35 @@ test "$(wc -l < "$work/audit/open-prs.tsv")" -eq 1
 test "$(wc -l < "$work/audit/recent-runs.tsv")" -eq 1
 ! grep -RInE '(ghp_[A-Za-z0-9]{20,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN (RSA|OPENSSH|EC|PRIVATE) KEY-----)' "$work/audit"
 
+scope_bin="$work/scope-bin"
+mkdir -p "$scope_bin"
+cat > "$scope_bin/gh" <<'FAKE_SCOPE_GH'
+#!/usr/bin/env bash
+set -Eeuo pipefail
+case "$*" in
+  *"user/repos?per_page=100&affiliation=owner"*)
+    printf 'HTTP 403: Resource not accessible by integration (token=[REDACTED])\n' >&2
+    exit 1
+    ;;
+  *)
+    printf 'unexpected gh invocation after inventory blocker: %s\n' "$*" >&2
+    exit 1
+    ;;
+esac
+FAKE_SCOPE_GH
+chmod +x "$scope_bin/gh"
+printf '%s\n' '{"execution_number":11}' > "$work/scope-previous-state.json"
+env PATH="$scope_bin:$PATH" GH_PAGER=cat GH_FORCE_TTY=0 NO_COLOR=1 "$RUNNER" "$work/scope-audit" "$work/scope-previous-state.json" > "$work/scope-runner-output.txt"
+jq -e '
+  .execution_number == 12 and
+  .result == "completed_with_blocker" and
+  .failure_category == "authorization_scope_blocker" and
+  (.remaining_blocker | contains("owner-repository inventory requires an authorized token")) and
+  (.next_recommended_action | contains("supported_read_only_repository_inventory_credential"))
+' "$work/scope-audit/execution-state.json" >/dev/null
+grep -q 'category=authorization_scope_blocker' "$work/scope-audit/blocker.txt"
+! grep -RInE '(ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN (RSA|OPENSSH|EC|PRIVATE) KEY-----)' "$work/scope-audit"
+
 bare="$work/remote.git"
 git init --bare -q "$bare"
 repo="$work/repo"
