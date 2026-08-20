@@ -59,6 +59,6 @@
 - [x] Verify and privately publish the improved daily maintenance model while retaining credentials only in their approved local or provider-managed stores.
 - [x] Run the current bounded private maintenance review across repository, schedule, approved CLIs, Drive, n8n, execution records, templates, and tracked-secret protections.
 - [x] Re-run the protected full-repository audit across source paths, dependencies, tests, workflows, CLIs, connectors, API boundaries, and declared monitoring integrations.
-- [ ] Repair only confirmed low-risk issues from the renewed audit, revalidate affected workflows, and publish verified private changes.
+- [x] Repair only confirmed low-risk issues from the renewed audit, revalidate affected workflows, and publish verified private changes; the final GitHub Actions run remains externally queued.
 - [x] Complete final isolated runtime validation of Dependabot PR #5 and merge it only if its validated toolchain update remains clean.
 - [x] Repair merged workspace-maintenance scripts so they use current project paths, metadata-only history inspection, opt-in cleanup, and accurate non-secret CLI readiness checks.
