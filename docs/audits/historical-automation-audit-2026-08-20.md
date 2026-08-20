@@ -22,7 +22,7 @@ The current workspace contains 32 synchronized repositories. The daily run compl
 
 The earlier `run_project_checks_cycle.sh` remains a historical implementation. The active `run_project_checks_cycle2.sh` is the preferred local runner because it supports cached dependencies, uses `--ignore-scripts` for safe installs in this environment, and applies hard timeouts. The two workflow inventories are complementary: one inventories recent GitHub runs for the canonical repositories, while the other checks the full repository inventory.
 
-Authentication remains explicitly bounded. GitHub CLI is authenticated and was successfully queried. Jules is installed and its remote probe succeeded in the current environment, but an OAuth session may be lost after a sandbox reset. Antigravity login remains deferred at the user's request. Gemini CLI is not installed or authorized. Docker is unavailable in the current sandbox, so n8n packages are validated structurally rather than launched.
+Authentication remains explicitly bounded. GitHub CLI is authenticated and was successfully queried. Jules is installed, but its read-only remote probe currently reports that the OAuth client session is unavailable; interactive login is therefore deferred to the account owner. Antigravity login remains deferred at the user's request. Gemini CLI is not installed or authorized. Docker is unavailable in the current sandbox, so n8n packages are validated structurally rather than launched.
 
 ## Daily execution
 
