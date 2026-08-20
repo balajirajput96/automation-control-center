@@ -87,8 +87,9 @@ jobs:
             git switch --create automation-state --track origin/automation-state
           else
             git switch --orphan automation-state
-            # A newly created orphan branch can have an empty index; tolerate that first-run state.
-            git rm -rf --ignore-unmatch . || true
+            # A newly created orphan branch has no index entries; clean both the empty index and checkout safely.
+            git rm -rf --cached . 2>/dev/null || true
+            git clean -fdx
           fi
           rm -rf state artifacts
           mkdir -p state artifacts
