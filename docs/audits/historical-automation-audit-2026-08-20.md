@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This audit preserves the surviving local-first engineering and automation state discovered in the Ubuntu workspace. It records reusable controls without copying raw shell history, credentials, tokens, private logs, or service-side authentication material into GitHub.
+This audit preserves reusable controls without copying raw shell history, credentials, tokens, private logs, or service-side authentication material into GitHub. The scripts are anchored to the current repository at runtime and write only ignored metadata and validation results under `reports/private/workspace-maintenance/`.
 
 The repository remains the documented **single source of truth** for cross-platform automation configuration and operating guidance. The newly integrated scripts are reviewable controls; they do not grant permissions, authenticate accounts, merge pull requests, send messages, publish repositories, or expose local services.
 
@@ -10,30 +10,19 @@ The repository remains the documented **single source of truth** for cross-platf
 
 | Control | Role | Safety boundary |
 |---|---|---|
-| `scripts/workspace-maintenance/historical_discovery.sh` | Inventory shell-history presence, workspace paths, repository state, cron entries, and command availability into TSV output. | Reports presence and versions only; does not print credentials or raw history. |
+| `scripts/workspace-maintenance/historical_discovery.sh` | Inventory shell-history metadata, current-repository state, and command availability into TSV output. | Records only history-file path, size, and modification time; it never reads history content, cron contents, or credentials. |
 | `scripts/workspace-maintenance/inventory_historical_automation.sh` | Inventory shell scripts, GitHub Actions workflows, automation-related files, and existing validation evidence. | Classifies files and references secret usage without extracting secret values. |
 | `scripts/workspace-maintenance/check_workflows.sh` | Read-only GitHub Actions run inventory for non-fork repositories. | Requires the caller's existing `gh` authorization and records API errors separately from no-run results. |
 | `scripts/workspace-maintenance/verify_current_project_integrations.sh` | Read-only Project B, GitHub Actions, pull-request, Jules, Antigravity, Gemini, and monitoring checks. | Defers absent or intentionally deferred authentication; does not attempt login or change connectors. |
-| `scripts/workspace-maintenance/daily_maintenance.sh` | Run static triage, project checks, exact tests, Python tests, and tree cleanliness checks. | Every stage is bounded and logged; the wrapper now returns nonzero when any stage or tree check fails. |
+| `scripts/workspace-maintenance/daily_maintenance.sh` | Run the current repository's discovery, workflow, integration, contract, and syntax checks. | Every stage is bounded and logged locally; no cleanup, repository mutation, or history replay occurs. |
 
 ## Evidence-based classification
 
-The current workspace contains 32 synchronized repositories. The daily run completed with return code `0` for static triage, project checks, exact tests, Python tests, and Git status. The post-run repository scan found zero dirty trees. These facts are recorded in the local checkpoint files and are intentionally not represented as claims that external services are permanently healthy.
-
-The earlier `run_project_checks_cycle.sh` remains a historical implementation. The active `run_project_checks_cycle2.sh` is the preferred local runner because it supports cached dependencies, uses `--ignore-scripts` for safe installs in this environment, and applies hard timeouts. The two workflow inventories are complementary: one inventories recent GitHub runs for the canonical repositories, while the other checks the full repository inventory.
-
-Authentication remains explicitly bounded. GitHub CLI is authenticated and was successfully queried. Jules is installed, but its read-only remote probe currently reports that the OAuth client session is unavailable; interactive login is therefore deferred to the account owner. Antigravity login remains deferred at the user's request. Gemini CLI is not installed or authorized. Docker is unavailable in the current sandbox, so n8n packages are validated structurally rather than launched.
+Authentication remains explicitly bounded. GitHub, Antigravity, Jules, and Gemini CLI readiness is checked only through their current approved local or provider-managed state; no script initiates sign-in, prints credential values, or changes a connector. n8n packages are validated structurally unless a valid provider workspace is available.
 
 ## Daily execution
 
-The local scheduled entry is configured for 02:00 India Standard Time with `flock` overlap protection:
-
-```cron
-CRON_TZ=Asia/Kolkata
-0 2 * * * flock -n /tmp/github-workspace-daily-maintenance.lock /usr/bin/env bash /home/ubuntu/github-workspace/daily_maintenance.sh
-```
-
-The local workspace is intentionally separate from this repository because it contains the cloned 32-repository test surface and machine-generated checkpoint logs. A deployment operator may copy the review-approved scripts into the workspace or invoke them from a controlled checkout after reviewing their path assumptions.
+The scripts are not a replacement for the active daily control review. They are reusable bounded diagnostics that can be invoked from a controlled checkout with the current repository path, and their output remains ignored locally.
 
 ## Review and integration policy
 
@@ -41,19 +30,16 @@ All repository changes from this audit are staged on the review branch `manus/hi
 
 ## Reproduction notes
 
-Run shell syntax checks first:
+Run the static regression checks first:
 
 ```bash
-bash -n scripts/workspace-maintenance/*.sh
+bash scripts/workspace-maintenance/test_workspace_maintenance.sh
 ```
 
-Then run the discovery and inventory controls with an explicit output directory. For GitHub checks, use an already-authorized `gh` session and review the resulting TSV files before taking any action:
+Then run the controlled current-repository diagnostics. For GitHub checks, use an already-authorized `gh` session and review the resulting ignored TSV files before taking any action:
 
 ```bash
-scripts/workspace-maintenance/historical_discovery.sh ./audit-output/historical-discovery.tsv
-scripts/workspace-maintenance/inventory_historical_automation.sh ./audit-output/automation-inventory.tsv
-scripts/workspace-maintenance/check_workflows.sh ./audit-output/repos.tsv ./audit-output/workflow-status.tsv
-scripts/workspace-maintenance/verify_current_project_integrations.sh
+WORKSPACE_OUTPUT_DIR=reports/private/workspace-maintenance scripts/workspace-maintenance/daily_maintenance.sh
 ```
 
-The daily runner is designed for the established `/home/ubuntu/github-workspace` layout. Its output is machine-readable under `checkpoints/`, with per-stage logs under `checkpoints/daily_logs/`. Review failures rather than suppressing them; the runner intentionally continues through all bounded stages so the final TSV contains a complete picture.
+The daily runner writes machine-readable local output under `reports/private/workspace-maintenance/`. Review failures rather than suppressing them; the runner continues through bounded stages so the final TSV contains a complete picture.

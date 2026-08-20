@@ -50,6 +50,13 @@ jobs:
             "scripts/test_record_automation_run.py"
             "scripts/record_terminal_history_metadata.py"
             "scripts/test_record_terminal_history_metadata.py"
+            "scripts/workspace-maintenance/workspace_common.sh"
+            "scripts/workspace-maintenance/historical_discovery.sh"
+            "scripts/workspace-maintenance/inventory_historical_automation.sh"
+            "scripts/workspace-maintenance/check_workflows.sh"
+            "scripts/workspace-maintenance/verify_current_project_integrations.sh"
+            "scripts/workspace-maintenance/daily_maintenance.sh"
+            "scripts/workspace-maintenance/test_workspace_maintenance.sh"
           )
           for path in "${required[@]}"; do
             test -f "$path"
@@ -70,6 +77,7 @@ jobs:
         run: |
           python scripts/test_record_automation_run.py
           python scripts/test_record_terminal_history_metadata.py
+          bash scripts/workspace-maintenance/test_workspace_maintenance.sh
 
       - name: Validate local configuration contracts and security
         shell: bash

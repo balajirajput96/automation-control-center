@@ -52,9 +52,13 @@
 - [x] Replace stale Google Drive folder references in scheduled prompts and static validation with the currently verified private Automation Control Center folder.
 - [x] Restore Gemini CLI's supported API-key execution path after its persisted individual OAuth profile was rejected by the provider.
 - [x] Publish a non-secret machine-readable execution record from the existing GitHub Actions health workflow.
-- [x] Assess the private repository's reported dependency alerts and apply only low-risk, test-validated remediation; the available major-toolchain Dependabot update was deliberately not merged.
-- [ ] Revalidate Dependabot pull request #5 on a runner that can complete the command-center production build before approving its Vite and pnpm major-version changes.
+- [x] Assess the private repository's reported dependency alerts and apply only low-risk, test-validated remediation; Dependabot pull request #5 was merged only after full isolated validation.
+- [x] Revalidate Dependabot pull request #5 on a runner that can complete the command-center production build before approving its Vite and pnpm major-version changes.
 - [x] Inventory non-secret references for authenticated CLIs, connectors, schedules, workflow records, and terminal-history locations without exporting credentials or raw history.
 - [x] Design and implement a secret-safe continuity runbook for daily maintenance, CLI re-authentication, and history-derived reproducibility.
 - [x] Verify and privately publish the improved daily maintenance model while retaining credentials only in their approved local or provider-managed stores.
 - [x] Run the current bounded private maintenance review across repository, schedule, approved CLIs, Drive, n8n, execution records, templates, and tracked-secret protections.
+- [x] Re-run the protected full-repository audit across source paths, dependencies, tests, workflows, CLIs, connectors, API boundaries, and declared monitoring integrations.
+- [ ] Repair only confirmed low-risk issues from the renewed audit, revalidate affected workflows, and publish verified private changes.
+- [x] Complete final isolated runtime validation of Dependabot PR #5 and merge it only if its validated toolchain update remains clean.
+- [x] Repair merged workspace-maintenance scripts so they use current project paths, metadata-only history inspection, opt-in cleanup, and accurate non-secret CLI readiness checks.
