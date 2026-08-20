@@ -105,6 +105,17 @@ jobs:
         run: |
           set -Eeuo pipefail
           git fetch --no-tags origin automation-state:refs/remotes/origin/automation-state || true
+          expected_previous=$(jq -r '.execution_number // 0' "$RUNNER_TEMP/previous-state.json")
+          if ! [[ "$expected_previous" =~ ^[0-9]+$ ]]; then expected_previous=0; fi
+          remote_previous=0
+          if git cat-file -e refs/remotes/origin/automation-state:state/execution-state.json 2>/dev/null; then
+            remote_previous=$(git show refs/remotes/origin/automation-state:state/execution-state.json | jq -r '.execution_number // 0')
+            if ! [[ "$remote_previous" =~ ^[0-9]+$ ]]; then remote_previous=0; fi
+          fi
+          if [ "$remote_previous" -ne "$expected_previous" ]; then
+            echo "State advanced from execution $expected_previous to $remote_previous while this run was auditing; refusing to overwrite newer state."
+            exit 0
+          fi
           chmod +x scripts/github-account-audit/bootstrap_state_branch.sh
           scripts/github-account-audit/bootstrap_state_branch.sh automation-state
           rm -rf state artifacts
