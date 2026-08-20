@@ -57,3 +57,4 @@
 - [x] Inventory non-secret references for authenticated CLIs, connectors, schedules, workflow records, and terminal-history locations without exporting credentials or raw history.
 - [x] Design and implement a secret-safe continuity runbook for daily maintenance, CLI re-authentication, and history-derived reproducibility.
 - [x] Verify and privately publish the improved daily maintenance model while retaining credentials only in their approved local or provider-managed stores.
+- [x] Run the current bounded private maintenance review across repository, schedule, approved CLIs, Drive, n8n, execution records, templates, and tracked-secret protections.
