@@ -39,3 +39,8 @@
 - [x] Recheck protected n8n readiness, workflow errors, GitHub Actions, Google Drive, Gemini Spark, and Julius signals.
 - [x] Check for a scoped read-only Antigravity audit; the `agy` executable is unavailable in this sandbox.
 - [x] Apply only validated low-risk local improvements and static validation; private publication remains pending.
+- [x] Inventory repository branches, scripts, workflows, dependencies, TODOs, and incomplete integration paths.
+- [x] Run practical build, test, workflow, runtime, GitHub, Gemini, Google, n8n, and connector diagnostics.
+- [x] Inspect Antigravity, Gemini CLI, Datadog, and other repository-declared integrations where available.
+- [x] Repair only validated low-risk engineering issues and revalidate the integrated reachable system.
+- [x] Restore the requested daily automation schedule because its current status is paused.

@@ -3,6 +3,15 @@ import { ensureIntegrationRegistry, getCommandCenterSnapshot, listDeploymentTarg
 import { protectedProcedure, router } from "../_core/trpc";
 import { z } from "zod";
 
+export const credentialManagementLinks = {
+  github: { url: "https://github.com/settings/personal-access-tokens", label: "Manage GitHub personal access tokens" },
+  gmail: { url: "https://console.cloud.google.com/apis/credentials", label: "Manage Google OAuth credentials" },
+  instagram: { url: "https://developers.facebook.com/apps/", label: "Manage Meta developer app credentials" },
+  vercel: { url: "https://vercel.com/account/tokens", label: "Manage Vercel access tokens" },
+  cloudflare: { url: "https://dash.cloudflare.com/profile/api-tokens", label: "Manage Cloudflare API tokens" },
+  google_cloud: { url: "https://console.cloud.google.com/apis/credentials", label: "Manage Google Cloud credentials" },
+} as const;
+
 export const commandCenterRouter = router({
   dashboard: protectedProcedure.query(async ({ ctx }) => {
     await ensureIntegrationRegistry(ctx.user.id);
@@ -40,7 +49,7 @@ export const commandCenterRouter = router({
     ].map(([service, detail]) => updateIntegrationHealth(ctx.user.id, service, { connectionStatus: "action_required", lastError: detail, permissionSummary: detail })),
     );
     const registry = await listIntegrationsForOwner(ctx.user.id);
-    return registry.map(item => ({ service: item.service, displayName: item.displayName, category: item.category, connectionStatus: item.connectionStatus, detail: item.permissionSummary || item.lastError || "No connection detail recorded.", lastHealthCheckAt: item.lastHealthCheckAt, verificationState: item.connectionStatus === "action_required" && item.lastError ? "unavailable_configured_boundary" as const : item.lastHealthCheckAt ? "provider_verified" as const : "registry_default" as const }));
+    return registry.map(item => ({ service: item.service, displayName: item.displayName, category: item.category, connectionStatus: item.connectionStatus, detail: item.permissionSummary || item.lastError || "No connection detail recorded.", lastHealthCheckAt: item.lastHealthCheckAt, verificationState: item.connectionStatus === "action_required" && item.lastError ? "unavailable_configured_boundary" as const : item.lastHealthCheckAt ? "provider_verified" as const : "registry_default" as const, credentialManagementUrl: credentialManagementLinks[item.service as keyof typeof credentialManagementLinks]?.url ?? null, credentialManagementLabel: credentialManagementLinks[item.service as keyof typeof credentialManagementLinks]?.label ?? null }));
   }),
   logs: protectedProcedure.input(z.object({ query: z.string().trim().max(160).optional(), outcome: z.enum(["success", "pending", "failure", "denied"]).optional() })).query(({ ctx, input }) => searchAuditEventsForOwner(ctx.user.id, input)),
   deploymentTargets: protectedProcedure.query(({ ctx }) => listDeploymentTargetsForOwner(ctx.user.id)),

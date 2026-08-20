@@ -83,3 +83,5 @@
 - [x] Add idempotent workflow schedule preflight records and execution-audit prerequisites before enabling any recurring callback.
 - [x] Improve video-job readiness and review states with explicit external-render handoff boundaries.
 - [x] Surface schedule preflight and video external-handoff audit states in the workflow and video control interfaces.
+- [x] Run a protected full-project engineering audit across dependencies, type checks, tests, build, migrations, and repository-declared integrations.
+- [x] Repair and document only validated low-risk command-center issues discovered by the audit.
