@@ -48,7 +48,7 @@
 - [x] Restore supported Gemini, Jules, and Antigravity CLI availability where compatible with this environment, then request takeover only for an opened OAuth sign-in flow.
 - [x] Create a secret-safe inventory of accessible historical automation assets, repositories, schedules, and CLI integration state.
 - [x] Classify reusable automation components and identify validated low-risk gaps in execution recording, self-healing, and scheduled maintenance.
-- [ ] Implement, test, document, and privately publish approved low-risk persistence improvements without exposing credentials.
+- [x] Implement, test, document, and privately publish approved low-risk persistence improvements without exposing credentials.
 - [x] Replace stale Google Drive folder references in scheduled prompts and static validation with the currently verified private Automation Control Center folder.
 - [x] Restore Gemini CLI's supported API-key execution path after its persisted individual OAuth profile was rejected by the provider.
-- [ ] Publish a non-secret machine-readable execution record from the existing GitHub Actions health workflow.
+- [x] Publish a non-secret machine-readable execution record from the existing GitHub Actions health workflow.
