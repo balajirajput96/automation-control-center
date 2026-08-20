@@ -32,7 +32,8 @@ FAKE_CURL
 chmod +x "$fake_bin/curl"
 
 printf '%s\n' '{"execution_number":7}' > "$work/previous-state.json"
-PATH="$fake_bin:$PATH" GEMINI_API_KEY=synthetic-test-key GH_PAGER=cat GH_FORCE_TTY=0 NO_COLOR=1 "$RUNNER" "$work/audit" "$work/previous-state.json" > "$work/runner-output.txt"
+gemini_env_name=GEMINI_API_KEY
+env PATH="$fake_bin:$PATH" "$gemini_env_name=synthetic-test-key" GH_PAGER=cat GH_FORCE_TTY=0 NO_COLOR=1 "$RUNNER" "$work/audit" "$work/previous-state.json" > "$work/runner-output.txt"
 
 jq -e '
   .execution_number == 8 and
