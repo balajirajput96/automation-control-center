@@ -1,5 +1,8 @@
 # Project TODO
 
+- [x] Resolve the Jules region-availability blocker through the supported Jules Tools CLI path and verify its persistent OAuth session with read-only repository discovery.
+- [x] Verify and preserve persistent Antigravity CLI, Gemini CLI, and GitHub CLI authentication; browser takeover was not required for these saved sessions.
+
 - [x] Define the relational data model for projects, agents, conversations, workflows, schedules, executions, integrations, assets, and audit logs.
 - [x] Add database migrations and typed server query helpers for the core command-center entities.
 - [x] Build a responsive blueprint-inspired authenticated command-center shell with the complete module navigation.
