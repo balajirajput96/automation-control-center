@@ -44,3 +44,5 @@
 - [x] Inspect Antigravity, Gemini CLI, Datadog, and other repository-declared integrations where available.
 - [x] Repair only validated low-risk engineering issues and revalidate the integrated reachable system.
 - [x] Restore the requested daily automation schedule because its current status is paused.
+- [x] Verify Antigravity, Jules, Gemini CLI, and GitHub CLI authentication, requesting browser takeover only where an interactive login is required.
+- [x] Restore supported Gemini, Jules, and Antigravity CLI availability where compatible with this environment, then request takeover only for an opened OAuth sign-in flow.
