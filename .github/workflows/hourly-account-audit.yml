@@ -55,7 +55,9 @@ jobs:
           fi
 
       - name: Run secret-safe repository inventory
+        id: audit-run
         if: steps.cycle-guard.outputs.continue == 'true'
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.AUDIT_GH_TOKEN || github.token }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -64,10 +66,30 @@ jobs:
           set -Eeuo pipefail
           chmod +x scripts/github-account-audit/run_audit.sh
           mkdir -p "$RUNNER_TEMP/audit"
+          set +e
           scripts/github-account-audit/run_audit.sh "$RUNNER_TEMP/audit" "$RUNNER_TEMP/previous-state.json"
+          audit_rc=$?
+          set -e
+          if [ "$audit_rc" -ne 0 ]; then
+            previous_number=$(jq -r '.execution_number // 0' "$RUNNER_TEMP/previous-state.json" 2>/dev/null || printf '0')
+            if ! [[ "$previous_number" =~ ^[0-9]+$ ]]; then previous_number=0; fi
+            execution_number=$((previous_number + 1))
+            if [ "$execution_number" -gt 2400 ]; then execution_number=2400; fi
+            printf 'repo\tdefault_branch\tupdated_at\thtml_url\n' > "$RUNNER_TEMP/audit/repos.tsv"
+            printf 'repo\tpr_number\ttitle\thead_ref\tbase_ref\thead_sha\tdraft\tmergeable_state\tupdated_at\turl\texcluded_jules\n' > "$RUNNER_TEMP/audit/open-prs.tsv"
+            printf 'repo\trun_id\tstatus\tconclusion\tcreated_at\tupdated_at\thead_branch\tworkflow\tevent\turl\n' > "$RUNNER_TEMP/audit/recent-runs.tsv"
+            cp "$RUNNER_TEMP/audit/recent-runs.tsv" "$RUNNER_TEMP/audit/recent-failures.tsv"
+            printf 'audit runner failed before completing its normal artifact contract; inspect this workflow run log.\n' > "$RUNNER_TEMP/audit/blocker.txt"
+            printf 'Gemini analysis skipped because the audit runner failed before classification.\n' > "$RUNNER_TEMP/audit/gemini-analysis.txt"
+            jq -n \
+              --argjson execution_number "$execution_number" \
+              --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+              '{execution_number:$execution_number,timestamp:$timestamp,repository:"balajirajput96/automation-control-center",repository_owner:"balajirajput96",task:"hourly_github_audit_continuation",workflow:"Hourly GitHub audit continuation",cli_connector_api_used:"GitHub Actions; gh REST API; optional Gemini REST API",action:"persist_fallback_after_audit_runner_failure",result:"failed",failure_category:"runner_failure",recovery_attempt:"fallback_state_and_empty_artifact_contract_written_before_failure_propagation",validation_status:"fallback_state_written",remaining_blocker:"inspect_workflow_log_for_audit_runner_failure",next_recommended_action:"repair_the_reproducible_runner_failure_before_resuming_normal_inventory"}' > "$RUNNER_TEMP/audit/execution-state.json"
+          fi
+          exit "$audit_rc"
 
       - name: Publish audit artifacts
-        if: steps.cycle-guard.outputs.continue == 'true'
+        if: always() && steps.cycle-guard.outputs.continue == 'true' && steps.audit-run.outcome != 'skipped'
         uses: actions/upload-artifact@v4
         with:
           name: hourly-audit-${{ github.run_number }}
@@ -76,7 +98,7 @@ jobs:
           retention-days: 30
 
       - name: Persist execution state on dedicated branch
-        if: steps.cycle-guard.outputs.continue == 'true'
+        if: always() && steps.cycle-guard.outputs.continue == 'true' && steps.audit-run.outcome != 'skipped'
         env:
           GH_TOKEN: ${{ secrets.AUDIT_GH_TOKEN || github.token }}
         shell: bash
@@ -87,8 +109,16 @@ jobs:
           scripts/github-account-audit/bootstrap_state_branch.sh automation-state
           rm -rf state artifacts
           mkdir -p state artifacts
+          for artifact in repos.tsv open-prs.tsv recent-runs.tsv recent-failures.tsv gemini-analysis.txt; do
+            test -f "$RUNNER_TEMP/audit/$artifact" || : > "$RUNNER_TEMP/audit/$artifact"
+          done
           cp "$RUNNER_TEMP/audit/execution-state.json" state/execution-state.json
-          cp "$RUNNER_TEMP/audit/execution-state.json" "state/execution-${GITHUB_RUN_NUMBER}.json"
+          execution_number=$(jq -r '.execution_number' "$RUNNER_TEMP/audit/execution-state.json")
+          if ! [[ "$execution_number" =~ ^[0-9]+$ ]] || [ "$execution_number" -lt 1 ] || [ "$execution_number" -gt 2400 ]; then
+            echo "invalid execution number in generated state: $execution_number" >&2
+            exit 1
+          fi
+          cp "$RUNNER_TEMP/audit/execution-state.json" "state/execution-${execution_number}.json"
           cp "$RUNNER_TEMP/audit/repos.tsv" artifacts/repos.tsv
           cp "$RUNNER_TEMP/audit/open-prs.tsv" artifacts/open-prs.tsv
           cp "$RUNNER_TEMP/audit/recent-runs.tsv" artifacts/recent-runs.tsv
@@ -101,6 +131,13 @@ jobs:
           if git diff --cached --quiet; then
             echo 'No state change to commit.'
           else
-            git commit -m "chore: persist hourly audit execution $GITHUB_RUN_NUMBER"
+            git commit -m "chore: persist hourly audit execution ${execution_number}"
             git push origin HEAD:automation-state
           fi
+
+      - name: Propagate inventory failure after state persistence
+        if: always() && steps.audit-run.outcome == 'failure'
+        shell: bash
+        run: |
+          echo 'The audit runner failed; its fallback state was persisted before propagating failure.' >&2
+          exit 1

@@ -35,13 +35,14 @@ done < <(tail -n +2 "$repos")
 
 head -n 1 "$runs" > "$fails"
 tail -n +2 "$runs" | awk -F '\t' 'BEGIN{OFS="\t"} $4=="failure" || $4=="timed_out" || $4=="startup_failure" || ($3!="completed" && $3!="") {print}' >> "$fails"
+failure_row_count=$(awk 'END{print NR-1}' "$fails")
 
 previous_number=$(jq -r '.execution_number // 0' "$previous_state" 2>/dev/null || printf '0')
 if ! [[ "$previous_number" =~ ^[0-9]+$ ]]; then previous_number=0; fi
 execution_number=$((previous_number + 1))
 if [ "$execution_number" -gt 2400 ]; then execution_number=2400; fi
 
-if [ -n "${GEMINI_API_KEY:-}" ] && [ -s "$fails" ]; then
+if [ -n "${GEMINI_API_KEY:-}" ] && [ "$failure_row_count" -gt 0 ]; then
   summary=$(awk -F '\t' 'NR>1{print $1 ":" $4}' "$fails" | head -n 30 | tr '\n' ';' | sed 's/"/\\"/g')
   payload=$(jq -n --arg text "Classify these GitHub audit failure rows concisely. Do not suggest credential changes or bypasses. Rows: $summary" '{contents:[{parts:[{text:$text}]}]}')
   gemini_ok=false
