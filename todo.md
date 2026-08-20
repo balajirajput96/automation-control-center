@@ -54,3 +54,6 @@
 - [x] Publish a non-secret machine-readable execution record from the existing GitHub Actions health workflow.
 - [x] Assess the private repository's reported dependency alerts and apply only low-risk, test-validated remediation; the available major-toolchain Dependabot update was deliberately not merged.
 - [ ] Revalidate Dependabot pull request #5 on a runner that can complete the command-center production build before approving its Vite and pnpm major-version changes.
+- [x] Inventory non-secret references for authenticated CLIs, connectors, schedules, workflow records, and terminal-history locations without exporting credentials or raw history.
+- [x] Design and implement a secret-safe continuity runbook for daily maintenance, CLI re-authentication, and history-derived reproducibility.
+- [ ] Verify and privately publish the improved daily maintenance model while retaining credentials only in their approved local or provider-managed stores.

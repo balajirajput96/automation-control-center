@@ -45,8 +45,11 @@ jobs:
             "docs/gemini-interactions-migration.md"
             "docs/live-readiness-audit.md"
             "docs/historical-automation-inventory.md"
+            "docs/credential-continuity-runbook.md"
             "scripts/record_automation_run.py"
             "scripts/test_record_automation_run.py"
+            "scripts/record_terminal_history_metadata.py"
+            "scripts/test_record_terminal_history_metadata.py"
           )
           for path in "${required[@]}"; do
             test -f "$path"
@@ -60,12 +63,13 @@ jobs:
       - name: Validate Python scripts syntax
         shell: bash
         run: |
-          python -m py_compile scripts/test_gemini.py scripts/validate_n8n_template.py scripts/record_automation_run.py scripts/test_record_automation_run.py
+          python -m py_compile scripts/test_gemini.py scripts/validate_n8n_template.py scripts/record_automation_run.py scripts/test_record_automation_run.py scripts/record_terminal_history_metadata.py scripts/test_record_terminal_history_metadata.py
 
       - name: Validate execution record contract
         shell: bash
         run: |
           python scripts/test_record_automation_run.py
+          python scripts/test_record_terminal_history_metadata.py
 
       - name: Validate local configuration contracts and security
         shell: bash
@@ -93,6 +97,8 @@ jobs:
         run: |
           set -euo pipefail
           ! git ls-files | grep -E '(^|/)(\.env|.*\.(key|pem|p12|pfx))$'
+          secret_pattern="(BEGIN [A-Z ]*PRIVATE KEY|GEMINI_API""_KEY=[^[:space:]]+|GH""_TOKEN=[^[:space:]]+|Authorization: Bearer [A-Za-z0-9._-]+)"
+          ! git grep -nE "$secret_pattern" -- .
 
       - name: Write secret-safe execution record
         if: always()

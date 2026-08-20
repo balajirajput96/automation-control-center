@@ -16,6 +16,7 @@ This inventory preserves the accessible, useful automation state discovered duri
 | `julius/scheduled-analysis-prompt.md` | Prepared — preserve | Read-only recurring analysis definition | Jules browser dashboard remains region-limited, while the authenticated Jules CLI can list connected repositories. |
 | `antigravity/` prompts and runners | Working — preserve | Local agent review instructions and validation boundaries | Antigravity CLI authentication is persistent; no workspace is trusted automatically. |
 | `reports/private/automation-execution.jsonl` | Working — new local record | Machine-readable, ignored execution history for authorized maintenance runs | Created only by an explicit local command; it is not committed or uploaded automatically. |
+| `scripts/record_terminal_history_metadata.py` | Working — new local record | Metadata-only inventory of shell-history files | Records file path, size, modification time, and availability without reading command content. |
 
 ## Historical sources reviewed safely
 
@@ -24,6 +25,8 @@ The review found two primary private repositories, a small Bash history source, 
 ## Controlled daily operating model
 
 The enabled daily control review remains the primary low-frequency orchestration path. Each run should use the existing reusable assets in this order: inspect repository state, validate static contracts, check authorized provider readiness, record a secret-safe result locally, document or repair only confirmed low-risk issues, validate again, and publish only private verified changes. The record schema is implemented by `scripts/record_automation_run.py`. The existing GitHub Actions health workflow separately retains a non-secret execution-record artifact for 30 days.
+
+The credential-continuity operating procedure is recorded in `docs/credential-continuity-runbook.md`. It preserves provider-managed and local secure login state by reference, never by copying credentials or raw terminal history into the repository.
 
 ## Known boundaries
 
