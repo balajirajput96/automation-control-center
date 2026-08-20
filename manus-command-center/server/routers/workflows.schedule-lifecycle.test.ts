@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   addAuditEvent: vi.fn(),
   deleteScheduleForOwner: vi.fn(),
+  listScheduleExecutionsForOwner: vi.fn(),
   setScheduleStateForOwner: vi.fn(),
   updateScheduleForOwner: vi.fn(),
 }));
@@ -47,5 +48,27 @@ describe("schedule lifecycle procedure", () => {
     await expect(scheduleCaller(42).update({ id: 7, workflowId: 3, name: "Event digest", recurrenceType: "event", timezone: "UTC", recurrenceConfig: {} })).rejects.toThrow("eventName");
     await scheduleCaller(42).update({ id: 7, workflowId: 3, name: "Weekly digest", recurrenceType: "weekly", timezone: "UTC", recurrenceConfig: { dayOfWeek: 1 } });
     expect(mocks.updateScheduleForOwner).toHaveBeenCalledWith(42, 7, expect.objectContaining({ recurrenceConfig: { dayOfWeek: 1 } }));
+  });
+
+  it("accepts each supported recurrence type through the paused definition lifecycle", async () => {
+    const definitions = [
+      { recurrenceType: "once" as const, recurrenceConfig: { runAt: "2026-08-20T09:00:00Z" } },
+      { recurrenceType: "hourly" as const },
+      { recurrenceType: "daily" as const },
+      { recurrenceType: "weekly" as const, recurrenceConfig: { dayOfWeek: 1 } },
+      { recurrenceType: "monthly" as const, recurrenceConfig: { dayOfMonth: 15 } },
+      { recurrenceType: "cron" as const, cronExpression: "0 0 9 * * *" },
+      { recurrenceType: "event" as const, recurrenceConfig: { eventName: "content.project.approved" } },
+    ];
+    for (const definition of definitions) {
+      await expect(scheduleCaller(42).update({ id: 7, workflowId: 3, name: `${definition.recurrenceType} definition`, timezone: "UTC", ...definition })).resolves.toMatchObject({ status: "paused" });
+    }
+    expect(mocks.updateScheduleForOwner).toHaveBeenCalledTimes(definitions.length);
+  });
+
+  it("lists callback execution history only through the authenticated owner scope", async () => {
+    mocks.listScheduleExecutionsForOwner.mockResolvedValue([{ id: 4, ownerId: 42, scheduleId: 7, status: "blocked" }]);
+    await expect(scheduleCaller(42).history({ scheduleId: 7 })).resolves.toEqual([{ id: 4, ownerId: 42, scheduleId: 7, status: "blocked" }]);
+    expect(mocks.listScheduleExecutionsForOwner).toHaveBeenCalledWith(42, 7);
   });
 });

@@ -143,6 +143,17 @@ export const schedules = mysqlTable("schedules", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, table => [index("schedules_owner_status_idx").on(table.ownerId, table.status), index("schedules_task_uid_idx").on(table.scheduleCronTaskUid)]);
 
+export const scheduleExecutions = mysqlTable("schedule_executions", {
+  id: int("id").autoincrement().primaryKey(),
+  scheduleId: int("scheduleId").notNull(),
+  ownerId: int("ownerId").notNull(),
+  taskUid: varchar("taskUid", { length: 65 }).notNull(),
+  idempotencyKey: varchar("idempotencyKey", { length: 180 }).notNull(),
+  status: mysqlEnum("status", ["blocked", "skipped", "duplicate"]).notNull(),
+  detail: text("detail").notNull(),
+  receivedAt: timestamp("receivedAt").defaultNow().notNull(),
+}, table => [uniqueIndex("schedule_executions_schedule_key_unique").on(table.scheduleId, table.idempotencyKey), index("schedule_executions_owner_received_idx").on(table.ownerId, table.receivedAt)]);
+
 export const niftyWatchDefinitions = mysqlTable("nifty_watch_definitions", {
   id: int("id").autoincrement().primaryKey(),
   ownerId: int("ownerId").notNull(),

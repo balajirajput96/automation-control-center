@@ -8,7 +8,7 @@ import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { sdk } from "./sdk";
-import { addAuditEvent, getScheduleForCronTaskUid } from "../db";
+import { addAuditEvent, recordScheduledCallbackForTask } from "../db";
 import { serveStatic, setupVite } from "./vite";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -42,10 +42,11 @@ async function startServer() {
     try {
       const user = await sdk.authenticateRequest(req);
       if (!user.isCron || !user.taskUid) return res.status(403).json({ error: "cron-only" });
-      const schedule = await getScheduleForCronTaskUid(user.taskUid);
-      if (!schedule) return res.json({ ok: true, skipped: "orphan" });
-      await addAuditEvent(schedule.ownerId, { action: "schedule.callback_blocked", resourceType: "schedule", resourceId: String(schedule.id), outcome: "pending", detail: `Authenticated callback for task ${user.taskUid} was received; execution remains blocked until an idempotent execution adapter is configured.` });
-      return res.json({ ok: true, status: "blocked_pending_execution_adapter", scheduleId: schedule.id });
+      const callback = await recordScheduledCallbackForTask(user.taskUid);
+      if (!callback.schedule) return res.json({ ok: true, skipped: "orphan" });
+      const action = callback.status === "duplicate" ? "schedule.callback_duplicate" : callback.status === "skipped" ? "schedule.callback_skipped" : "schedule.callback_blocked";
+      await addAuditEvent(callback.schedule.ownerId, { action, resourceType: "schedule", resourceId: String(callback.schedule.id), outcome: callback.status === "blocked" ? "pending" : "success", detail: `Authenticated callback claimed with idempotency key ${callback.idempotencyKey}; ${callback.status === "blocked" ? "execution remains blocked until an adapter is configured." : callback.status === "duplicate" ? "duplicate delivery was not executed." : "the schedule was not active."}` });
+      return res.json({ ok: true, status: callback.status === "blocked" ? "blocked_pending_execution_adapter" : callback.status, scheduleId: callback.schedule.id, idempotencyKey: callback.idempotencyKey });
     } catch (error) {
       return res.status(500).json({ error: error instanceof Error ? error.message : "scheduled callback failed", timestamp: new Date().toISOString() });
     }

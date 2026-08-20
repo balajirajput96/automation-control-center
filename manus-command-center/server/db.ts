@@ -17,6 +17,7 @@ import {
   niftyAlertDefinitions,
   niftyWatchDefinitions,
   schedules,
+  scheduleExecutions,
   users,
   workflowRunEvents,
   workflowRuns,
@@ -249,6 +250,45 @@ export async function listSchedulesForOwner(ownerId: number) {
 export async function getScheduleForCronTaskUid(taskUid: string) {
   const db = await requireDb();
   return (await db.select().from(schedules).where(eq(schedules.scheduleCronTaskUid, taskUid)).limit(1))[0] ?? null;
+}
+
+export function createScheduleCallbackIdempotencyKey(taskUid: string, receivedAt = new Date()) {
+  const minuteWindow = receivedAt.toISOString().slice(0, 16);
+  return `${taskUid}:${minuteWindow}`;
+}
+
+export function getScheduledCallbackStatus(scheduleStatus: "active" | "paused" | "failed" | "completed") {
+  return scheduleStatus === "active" ? "blocked" as const : "skipped" as const;
+}
+
+export async function recordScheduledCallbackForTask(taskUid: string, receivedAt = new Date()) {
+  const db = await requireDb();
+  const schedule = await getScheduleForCronTaskUid(taskUid);
+  if (!schedule) return { schedule: null, status: "skipped" as const, idempotencyKey: createScheduleCallbackIdempotencyKey(taskUid, receivedAt), duplicate: false };
+  const idempotencyKey = createScheduleCallbackIdempotencyKey(taskUid, receivedAt);
+  const existing = await db.select({ id: scheduleExecutions.id, status: scheduleExecutions.status })
+    .from(scheduleExecutions).where(and(eq(scheduleExecutions.scheduleId, schedule.id), eq(scheduleExecutions.idempotencyKey, idempotencyKey))).limit(1);
+  if (existing[0]) return { schedule, status: "duplicate" as const, idempotencyKey, duplicate: true };
+  const status = getScheduledCallbackStatus(schedule.status);
+  const detail = status === "blocked"
+    ? "Authenticated callback received and claimed idempotently; no execution adapter is configured."
+    : `Authenticated callback received while the schedule is ${schedule.status}; no execution was started.`;
+  try {
+    await db.insert(scheduleExecutions).values({ scheduleId: schedule.id, ownerId: schedule.ownerId, taskUid, idempotencyKey, status, detail, receivedAt });
+  } catch (error) {
+    const raced = await db.select({ id: scheduleExecutions.id }).from(scheduleExecutions)
+      .where(and(eq(scheduleExecutions.scheduleId, schedule.id), eq(scheduleExecutions.idempotencyKey, idempotencyKey))).limit(1);
+    if (!raced[0]) throw error;
+    return { schedule, status: "duplicate" as const, idempotencyKey, duplicate: true };
+  }
+  await db.update(schedules).set({ lastExecutionAt: receivedAt }).where(eq(schedules.id, schedule.id));
+  return { schedule, status, idempotencyKey, duplicate: false };
+}
+
+export async function listScheduleExecutionsForOwner(ownerId: number, scheduleId?: number) {
+  const db = await requireDb();
+  const where = scheduleId ? and(eq(scheduleExecutions.ownerId, ownerId), eq(scheduleExecutions.scheduleId, scheduleId)) : eq(scheduleExecutions.ownerId, ownerId);
+  return db.select().from(scheduleExecutions).where(where).orderBy(desc(scheduleExecutions.receivedAt)).limit(100);
 }
 
 export async function listNiftyWatchDefinitionsForOwner(ownerId: number) {
@@ -485,6 +525,15 @@ export async function listVideoJobsForOwner(ownerId: number) {
   return db.select().from(videoJobs).where(eq(videoJobs.ownerId, ownerId)).orderBy(desc(videoJobs.updatedAt));
 }
 
+export function assertManagedVideoAssetReference(slot: "source" | "thumbnail" | "output", asset: { contentProjectId: number | null; kind: string } | undefined, contentProjectId?: number | null) {
+  // The owner filter belongs to the lookup. A missing row is intentionally indistinguishable
+  // from a non-existent row so one owner cannot discover another owner's managed assets.
+  if (!asset) throw new Error("Managed media asset not found");
+  if (contentProjectId && asset.contentProjectId !== contentProjectId) throw new Error("Managed media asset is not attached to this content project");
+  if (slot === "thumbnail" && !["image", "thumbnail"].includes(asset.kind)) throw new Error("Thumbnail slot requires an image or thumbnail asset");
+  if ((slot === "source" || slot === "output") && asset.kind !== "video") throw new Error(`${slot === "source" ? "Source" : "Output"} slot requires a video asset`);
+}
+
 export async function createVideoJobForOwner(ownerId: number, values: { title: string; outputFormat: "vertical_9_16" | "landscape_16_9" | "square_1_1"; targetDurationSeconds: number; contentProjectId?: number | null; editPlan?: unknown; sourceAssetId?: number | null; thumbnailAssetId?: number | null; outputAssetId?: number | null; storageMetadata?: unknown }) {
   const db = await requireDb();
   if (values.contentProjectId) {
@@ -494,10 +543,7 @@ export async function createVideoJobForOwner(ownerId: number, values: { title: s
   for (const [slot, assetId] of [["source", values.sourceAssetId], ["thumbnail", values.thumbnailAssetId], ["output", values.outputAssetId]] as const) {
     if (typeof assetId !== "number") continue;
     const asset = await db.select({ id: mediaAssets.id, contentProjectId: mediaAssets.contentProjectId, kind: mediaAssets.kind }).from(mediaAssets).where(and(eq(mediaAssets.id, assetId), eq(mediaAssets.ownerId, ownerId))).limit(1);
-    if (!asset[0]) throw new Error("Managed media asset not found");
-    if (values.contentProjectId && asset[0].contentProjectId !== values.contentProjectId) throw new Error("Managed media asset is not attached to this content project");
-    if (slot === "thumbnail" && !["image", "thumbnail"].includes(asset[0].kind)) throw new Error("Thumbnail slot requires an image or thumbnail asset");
-    if ((slot === "source" || slot === "output") && asset[0].kind !== "video") throw new Error(`${slot === "source" ? "Source" : "Output"} slot requires a video asset`);
+    assertManagedVideoAssetReference(slot, asset[0], values.contentProjectId);
   }
   await db.insert(videoJobs).values({ ownerId, ...values, status: "draft" });
 }

@@ -1,7 +1,7 @@
 import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { auditLogs, schedules, workflowRuns, workflows } from "../../drizzle/schema";
-import { addAuditEvent, createWorkflowRunForOwner, createWorkflowTemplateForOwner, deleteScheduleForOwner, getDb, listSchedulesForOwner, listWorkflowRunsForOwner, listWorkflowTemplatesForOwner, listWorkflowsForOwner, setScheduleStateForOwner, updateScheduleForOwner, updateWorkflowDefinitionForOwner } from "../db";
+import { addAuditEvent, createWorkflowRunForOwner, createWorkflowTemplateForOwner, deleteScheduleForOwner, getDb, listScheduleExecutionsForOwner, listSchedulesForOwner, listWorkflowRunsForOwner, listWorkflowTemplatesForOwner, listWorkflowsForOwner, setScheduleStateForOwner, updateScheduleForOwner, updateWorkflowDefinitionForOwner } from "../db";
 import { protectedProcedure, router } from "../_core/trpc";
 
 const nodeSchema = z.object({ id: z.string().min(1).max(100), type: z.enum(["trigger", "agent", "http", "condition", "loop", "parallel", "approval", "publish", "deploy", "storage"]), label: z.string().min(1).max(160), config: z.record(z.string(), z.unknown()).default({}) });
@@ -110,6 +110,7 @@ export const workflowRouter = router({
 
 export const scheduleRouter = router({
   list: protectedProcedure.query(({ ctx }) => listSchedulesForOwner(ctx.user.id)),
+  history: protectedProcedure.input(z.object({ scheduleId: z.number().int().positive().optional() }).optional()).query(({ ctx, input }) => listScheduleExecutionsForOwner(ctx.user.id, input?.scheduleId)),
   preflights: protectedProcedure.query(async ({ ctx }) => {
     const db = await getDb();
     if (!db) throw new Error("Database is unavailable");

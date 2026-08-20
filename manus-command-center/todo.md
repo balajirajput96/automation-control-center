@@ -14,11 +14,11 @@
 - [x] Implement server-side model catalog discovery and a multi-model chat endpoint using authorized built-in providers.
 - [x] Reuse and adapt the supplied chat component for model selection, conversation selection, send states, and error states.
 - [ ] Implement workflow records, reusable templates, node/edge definitions, validation states, and execution history.
-- [ ] Build a true graph-based workflow canvas with editable nodes and edges that visibly represent sequential, parallel, conditional, and loop branches.
-- [ ] Implement schedule CRUD UI for one-time, hourly, daily, weekly, monthly, cron, and event-driven job definitions.
+- [x] Build a true graph-based workflow canvas with editable nodes and edges that visibly represent sequential, parallel, conditional, and loop branches.
+- [x] Implement schedule CRUD UI for one-time, hourly, daily, weekly, monthly, cron, and event-driven job definitions.
 - [x] Add edit/update UI for existing schedule definitions, including name, workflow, recurrence type, timezone, and cron expression when applicable.
 - [x] Add mode-appropriate schedule definition fields and validation for one-time, weekly, monthly, and event-driven schedules.
-- [ ] Add production-safe scheduled callback foundations with ownership checks, idempotency requirements, pause/resume states, and execution history.
+- [x] Add production-safe scheduled callback foundations with ownership checks, idempotency requirements, pause/resume states, and execution history.
 - [ ] Implement research and content project tracking for sources, outlines, scripts, storyboards, citations, metadata, and exports.
 - [x] Add structured citation records linked to content projects, with owner-scoped CRUD, section attribution, and regression tests.
 - [x] Add explicit content export records or history linked to exported assets, rather than relying only on stage labels and freeform notes.
@@ -27,16 +27,16 @@
 - [ ] Capture populated content-artifact UI verification with project, source, citation, and export records.
 - [ ] Implement secure media-asset metadata and storage references for images, audio, video, thumbnails, and vertical-video jobs.
 - [x] Add owner-scoped managed asset references and storage metadata to vertical-video jobs, including source, thumbnail, and output slots.
-- [ ] Add vertical-video asset-reference ownership and storage-metadata regression coverage.
+- [x] Add vertical-video asset-reference ownership and storage-metadata regression coverage.
 - [x] Enforce media upload kind/MIME compatibility and vertical-video slot-compatible asset kinds.
-- [ ] Constrain vertical-video storage metadata to an explicit schema and surface validated slot metadata in the job UI.
-- [ ] Surface validated vertical-video metadata notes alongside asset-slot references in the video job UI.
+- [x] Constrain vertical-video storage metadata to an explicit schema and surface validated slot metadata in the job UI.
+- [x] Surface validated vertical-video metadata notes alongside asset-slot references in the video job UI.
 - [ ] Capture populated video job UI verification showing source, thumbnail, output, and validated storage metadata.
-- [ ] Add wrong-kind asset-reference and invalid kind/MIME rejection regression coverage.
+- [x] Add wrong-kind asset-reference and invalid kind/MIME rejection regression coverage.
 - [x] Add server-side visual asset generation with stored output records, model discovery, loading states, and failure states.
 - [x] Build a vertical-video pipeline job interface covering clipping, silence-removal, captions, voice-over, subtitles, aspect-ratio conversion, and export readiness; clearly label unsupported render actions.
 - [x] Add user-visible configurable vertical-video pipeline controls for clipping, silence removal, captions, voice-over, subtitles, and aspect-ratio conversion.
-- [ ] Persist and display selected vertical-video pipeline-operation states alongside export readiness and unsupported-render messaging.
+- [x] Persist and display selected vertical-video pipeline-operation states alongside export readiness and unsupported-render messaging.
 - [ ] Add regression and visual verification for configurable vertical-video pipeline-operation selection and saved-state rendering.
 - [x] Implement GitHub repository, issue, pull-request, commit, and code-review data surfaces using only authorized access.
 - [x] Add an authorized GitHub pull-request review data procedure and a read-only review panel with loading, empty, and error states.
