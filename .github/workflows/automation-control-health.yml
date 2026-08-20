@@ -57,6 +57,9 @@ jobs:
             "scripts/workspace-maintenance/verify_current_project_integrations.sh"
             "scripts/workspace-maintenance/daily_maintenance.sh"
             "scripts/workspace-maintenance/test_workspace_maintenance.sh"
+            "scripts/github-account-audit/run_audit.sh"
+            "scripts/github-account-audit/bootstrap_state_branch.sh"
+            "scripts/github-account-audit/test_github_account_audit.sh"
           )
           for path in "${required[@]}"; do
             test -f "$path"
@@ -78,6 +81,7 @@ jobs:
           python scripts/test_record_automation_run.py
           python scripts/test_record_terminal_history_metadata.py
           bash scripts/workspace-maintenance/test_workspace_maintenance.sh
+          bash scripts/github-account-audit/test_github_account_audit.sh
 
       - name: Validate local configuration contracts and security
         shell: bash

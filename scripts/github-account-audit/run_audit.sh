@@ -35,13 +35,14 @@ done < <(tail -n +2 "$repos")
 
 head -n 1 "$runs" > "$fails"
 tail -n +2 "$runs" | awk -F '\t' 'BEGIN{OFS="\t"} $4=="failure" || $4=="timed_out" || $4=="startup_failure" || ($3!="completed" && $3!="") {print}' >> "$fails"
+failure_row_count=$(awk 'END{print NR-1}' "$fails")
 
 previous_number=$(jq -r '.execution_number // 0' "$previous_state" 2>/dev/null || printf '0')
 if ! [[ "$previous_number" =~ ^[0-9]+$ ]]; then previous_number=0; fi
 execution_number=$((previous_number + 1))
 if [ "$execution_number" -gt 2400 ]; then execution_number=2400; fi
 
-if [ -n "${GEMINI_API_KEY:-}" ] && [ -s "$fails" ]; then
+if [ -n "${GEMINI_API_KEY:-}" ] && [ "$failure_row_count" -gt 0 ]; then
   summary=$(awk -F '\t' 'NR>1{print $1 ":" $4}' "$fails" | head -n 30 | tr '\n' ';' | sed 's/"/\\"/g')
   payload=$(jq -n --arg text "Classify these GitHub audit failure rows concisely. Do not suggest credential changes or bypasses. Rows: $summary" '{contents:[{parts:[{text:$text}]}]}')
   gemini_ok=false
@@ -60,17 +61,24 @@ else
   printf 'Gemini analysis skipped because GEMINI_API_KEY is not configured or no failure rows were present.\n' > "$analysis"
 fi
 
+result_value="completed"
+if [ -s "$out_dir/blocker.txt" ]; then result_value="completed_with_blocker"; fi
+
 jq -n \
   --argjson execution_number "$execution_number" \
   --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+  --arg repository "$owner/automation-control-center" \
   --arg repository_owner "$owner" \
+  --arg task "hourly_github_audit_continuation" \
+  --arg workflow "Hourly GitHub audit continuation" \
+  --arg cli_connector_api_used "GitHub Actions; gh REST API; optional Gemini REST API" \
   --arg action "inventory_active_nonfork_repositories_open_prs_and_recent_workflows" \
-  --arg result "completed" \
+  --arg result "$result_value" \
   --arg failure_category "$(if [ -s "$out_dir/blocker.txt" ]; then printf 'external_or_inventory_blocker'; else printf 'none_or_classified_in_artifacts'; fi)" \
   --arg recovery_attempt "bounded_api_calls_and_secret_safe_artifact_capture" \
   --arg validation_status "inventory_artifacts_written" \
   --arg remaining_blocker "$(if [ -f "$out_dir/blocker.txt" ]; then tr '\n' ' ' < "$out_dir/blocker.txt"; else printf 'none_recorded_by_inventory_runner'; fi)" \
-  --arg next_action "inspect_current_failure_rows_and_repair_only_reproducible_issues" \
-  '{execution_number:$execution_number,timestamp:$timestamp,repository_owner:$repository_owner,action:$action,result:$result,failure_category:$failure_category,recovery_attempt:$recovery_attempt,validation_status:$validation_status,remaining_blocker:$remaining_blocker,next_action:$next_action}' > "$state"
+  --arg next_recommended_action "inspect_current_failure_rows_and_repair_only_reproducible_issues" \
+  '{execution_number:$execution_number,timestamp:$timestamp,repository:$repository,repository_owner:$repository_owner,task:$task,workflow:$workflow,cli_connector_api_used:$cli_connector_api_used,action:$action,result:$result,failure_category:$failure_category,recovery_attempt:$recovery_attempt,validation_status:$validation_status,remaining_blocker:$remaining_blocker,next_recommended_action:$next_recommended_action}' > "$state"
 
 printf 'execution_number=%s\nrepos=%s\nopen_pr_rows=%s\nrecent_failure_rows=%s\n' "$execution_number" "$(($(wc -l < "$repos")-1))" "$(($(wc -l < "$prs")-1))" "$(($(wc -l < "$fails")-1))"
