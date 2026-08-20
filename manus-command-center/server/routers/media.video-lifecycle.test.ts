@@ -31,6 +31,13 @@ describe("video lifecycle procedure", () => {
     expect(mocks.addAuditEvent).toHaveBeenCalledWith(42, expect.objectContaining({ action: "video_job.created" }));
   });
 
+  it("persists the owner-selected vertical-video pipeline operations without invoking a renderer", async () => {
+    const editPlan = { clipping: true, silenceRemoval: false, captions: true, voiceOver: false, subtitles: true, aspectRatioConversion: true, execution: "external_render_required" as const };
+    await expect(videoCaller(42).create({ title: "Selective pipeline plan", outputFormat: "vertical_9_16", targetDurationSeconds: 45, editPlan })).resolves.toMatchObject({ renderState: "draft" });
+    expect(mocks.createVideoJobForOwner).toHaveBeenCalledWith(42, expect.objectContaining({ title: "Selective pipeline plan", editPlan }));
+    expect(mocks.addAuditEvent).toHaveBeenCalledWith(42, expect.objectContaining({ action: "video_job.created", detail: expect.stringContaining("explicit edit operations") }));
+  });
+
   it("records an owner-scoped external handoff without invoking a renderer", async () => {
     const { db } = ownerScopedVideoDb({ id: 7, title: "Vertical research short", editPlan: {} });
     mocks.getDb.mockResolvedValue(db);

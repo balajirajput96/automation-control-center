@@ -31,4 +31,11 @@ describe("workflow run approval resolution", () => {
     mocks.listWorkflowRunsForOwner.mockResolvedValue([]);
     await expect(caller(99).resolveRun({ runId: 12, decision: "approved" })).rejects.toThrow("Workflow run not found");
   });
+
+  it("returns owner-scoped run status, retry, and error details for the execution trace surface", async () => {
+    const trace = [{ id: 12, ownerId: 42, workflowId: 4, status: "failed", triggerSource: "schedule", retryCount: 2, errorMessage: "Adapter unavailable" }];
+    mocks.listWorkflowRunsForOwner.mockResolvedValue(trace);
+    await expect(caller(42).runs()).resolves.toEqual(trace);
+    expect(mocks.listWorkflowRunsForOwner).toHaveBeenCalledWith(42);
+  });
 });

@@ -24,6 +24,7 @@ import { CitationEditorPanel } from "./components/CitationEditorPanel";
 import { ScheduleDefinitionPanel } from "./components/ScheduleDefinitionPanel";
 import { VideoAssetPlanPanel } from "./components/VideoAssetPlanPanel";
 import { WorkflowDefinitionEditor } from "./components/WorkflowDefinitionEditor";
+import { WorkflowTracePanel } from "./components/WorkflowTracePanel";
 
 const modulePaths = ["github", "content", "video", "images", "research", "deployments", "integrations", "logs", "settings"] as const;
 
@@ -46,7 +47,7 @@ function Router() {
     <Route path="/agents" component={AgentsPage} />
     <Route path="/projects" component={ProjectsPage} />
     <Route path="/projects/activity" component={ProjectActivityPage} />
-    <Route path="/logs" component={LogsPage} />
+    <Route path="/logs">{() => <><LogsPage /><WorkflowTracePanel /></>}</Route>
     <Route path="/workflows" component={WorkflowsPage} />
     <Route path="/workflow-definition-editor">{() => <div className="mx-auto max-w-[1100px] space-y-6"><section className="blueprint-card p-7"><p className="eyebrow">GRAPH / OWNER-SCOPED DRAFT</p><h1 className="mt-2 text-4xl font-black tracking-[-0.055em] text-slate-950">Edit workflow graph</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Persist a structurally validated node-and-edge definition. Saving records only the workflow draft; execution remains approval-gated.</p></section><WorkflowDefinitionEditor /></div>}</Route>
     <Route path="/workflow-approvals" component={WorkflowRunApprovalsPage} />

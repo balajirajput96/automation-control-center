@@ -13,19 +13,19 @@
 - [x] Implement persistent multi-model conversation and message storage with user-scoped history.
 - [x] Implement server-side model catalog discovery and a multi-model chat endpoint using authorized built-in providers.
 - [x] Reuse and adapt the supplied chat component for model selection, conversation selection, send states, and error states.
-- [ ] Implement workflow records, reusable templates, node/edge definitions, validation states, and execution history.
+- [x] Implement workflow records, reusable templates, node/edge definitions, validation states, and execution history.
 - [x] Build a true graph-based workflow canvas with editable nodes and edges that visibly represent sequential, parallel, conditional, and loop branches.
 - [x] Implement schedule CRUD UI for one-time, hourly, daily, weekly, monthly, cron, and event-driven job definitions.
 - [x] Add edit/update UI for existing schedule definitions, including name, workflow, recurrence type, timezone, and cron expression when applicable.
 - [x] Add mode-appropriate schedule definition fields and validation for one-time, weekly, monthly, and event-driven schedules.
 - [x] Add production-safe scheduled callback foundations with ownership checks, idempotency requirements, pause/resume states, and execution history.
-- [ ] Implement research and content project tracking for sources, outlines, scripts, storyboards, citations, metadata, and exports.
+- [x] Implement research and content project tracking for sources, outlines, scripts, storyboards, citations, metadata, and exports.
 - [x] Add structured citation records linked to content projects, with owner-scoped CRUD, section attribution, and regression tests.
 - [x] Add explicit content export records or history linked to exported assets, rather than relying only on stage labels and freeform notes.
 - [x] Add owner-scoped citation edit support plus list/remove/update and cross-owner rejection regression coverage.
 - [x] Expose asset-linked content export creation in the UI and validate exported-media attachment ownership.
 - [ ] Capture populated content-artifact UI verification with project, source, citation, and export records.
-- [ ] Implement secure media-asset metadata and storage references for images, audio, video, thumbnails, and vertical-video jobs.
+- [x] Implement secure media-asset metadata and storage references for images, audio, video, thumbnails, and vertical-video jobs.
 - [x] Add owner-scoped managed asset references and storage metadata to vertical-video jobs, including source, thumbnail, and output slots.
 - [x] Add vertical-video asset-reference ownership and storage-metadata regression coverage.
 - [x] Enforce media upload kind/MIME compatibility and vertical-video slot-compatible asset kinds.
@@ -38,16 +38,17 @@
 - [x] Add user-visible configurable vertical-video pipeline controls for clipping, silence removal, captions, voice-over, subtitles, and aspect-ratio conversion.
 - [x] Persist and display selected vertical-video pipeline-operation states alongside export readiness and unsupported-render messaging.
 - [ ] Add regression and visual verification for configurable vertical-video pipeline-operation selection and saved-state rendering.
+- [x] Add regression coverage for owner-selected vertical-video pipeline operation persistence without renderer invocation.
 - [x] Implement GitHub repository, issue, pull-request, commit, and code-review data surfaces using only authorized access.
 - [x] Add an authorized GitHub pull-request review data procedure and a read-only review panel with loading, empty, and error states.
 - [x] Add regression coverage for authorized GitHub review-data retrieval and validate the read-only repository details workspace.
 - [x] Add a mocked procedure-level GitHub review retrieval test covering response mapping, invalid inputs, and upstream failure handling.
 - [x] Execute the GitHub review procedure with mocked successful, invalid-input, and upstream-failure scenarios.
-- [ ] Complete deployment target detail views and health-refresh logic for GitHub, Vercel, Cloudflare, and Google Cloud, with exact disconnected and unavailable states.
+- [x] Complete deployment target detail views and health-refresh logic for GitHub, Vercel, Cloudflare, and Google Cloud, with exact disconnected and unavailable states.
 - [x] Refetch deployment target state alongside integration health through the Deployments refresh control.
-- [ ] Add provider-specific deployment target detail views for GitHub, Vercel, Cloudflare, and Google Cloud.
-- [ ] Verify refresh behavior across connected, disconnected, and unavailable deployment target states.
-- [ ] Implement searchable logs, task traces, errors, retries, permission audit events, and system usage records.
+- [x] Add provider-specific deployment target detail views for GitHub, Vercel, Cloudflare, and Google Cloud.
+- [x] Verify refresh behavior across connected, disconnected, and unavailable deployment target states.
+- [x] Implement searchable logs, task traces, errors, retries, permission audit events, and system usage records.
 - [ ] Add responsive loading, empty, error, and authorization states for every implemented module.
 - [x] Add Vitest coverage for server procedures, policy validation, model routing, workflow validation, and schedule state changes.
 - [x] Run type checks, test suite, production build, desktop/mobile visual verification, and document real integration limitations.
@@ -68,17 +69,17 @@
 - [x] Add approval-gated workflow run requests and agent dispatch controls with auditable requested, approved, and denied states.
 - [x] Add UI controls for approved and denied agent dispatch and workflow run requests, wired to owner-scoped resolution procedures.
 - [x] Surface requested, approved, and denied execution states with loading/error feedback in Workflow and Agents interfaces.
-- [ ] Render the workflow approval queue directly inside Workflows and verify approve/deny actions there.
+- [x] Render the workflow approval queue directly inside Workflows and verify approve/deny actions there.
 - [x] Add persisted agent-dispatch history so requested, approved, and denied dispatch states survive refresh in Agents.
 - [ ] Add explicit empty/error states for workflow approvals and agent dispatch history, then capture populated-state UI verification.
 - [ ] Capture desktop/mobile UI verification for dispatch and workflow run approval-resolution controls.
 - [x] Fix the 404 workflow approval route and verify its direct navigation target.
-- [ ] Add production-safe schedule activation prerequisites with idempotent execution records and callback authorization validation.
-- [ ] Complete managed media and vertical-video job state transitions with export readiness and explicit unsupported-render boundaries.
+- [x] Add production-safe schedule activation prerequisites with idempotent execution records and callback authorization validation.
+- [x] Complete managed media and vertical-video job state transitions with export readiness and explicit unsupported-render boundaries.
 - [ ] Add credential-backed health-check adapters for configured deployment providers while retaining unavailable states for unconfigured providers.
 - [ ] Configure secure Vercel, Cloudflare, and Google Cloud credentials and validate scoped deployment-health endpoints without persisting raw secrets.
 - [x] Publish the current command-center code to the approved GitHub repository balajirajput96/automation-control-center main branch after preserving remote work.
-- [ ] Reattach the recovered command-center source to a managed project context with required application secrets and runtime services restored.
+- [x] Reattach the recovered command-center source to a managed project context with required application secrets and runtime services restored.
 - [x] Add idempotent workflow schedule preflight records and execution-audit prerequisites before enabling any recurring callback.
 - [x] Improve video-job readiness and review states with explicit external-render handoff boundaries.
 - [x] Surface schedule preflight and video external-handoff audit states in the workflow and video control interfaces.
