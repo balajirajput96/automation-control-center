@@ -56,4 +56,4 @@
 - [ ] Revalidate Dependabot pull request #5 on a runner that can complete the command-center production build before approving its Vite and pnpm major-version changes.
 - [x] Inventory non-secret references for authenticated CLIs, connectors, schedules, workflow records, and terminal-history locations without exporting credentials or raw history.
 - [x] Design and implement a secret-safe continuity runbook for daily maintenance, CLI re-authentication, and history-derived reproducibility.
-- [ ] Verify and privately publish the improved daily maintenance model while retaining credentials only in their approved local or provider-managed stores.
+- [x] Verify and privately publish the improved daily maintenance model while retaining credentials only in their approved local or provider-managed stores.
