@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -u
 
-ROOT="${WORKSPACE_ROOT:-/home/ubuntu/github-workspace}"
+ROOT="${WORKSPACE_ROOT:-$PWD/.workspace}"
 REPOS="${WORKSPACE_REPOS:-$ROOT/repos}"
 OUT="${1:-${WORKSPACE_OUTPUT:-$ROOT/checkpoints/project_checks_cycle2.tsv}}"
 LOGS="${WORKSPACE_LOGS:-$ROOT/checkpoints/project_logs_cycle2}"
