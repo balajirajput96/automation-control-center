@@ -13,7 +13,7 @@ run_cmd() {
   local log="$1"
   local seconds="$2"
   shift 2
-  timeout --kill-after=20s "$seconds" bash -lc "$*" >"$log" 2>&1
+  timeout --kill-after=20s "$seconds" bash -c "$*" >"$log" 2>&1
   echo $?
 }
 
@@ -78,7 +78,7 @@ for name in daily-research-reels-automation pharma-outreach-automation; do
   dir="$REPOS/$name"
   [ -d "$dir" ] || continue
   log="$LOGS/${name}_pytest.log"
-  timeout --kill-after=20s 600 bash -lc "cd '$dir' && pytest -q" >"$log" 2>&1
+  timeout --kill-after=20s 600 bash -c "cd '$dir' && pytest -q" >"$log" 2>&1
   rc=$?
   printf '%s\tna\tna\t%s\tna\t%s\n' "$name" "$rc" "$([ "$rc" -eq 0 ] && echo pass || echo pytest_failure)" >> "$OUT"
 done
