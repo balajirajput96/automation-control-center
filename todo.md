@@ -73,8 +73,8 @@
 - [x] Document the verified absence of local Gemini and Jules CLI executables in the current sandbox without modifying provider authentication or installations.
 - [x] Reassess the persistent mission's current repository, hourly state branch, daily schedule, sanitized execution records, and approved authentication boundaries.
 - [x] Run bounded continuation diagnostics and publish only confirmed low-risk private repairs or state-record corrections.
-- [ ] Reassess the current persistent mission state and run bounded continuation diagnostics across schedules, workflows, state records, approved CLIs, Drive, and n8n.
-- [ ] Apply, validate, and privately publish only confirmed low-risk continuity repairs from the renewed cycle.
+- [x] Reassess the current persistent mission state and run bounded continuation diagnostics across schedules, workflows, state records, approved CLIs, Drive, and n8n.
+- [x] Apply, validate, and privately publish only confirmed low-risk continuity repairs from the renewed cycle.
 - [x] Refresh the readiness record with the verified advance of the hourly continuation state from execution 39 to 41.
 - [x] Update the readiness record to reflect the newly completed private health and hourly continuation workflow runs.
 - [x] Complete final isolated runtime validation of Dependabot PR #5 and merge it only if its validated toolchain update remains clean.
