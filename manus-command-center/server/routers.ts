@@ -8,6 +8,7 @@ import { agentRouter, projectRouter } from "./routers/projects";
 import { contentRouter, mediaRouter, videoRouter } from "./routers/media";
 import { githubRouter } from "./routers/github";
 import { marketRouter } from "./routers/market";
+import { maintenanceRouter } from "./routers/maintenance";
 import { scheduleRouter, workflowRouter } from "./routers/workflows";
 
 export const appRouter = router({
@@ -34,6 +35,7 @@ export const appRouter = router({
   video: videoRouter,
   github: githubRouter,
   market: marketRouter,
+  maintenance: maintenanceRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -2,14 +2,17 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   addAuditEvent: vi.fn(),
+  createAgentDispatchForOwner: vi.fn(),
   createAgentForOwner: vi.fn(),
   createProjectForOwner: vi.fn(),
   deleteProjectForOwner: vi.fn(),
   listAgentsForOwner: vi.fn(),
+  listAgentDispatchesForOwner: vi.fn(),
   listProjectAuditEventsForOwner: vi.fn(),
   listProjectsForOwner: vi.fn(),
   updateAgentForOwner: vi.fn(),
   updateProjectForOwner: vi.fn(),
+  resolveAgentDispatchForOwner: vi.fn(),
 }));
 
 vi.mock("../db", () => mocks);
@@ -53,15 +56,25 @@ describe("project and agent ownership procedures", () => {
 
   it("records high-impact autonomous dispatches as approval-gated", async () => {
     mocks.listAgentsForOwner.mockResolvedValue([{ id: 7, name: "Owner Agent", autonomyLevel: "autonomous" }]);
+    mocks.createAgentDispatchForOwner.mockResolvedValue(13);
     await expect(caller(42).agent.requestDispatch({ agentId: 7, task: "Deploy production build", action: "deploy" })).resolves.toMatchObject({ status: "needs_approval", policy: { decision: "needs_approval" } });
+    expect(mocks.createAgentDispatchForOwner).toHaveBeenCalledWith(42, expect.objectContaining({ agentId: 7, status: "needs_approval" }));
     expect(mocks.addAuditEvent).toHaveBeenCalledWith(42, expect.objectContaining({ action: "agent_dispatch.requested", outcome: "pending", resourceId: "7" }));
   });
 
-  it("records owner-scoped approved and denied dispatch decisions without execution", async () => {
+  it("persists and resolves owner-scoped dispatch decisions without execution", async () => {
     mocks.listAgentsForOwner.mockResolvedValue([{ id: 7, name: "Owner Agent", autonomyLevel: "assisted" }]);
-    await expect(caller(42).agent.resolveDispatch({ agentId: 7, task: "Publish approved briefing", decision: "approved" })).resolves.toEqual({ status: "approved", execution: "not_invoked" });
+    mocks.resolveAgentDispatchForOwner.mockResolvedValue({ id: 13, agentId: 7, task: "Publish approved briefing", action: "publish", status: "approved" });
+    await expect(caller(42).agent.resolveDispatch({ dispatchId: 13, decision: "approved" })).resolves.toEqual({ status: "approved", execution: "not_invoked" });
     expect(mocks.addAuditEvent).toHaveBeenCalledWith(42, expect.objectContaining({ action: "agent_dispatch.approved", outcome: "success", resourceId: "7" }));
-    await expect(caller(42).agent.resolveDispatch({ agentId: 7, task: "Reject unsafe deploy", decision: "denied" })).resolves.toEqual({ status: "denied", execution: "not_invoked" });
+    mocks.resolveAgentDispatchForOwner.mockResolvedValue({ id: 14, agentId: 7, task: "Reject unsafe deploy", action: "deploy", status: "denied" });
+    await expect(caller(42).agent.resolveDispatch({ dispatchId: 14, decision: "denied" })).resolves.toEqual({ status: "denied", execution: "not_invoked" });
     expect(mocks.addAuditEvent).toHaveBeenCalledWith(42, expect.objectContaining({ action: "agent_dispatch.denied", outcome: "denied", resourceId: "7" }));
+  });
+
+  it("lists persisted dispatches through the authenticated owner scope", async () => {
+    mocks.listAgentDispatchesForOwner.mockResolvedValue([{ id: 13, ownerId: 42, agentId: 7, status: "needs_approval" }]);
+    await expect(caller(42).agent.dispatches({ agentId: 7 })).resolves.toEqual([{ id: 13, ownerId: 42, agentId: 7, status: "needs_approval" }]);
+    expect(mocks.listAgentDispatchesForOwner).toHaveBeenCalledWith(42, 7);
   });
 });

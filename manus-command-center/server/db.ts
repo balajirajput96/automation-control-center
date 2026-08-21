@@ -1,6 +1,7 @@
 import { and, desc, eq, like, or, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
+  agentDispatches,
   agents,
   auditLogs,
   contentCitations,
@@ -12,6 +13,8 @@ import {
   InsertUser,
   projects,
   mediaAssets,
+  maintenanceCycles,
+  maintenancePlans,
   deploymentTargets,
   integrations,
   niftyAlertDefinitions,
@@ -28,6 +31,11 @@ import {
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
+
+/** Test-only database override for deterministic persistence-path regressions. */
+export function __setDbForTesting(db: ReturnType<typeof drizzle> | null) {
+  _db = db;
+}
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
@@ -198,6 +206,29 @@ export async function createAgentForOwner(ownerId: number, values: {
   await db.insert(agents).values({ ownerId, ...values, enabled: true });
 }
 
+export async function createAgentDispatchForOwner(ownerId: number, values: { agentId: number; task: string; action: "plan" | "research" | "generate_content" | "publish" | "deploy" | "delete" | "credential_change"; status: "needs_approval" | "queued" }) {
+  const db = await requireDb();
+  const owned = await db.select({ id: agents.id }).from(agents).where(and(eq(agents.id, values.agentId), eq(agents.ownerId, ownerId))).limit(1);
+  if (!owned[0]) throw new Error("Agent not found");
+  const inserted = await db.insert(agentDispatches).values({ ownerId, ...values }).$returningId();
+  return inserted[0]?.id;
+}
+
+export async function listAgentDispatchesForOwner(ownerId: number, agentId?: number) {
+  const db = await requireDb();
+  const where = agentId ? and(eq(agentDispatches.ownerId, ownerId), eq(agentDispatches.agentId, agentId)) : eq(agentDispatches.ownerId, ownerId);
+  return db.select().from(agentDispatches).where(where).orderBy(desc(agentDispatches.createdAt)).limit(100);
+}
+
+export async function resolveAgentDispatchForOwner(ownerId: number, dispatchId: number, status: "approved" | "denied") {
+  const db = await requireDb();
+  const found = await db.select().from(agentDispatches).where(and(eq(agentDispatches.id, dispatchId), eq(agentDispatches.ownerId, ownerId))).limit(1);
+  if (!found[0]) throw new Error("Dispatch record not found");
+  if (found[0].status !== "needs_approval") throw new Error("Dispatch is not awaiting approval");
+  await db.update(agentDispatches).set({ status, resolvedAt: new Date() }).where(eq(agentDispatches.id, dispatchId));
+  return { ...found[0], status };
+}
+
 export async function updateAgentForOwner(ownerId: number, agentId: number, values: { name: string; description?: string | null; role: "orchestrator" | "coding" | "research" | "automation" | "image" | "video" | "publishing" | "qa" | "devops" | "custom"; autonomyLevel: "manual" | "assisted" | "autonomous"; modelPreference?: string | null; instructions?: string | null; enabled: boolean; toolPolicy: unknown }) {
   const db = await requireDb();
   const found = await db.select({ id: agents.id }).from(agents).where(and(eq(agents.id, agentId), eq(agents.ownerId, ownerId))).limit(1);
@@ -289,6 +320,62 @@ export async function listScheduleExecutionsForOwner(ownerId: number, scheduleId
   const db = await requireDb();
   const where = scheduleId ? and(eq(scheduleExecutions.ownerId, ownerId), eq(scheduleExecutions.scheduleId, scheduleId)) : eq(scheduleExecutions.ownerId, ownerId);
   return db.select().from(scheduleExecutions).where(where).orderBy(desc(scheduleExecutions.receivedAt)).limit(100);
+}
+
+export async function listMaintenancePlansForOwner(ownerId: number) {
+  const db = await requireDb();
+  return db.select().from(maintenancePlans).where(eq(maintenancePlans.ownerId, ownerId)).orderBy(desc(maintenancePlans.updatedAt));
+}
+
+export async function createMaintenancePlanForOwner(ownerId: number, values: { name: string; maxCycles?: number; intervalMinutes?: number }) {
+  const db = await requireDb();
+  const inserted = await db.insert(maintenancePlans).values({ ownerId, name: values.name, maxCycles: values.maxCycles ?? 2400, intervalMinutes: values.intervalMinutes ?? 60, enabled: true }).$returningId();
+  return inserted[0]?.id;
+}
+
+export async function listMaintenanceCyclesForOwner(ownerId: number, maintenancePlanId?: number) {
+  const db = await requireDb();
+  const where = maintenancePlanId ? and(eq(maintenanceCycles.ownerId, ownerId), eq(maintenanceCycles.maintenancePlanId, maintenancePlanId)) : eq(maintenanceCycles.ownerId, ownerId);
+  return db.select().from(maintenanceCycles).where(where).orderBy(desc(maintenanceCycles.createdAt)).limit(100);
+}
+
+export function createMaintenanceCycleIdempotencyKey(taskUid: string, receivedAt = new Date()) {
+  return `${taskUid}:${receivedAt.toISOString().slice(0, 13)}`;
+}
+
+export function getMaintenanceCycleEligibility(plan: { enabled: boolean; cyclesCompleted: number; maxCycles: number } | null) {
+  if (!plan) return { status: "orphan" as const, summary: "No maintenance plan is mapped to this authenticated task." };
+  if (!plan.enabled) return { status: "skipped" as const, summary: "Maintenance plan is paused; no checks were executed." };
+  if (plan.cyclesCompleted >= plan.maxCycles) return { status: "skipped" as const, summary: "Maintenance plan cycle limit reached; no checks were executed." };
+  return { status: "completed" as const, summary: null };
+}
+
+export async function recordReadOnlyMaintenanceCycleForTask(taskUid: string, receivedAt = new Date()) {
+  const db = await requireDb();
+  const plan = (await db.select().from(maintenancePlans).where(eq(maintenancePlans.scheduleCronTaskUid, taskUid)).limit(1))[0] ?? null;
+  const idempotencyKey = createMaintenanceCycleIdempotencyKey(taskUid, receivedAt);
+  const eligibility = getMaintenanceCycleEligibility(plan);
+  if (!plan) return { plan: null, status: "skipped" as const, idempotencyKey, summary: eligibility.summary };
+  const existing = await db.select({ id: maintenanceCycles.id }).from(maintenanceCycles).where(and(eq(maintenanceCycles.maintenancePlanId, plan.id), eq(maintenanceCycles.idempotencyKey, idempotencyKey))).limit(1);
+  if (existing[0]) return { plan, status: "duplicate" as const, idempotencyKey, summary: "This hourly maintenance window was already recorded." };
+  if (eligibility.status === "skipped") {
+    const summary = eligibility.summary;
+    await db.insert(maintenanceCycles).values({ maintenancePlanId: plan.id, ownerId: plan.ownerId, taskUid, idempotencyKey, status: "skipped", summary, details: { readOnly: true } });
+    return { plan, status: "skipped" as const, idempotencyKey, summary };
+  }
+  const [pendingRuns, pendingDispatches, targetRows, integrationRows] = await Promise.all([
+    db.select({ id: workflowRuns.id }).from(workflowRuns).where(and(eq(workflowRuns.ownerId, plan.ownerId), eq(workflowRuns.status, "needs_approval"))),
+    db.select({ id: agentDispatches.id }).from(agentDispatches).where(and(eq(agentDispatches.ownerId, plan.ownerId), eq(agentDispatches.status, "needs_approval"))),
+    db.select({ provider: deploymentTargets.provider, status: deploymentTargets.status }).from(deploymentTargets).where(eq(deploymentTargets.ownerId, plan.ownerId)),
+    db.select({ service: integrations.service, connectionStatus: integrations.connectionStatus }).from(integrations).where(eq(integrations.ownerId, plan.ownerId)),
+  ]);
+  const nonHealthyTargets = targetRows.filter(target => target.status !== "healthy").map(target => `${target.provider}:${target.status}`);
+  const attentionIntegrations = integrationRows.filter(item => item.connectionStatus === "action_required" || item.connectionStatus === "error").map(item => `${item.service}:${item.connectionStatus}`);
+  const details = { readOnly: true, pendingWorkflowApprovals: pendingRuns.length, pendingDispatchApprovals: pendingDispatches.length, nonHealthyTargets, attentionIntegrations };
+  const summary = `Read-only hourly check recorded: ${pendingRuns.length} workflow approval(s), ${pendingDispatches.length} dispatch approval(s), ${nonHealthyTargets.length} deployment target(s) needing attention, ${attentionIntegrations.length} integration(s) needing attention.`;
+  await db.insert(maintenanceCycles).values({ maintenancePlanId: plan.id, ownerId: plan.ownerId, taskUid, idempotencyKey, status: "completed", summary, details });
+  await db.update(maintenancePlans).set({ cyclesCompleted: sql`${maintenancePlans.cyclesCompleted} + 1`, lastCycleAt: receivedAt, lastSummary: summary }).where(eq(maintenancePlans.id, plan.id));
+  return { plan, status: "completed" as const, idempotencyKey, summary, details };
 }
 
 export async function listNiftyWatchDefinitionsForOwner(ownerId: number) {
@@ -387,6 +474,7 @@ export async function addAuditEvent(ownerId: number, values: {
   resourceId?: string | null;
   outcome: "success" | "failure" | "pending" | "denied";
   detail?: string | null;
+  metadata?: unknown;
 }) {
   const db = await requireDb();
   await db.insert(auditLogs).values({ ownerId, ...values });
@@ -589,7 +677,7 @@ export async function listDeploymentTargetsForOwner(ownerId: number) {
   return db.select().from(deploymentTargets).where(eq(deploymentTargets.ownerId, ownerId)).orderBy(deploymentTargets.provider);
 }
 
-export async function updateDeploymentTargetHealth(ownerId: number, provider: "github" | "vercel" | "cloudflare" | "google_cloud", values: { status: "healthy" | "failed"; detail: string }) {
+export async function updateDeploymentTargetHealth(ownerId: number, provider: "github" | "vercel" | "cloudflare" | "google_cloud", values: { status: "healthy" | "failed" | "not_connected"; detail: string }) {
   const db = await requireDb();
   await db.update(deploymentTargets).set({ status: values.status, lastHealthCheckAt: new Date(), metadata: { verification: "provider_verified", detail: values.detail } }).where(and(eq(deploymentTargets.ownerId, ownerId), eq(deploymentTargets.provider, provider)));
 }

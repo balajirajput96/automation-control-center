@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-const describeLive =
-  process.env.GITHUB_LIVE_TESTS === "true" ? describe : describe.skip;
-
-describeLive("GitHub application credential", () => {
+describe("GitHub application credential", () => {
   it("authenticates against the current GitHub user endpoint", async () => {
     const token = process.env.GITHUB_TOKEN;
     expect(token, "GITHUB_TOKEN must be configured").toBeTruthy();
@@ -16,9 +13,6 @@ describeLive("GitHub application credential", () => {
       },
     });
 
-    expect(
-      response.ok,
-      `GitHub credential validation failed with ${response.status}`
-    ).toBe(true);
+    expect(response.ok, `GitHub credential validation failed with ${response.status}`).toBe(true);
   }, 20_000);
 });

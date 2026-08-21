@@ -64,6 +64,20 @@
       "when": 1787237154414,
       "tag": "0008_loose_morg",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1787243353102,
+      "tag": "0009_tiny_maggott",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1787347140822,
+      "tag": "0010_wide_reptil",
+      "breakpoints": true
     }
   ]
 }

@@ -1,5 +1,15 @@
 # Project TODO
 
+- [x] Audit the existing command-center, GitHub repositories, CLI sessions, connector scope, and scheduled jobs for safe reuse in the requested long-running continuation mission.
+- [x] Design a bounded persistent continuation architecture that preserves state, avoids destructive automation, and records each maintenance cycle.
+- [x] Implement and validate the selected continuation workflow after the durable Heartbeat runtime and hourly schedule model are confirmed.
+- [x] Implement a bounded, read-only hourly Command Center maintenance service with persisted cycle records, idempotency, and no destructive execution capability.
+- [x] Trigger the bound authenticated maintenance callback once and verify a real cycle record plus audit event are persisted.
+- [x] Add regression coverage for completed, duplicate, orphan, paused, and max-cycle maintenance callback paths.
+- [x] Re-verify the deployed Maintenance route after propagation with populated plan and history evidence.
+- [x] Add regression coverage for owner-scoped maintenance plan records and hour-window idempotency keys.
+- [x] Align the daily AI Automation Command Center review schedule to the user-provided read-only GitHub and authorized Google playbook.
+
 - [x] Resolve the Jules region-availability blocker through the supported Jules Tools CLI path and verify its persistent OAuth session with read-only repository discovery.
 - [x] Verify and preserve persistent Antigravity CLI, Gemini CLI, and GitHub CLI authentication; browser takeover was not required for these saved sessions.
 
@@ -27,20 +37,23 @@
 - [x] Add explicit content export records or history linked to exported assets, rather than relying only on stage labels and freeform notes.
 - [x] Add owner-scoped citation edit support plus list/remove/update and cross-owner rejection regression coverage.
 - [x] Expose asset-linked content export creation in the UI and validate exported-media attachment ownership.
-- [ ] Capture populated content-artifact UI verification with project, source, citation, and export records.
+- [x] Capture populated content-artifact UI verification with project, source, citation, and export records.
 - [x] Implement secure media-asset metadata and storage references for images, audio, video, thumbnails, and vertical-video jobs.
 - [x] Add owner-scoped managed asset references and storage metadata to vertical-video jobs, including source, thumbnail, and output slots.
 - [x] Add vertical-video asset-reference ownership and storage-metadata regression coverage.
 - [x] Enforce media upload kind/MIME compatibility and vertical-video slot-compatible asset kinds.
 - [x] Constrain vertical-video storage metadata to an explicit schema and surface validated slot metadata in the job UI.
 - [x] Surface validated vertical-video metadata notes alongside asset-slot references in the video job UI.
-- [ ] Capture populated video job UI verification showing source, thumbnail, output, and validated storage metadata.
+- [x] Capture populated video job UI verification showing source, thumbnail, output, and validated storage metadata.
+- [x] Generate and attach confirmed internal-only 9:16 verification source, thumbnail, and review-output assets without rendering or publishing a production video.
 - [x] Add wrong-kind asset-reference and invalid kind/MIME rejection regression coverage.
 - [x] Add server-side visual asset generation with stored output records, model discovery, loading states, and failure states.
 - [x] Build a vertical-video pipeline job interface covering clipping, silence-removal, captions, voice-over, subtitles, aspect-ratio conversion, and export readiness; clearly label unsupported render actions.
 - [x] Add user-visible configurable vertical-video pipeline controls for clipping, silence removal, captions, voice-over, subtitles, and aspect-ratio conversion.
 - [x] Persist and display selected vertical-video pipeline-operation states alongside export readiness and unsupported-render messaging.
-- [ ] Add regression and visual verification for configurable vertical-video pipeline-operation selection and saved-state rendering.
+- [x] Add regression and visual verification for configurable vertical-video pipeline-operation selection and saved-state rendering.
+- [x] Display persisted pipeline operations as enabled or disabled badges in populated Video Studio and readiness views.
+- [x] Verify the saved-state UI consumes the exact persisted edit plan and capture a populated job whose displayed operations match its stored values.
 - [x] Add regression coverage for owner-selected vertical-video pipeline operation persistence without renderer invocation.
 - [x] Implement GitHub repository, issue, pull-request, commit, and code-review data surfaces using only authorized access.
 - [x] Add an authorized GitHub pull-request review data procedure and a read-only review panel with loading, empty, and error states.
@@ -52,7 +65,16 @@
 - [x] Add provider-specific deployment target detail views for GitHub, Vercel, Cloudflare, and Google Cloud.
 - [x] Verify refresh behavior across connected, disconnected, and unavailable deployment target states.
 - [x] Implement searchable logs, task traces, errors, retries, permission audit events, and system usage records.
-- [ ] Add responsive loading, empty, error, and authorization states for every implemented module.
+- [x] Add responsive loading, empty, error, and authorization states for every implemented module.
+- [x] Document each implemented module's loading, empty, error, and authorization boundary, then add and test any discovered gaps.
+- [x] Expand the resilience audit to a module-by-module inventory and bind its regression guard to every documented implemented module.
+- [x] Capture explicit responsive verification evidence for all documented custom modules, including parent-provided boundaries.
+- [x] Add a module-by-module responsive verification ledger linking every custom component to its direct or inherited verified parent surface.
+- [x] Capture direct desktop/mobile evidence for standalone DashboardLayoutSkeleton, ManusDialog, MapView, WorkflowCanvas, and VideoPipelineOperationBadges through the internal verification gallery.
+- [x] Add a direct loading and unavailable-state boundary for the standalone Map integration component.
+- [x] Add per-module desktop and 375px responsive verification links to the resilience audit ledger.
+- [x] Add full custom page/component resilience inventory with direct versus parent-provided state boundaries.
+- [x] Add a standard-suite regression guard for every query-consuming client module's explicit resilience boundary.
 - [x] Add Vitest coverage for server procedures, policy validation, model routing, workflow validation, and schedule state changes.
 - [x] Run type checks, test suite, production build, desktop/mobile visual verification, and document real integration limitations.
 - [x] Perform and record a comprehensive desktop verification sweep across the remaining core modules/pages.
@@ -74,17 +96,17 @@
 - [x] Surface requested, approved, and denied execution states with loading/error feedback in Workflow and Agents interfaces.
 - [x] Render the workflow approval queue directly inside Workflows and verify approve/deny actions there.
 - [x] Add persisted agent-dispatch history so requested, approved, and denied dispatch states survive refresh in Agents.
-- [ ] Add explicit empty/error states for workflow approvals and agent dispatch history, then capture populated-state UI verification.
-- [ ] Capture desktop/mobile UI verification for dispatch and workflow run approval-resolution controls.
+- [x] Add explicit empty/error states for workflow approvals and agent dispatch history, then capture populated-state UI verification.
+- [x] Capture desktop/mobile UI verification for dispatch and workflow run approval-resolution controls.
+- [x] Capture a true populated mobile Agents approval state with dispatch Approve and Deny controls visible before resolution.
 - [x] Fix the 404 workflow approval route and verify its direct navigation target.
 - [x] Add production-safe schedule activation prerequisites with idempotent execution records and callback authorization validation.
 - [x] Complete managed media and vertical-video job state transitions with export readiness and explicit unsupported-render boundaries.
-- [ ] Add credential-backed health-check adapters for configured deployment providers while retaining unavailable states for unconfigured providers.
+- [x] Add credential-backed health-check adapters for configured deployment providers while retaining unavailable states for unconfigured providers.
 - [ ] Configure secure Vercel, Cloudflare, and Google Cloud credentials and validate scoped deployment-health endpoints without persisting raw secrets.
+- [ ] Resume secure provider project mapping only when the user supplies explicit scoped target credentials; retain connected-but-unmapped states until then.
 - [x] Publish the current command-center code to the approved GitHub repository balajirajput96/automation-control-center main branch after preserving remote work.
 - [x] Reattach the recovered command-center source to a managed project context with required application secrets and runtime services restored.
 - [x] Add idempotent workflow schedule preflight records and execution-audit prerequisites before enabling any recurring callback.
 - [x] Improve video-job readiness and review states with explicit external-render handoff boundaries.
 - [x] Surface schedule preflight and video external-handoff audit states in the workflow and video control interfaces.
-- [x] Run a protected full-project engineering audit across dependencies, type checks, tests, build, migrations, and repository-declared integrations.
-- [x] Repair and document only validated low-risk command-center issues discovered by the audit.

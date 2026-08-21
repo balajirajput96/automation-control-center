@@ -1,0 +1,9 @@
+import { Card, CardContent } from "@/components/ui/card";
+import { trpc } from "@/lib/trpc";
+import { VideoPipelineOperationBadges } from "@/components/VideoPipelineOperationBadges";
+import { SlidersHorizontal } from "lucide-react";
+
+export function VideoSavedOperationPanel() {
+  const jobs = trpc.video.list.useQuery();
+  return <section className="mx-auto max-w-[1250px] pb-6"><Card className="blueprint-card border-0"><CardContent className="p-5"><div className="flex items-start gap-3"><span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-900"><SlidersHorizontal className="size-4" /></span><div><p className="eyebrow">PERSISTED PIPELINE STATE</p><p className="mt-1 text-sm leading-6 text-slate-600">These badges read the saved edit plan directly. They do not infer operations from generic job labels or invoke a renderer.</p></div></div><div className="mt-4 space-y-3">{jobs.isLoading ? <div className="h-20 animate-pulse rounded-xl bg-slate-100" /> : jobs.isError ? <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">Persisted pipeline state could not be loaded. Please retry.</div> : jobs.data?.length ? jobs.data.map(job => <div key={job.id} className="rounded-xl border border-slate-100 bg-white/70 p-3"><div className="mb-3 flex flex-wrap items-center justify-between gap-2"><p className="text-sm font-semibold">{job.title}</p><span className="font-mono text-[10px] uppercase text-slate-500">{job.status} · {job.outputFormat.replaceAll("_", " ")}</span></div><VideoPipelineOperationBadges editPlan={job.editPlan} /></div>) : <div className="rounded-xl border border-dashed border-slate-200 p-5 text-center text-sm text-slate-500">No persisted video plans are available.</div>}</div></CardContent></Card></section>;
+}

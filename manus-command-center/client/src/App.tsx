@@ -25,6 +25,11 @@ import { ScheduleDefinitionPanel } from "./components/ScheduleDefinitionPanel";
 import { VideoAssetPlanPanel } from "./components/VideoAssetPlanPanel";
 import { WorkflowDefinitionEditor } from "./components/WorkflowDefinitionEditor";
 import { WorkflowTracePanel } from "./components/WorkflowTracePanel";
+import { VideoSavedOperationPanel } from "./components/VideoSavedOperationPanel";
+import { MediaUploadPage } from "./pages/MediaUploadPage";
+import { MaintenancePage } from "./pages/MaintenancePage";
+import ComponentShowcase from "./pages/ComponentShowcase";
+import { BoundaryVerificationPage } from "./pages/BoundaryVerificationPage";
 
 const modulePaths = ["github", "content", "video", "images", "research", "deployments", "integrations", "logs", "settings"] as const;
 
@@ -32,6 +37,9 @@ function Router() {
   return <DashboardLayout><Switch>
     <Route path="/" component={DashboardPage} />
     <Route path="/chat" component={ChatPage} />
+    <Route path="/component-showcase" component={ComponentShowcase} />
+    <Route path="/boundary-verification">{() => <BoundaryVerificationPage />}</Route>
+    <Route path="/boundary-dialog">{() => <BoundaryVerificationPage forceDialog />}</Route>
     <Route path="/content" component={ContentStudioPage} />
     <Route path="/content-artifacts">{() => <div className="mx-auto max-w-[1100px] space-y-6"><section className="blueprint-card p-7"><p className="eyebrow">SOURCE → OUTLINE → SCRIPT → STORYBOARD → EXPORT</p><h1 className="mt-2 text-4xl font-black tracking-[-0.055em] text-slate-950">Content artifacts</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Maintain structured production artifacts and lifecycle state without detaching them from their source-backed content project.</p></section><ContentArtifactPanel /></div>}</Route>
     <Route path="/content-records">{() => <div className="mx-auto max-w-[1100px] space-y-6"><section className="blueprint-card p-7"><p className="eyebrow">CONTENT EVIDENCE / DELIVERY HISTORY</p><h1 className="mt-2 text-4xl font-black tracking-[-0.055em] text-slate-950">Citations & exports</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Record section-specific citations and output history without publishing or delivering content.</p></section><ContentRecordsPanel /></div>}</Route>
@@ -40,9 +48,9 @@ function Router() {
     <Route path="/schedule-definitions">{() => <div className="mx-auto max-w-[1100px] space-y-6"><section className="blueprint-card p-7"><p className="eyebrow">RECURRENCE / PRODUCTION GUARD</p><h1 className="mt-2 text-4xl font-black tracking-[-0.055em] text-slate-950">Define a schedule</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Configure time- or event-driven definitions. They remain paused until a signed and idempotent production callback is available.</p></section><ScheduleDefinitionPanel /></div>}</Route>
     <Route path="/video-asset-plan">{() => <div className="mx-auto max-w-[1100px] space-y-6"><section className="blueprint-card p-7"><p className="eyebrow">VERTICAL-VIDEO / STORAGE PROVENANCE</p><h1 className="mt-2 text-4xl font-black tracking-[-0.055em] text-slate-950">Link video assets</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Attach managed project assets to a vertical-video plan without rendering or delivering a file.</p></section><VideoAssetPlanPanel /></div>}</Route>
     <Route path="/images" component={ImageStudioPage} />
-    <Route path="/media" component={MediaLibraryPage} />
+    <Route path="/media" component={MediaUploadPage} />
     <Route path="/research" component={ResearchPage} />
-    <Route path="/video" component={VideoStudioPage} />
+    <Route path="/video">{() => <><VideoStudioPage /><VideoSavedOperationPanel /></>}</Route>
     <Route path="/video-readiness">{() => <div className="mx-auto max-w-[1100px] space-y-6"><section className="blueprint-card p-7"><p className="eyebrow">EXTERNAL RENDER GOVERNANCE</p><h1 className="mt-2 text-4xl font-black tracking-[-0.055em] text-slate-950">Video readiness</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Review export readiness and request a human-reviewed external render handoff. These state changes never execute a renderer.</p></section><VideoReadinessPanel /></div>}</Route>
     <Route path="/agents" component={AgentsPage} />
     <Route path="/projects" component={ProjectsPage} />
@@ -53,6 +61,7 @@ function Router() {
     <Route path="/workflow-approvals" component={WorkflowRunApprovalsPage} />
     <Route path="/run-approvals" component={WorkflowRunApprovalsPage} />
     <Route path="/schedules" component={SchedulesPage} />
+    <Route path="/maintenance" component={MaintenancePage} />
     <Route path="/schedule-lifecycle">{() => <div className="mx-auto max-w-[1100px] space-y-6"><section className="blueprint-card p-7"><p className="eyebrow">SCHEDULE DEFINITION GOVERNANCE</p><h1 className="mt-2 text-4xl font-black tracking-[-0.055em] text-slate-950">Schedule lifecycle</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Review and remove paused owner-scoped schedule definitions. Deletion never invokes a callback or workflow run.</p></section><ScheduleLifecyclePanel /></div>}</Route>
     <Route path="/nifty" component={NiftyPage} />
     <Route path="/github/details" component={GitHubDetailsPage} />

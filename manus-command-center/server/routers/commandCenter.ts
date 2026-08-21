@@ -1,16 +1,8 @@
 import { listLLMModels } from "../_core/llm";
 import { ensureIntegrationRegistry, getCommandCenterSnapshot, listDeploymentTargetsForOwner, listIntegrationsForOwner, searchAuditEventsForOwner, updateDeploymentTargetHealth, updateIntegrationHealth } from "../db";
+import { checkCloudflareHealth, checkGoogleCloudHealth, checkVercelHealth } from "../providerHealth";
 import { protectedProcedure, router } from "../_core/trpc";
 import { z } from "zod";
-
-export const credentialManagementLinks = {
-  github: { url: "https://github.com/settings/personal-access-tokens", label: "Manage GitHub personal access tokens" },
-  gmail: { url: "https://console.cloud.google.com/apis/credentials", label: "Manage Google OAuth credentials" },
-  instagram: { url: "https://developers.facebook.com/apps/", label: "Manage Meta developer app credentials" },
-  vercel: { url: "https://vercel.com/account/tokens", label: "Manage Vercel access tokens" },
-  cloudflare: { url: "https://dash.cloudflare.com/profile/api-tokens", label: "Manage Cloudflare API tokens" },
-  google_cloud: { url: "https://console.cloud.google.com/apis/credentials", label: "Manage Google Cloud credentials" },
-} as const;
 
 export const commandCenterRouter = router({
   dashboard: protectedProcedure.query(async ({ ctx }) => {
@@ -43,13 +35,16 @@ export const commandCenterRouter = router({
     await Promise.all([
       ["gmail", "Gmail authorization is not configured; health check was not run."],
       ["instagram", "Official Instagram publishing authorization is not configured; health check was not run."],
-      ["vercel", "Vercel credential and project mapping are not configured; health check was not run."],
-      ["cloudflare", "Cloudflare credential and zone mapping are not configured; health check was not run."],
-      ["google_cloud", "Google Cloud service credential and deployment target are not configured; health check was not run."],
     ].map(([service, detail]) => updateIntegrationHealth(ctx.user.id, service, { connectionStatus: "action_required", lastError: detail, permissionSummary: detail })),
     );
+    const providerChecks = await Promise.all([ ["vercel", checkVercelHealth], ["cloudflare", checkCloudflareHealth], ["google_cloud", checkGoogleCloudHealth] ] as const);
+    await Promise.all(providerChecks.map(async ([service, check]) => {
+      const result = await check();
+      await updateIntegrationHealth(ctx.user.id, service, { connectionStatus: result.connectionStatus, lastError: result.connectionStatus === "connected" ? null : result.detail, permissionSummary: result.detail });
+      await updateDeploymentTargetHealth(ctx.user.id, service, { status: result.targetStatus, detail: result.detail });
+    }));
     const registry = await listIntegrationsForOwner(ctx.user.id);
-    return registry.map(item => ({ service: item.service, displayName: item.displayName, category: item.category, connectionStatus: item.connectionStatus, detail: item.permissionSummary || item.lastError || "No connection detail recorded.", lastHealthCheckAt: item.lastHealthCheckAt, verificationState: item.connectionStatus === "action_required" && item.lastError ? "unavailable_configured_boundary" as const : item.lastHealthCheckAt ? "provider_verified" as const : "registry_default" as const, credentialManagementUrl: credentialManagementLinks[item.service as keyof typeof credentialManagementLinks]?.url ?? null, credentialManagementLabel: credentialManagementLinks[item.service as keyof typeof credentialManagementLinks]?.label ?? null }));
+    return registry.map(item => ({ service: item.service, displayName: item.displayName, category: item.category, connectionStatus: item.connectionStatus, detail: item.permissionSummary || item.lastError || "No connection detail recorded.", lastHealthCheckAt: item.lastHealthCheckAt, verificationState: item.connectionStatus === "action_required" && item.lastError ? "unavailable_configured_boundary" as const : item.lastHealthCheckAt ? "provider_verified" as const : "registry_default" as const }));
   }),
   logs: protectedProcedure.input(z.object({ query: z.string().trim().max(160).optional(), outcome: z.enum(["success", "pending", "failure", "denied"]).optional() })).query(({ ctx, input }) => searchAuditEventsForOwner(ctx.user.id, input)),
   deploymentTargets: protectedProcedure.query(({ ctx }) => listDeploymentTargetsForOwner(ctx.user.id)),

@@ -8,7 +8,7 @@ import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { sdk } from "./sdk";
-import { addAuditEvent, recordScheduledCallbackForTask } from "../db";
+import { addAuditEvent, recordReadOnlyMaintenanceCycleForTask, recordScheduledCallbackForTask } from "../db";
 import { serveStatic, setupVite } from "./vite";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -49,6 +49,18 @@ async function startServer() {
       return res.json({ ok: true, status: callback.status === "blocked" ? "blocked_pending_execution_adapter" : callback.status, scheduleId: callback.schedule.id, idempotencyKey: callback.idempotencyKey });
     } catch (error) {
       return res.status(500).json({ error: error instanceof Error ? error.message : "scheduled callback failed", timestamp: new Date().toISOString() });
+    }
+  });
+  app.post("/api/scheduled/maintenance-cycle", async (req, res) => {
+    try {
+      const user = await sdk.authenticateRequest(req);
+      if (!user.isCron || !user.taskUid) return res.status(403).json({ error: "cron-only" });
+      const cycle = await recordReadOnlyMaintenanceCycleForTask(user.taskUid);
+      if (!cycle.plan) return res.json({ ok: true, skipped: "orphan" });
+      await addAuditEvent(cycle.plan.ownerId, { action: `maintenance_cycle.${cycle.status}`, resourceType: "maintenance_plan", resourceId: String(cycle.plan.id), outcome: cycle.status === "completed" ? "success" : "pending", detail: `${cycle.summary} Idempotency key: ${cycle.idempotencyKey}. This callback is read-only and cannot publish, merge, deploy, delete, or change credentials.` });
+      return res.json({ ok: true, status: cycle.status, maintenancePlanId: cycle.plan.id, idempotencyKey: cycle.idempotencyKey, summary: cycle.summary });
+    } catch (error) {
+      return res.status(500).json({ error: error instanceof Error ? error.message : "maintenance callback failed", timestamp: new Date().toISOString() });
     }
   });
   // tRPC API

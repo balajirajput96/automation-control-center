@@ -6,7 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { startLogin } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { Bot, BookOpenText, Boxes, CalendarClock, CircuitBoard, CloudCog, FileChartColumnIncreasing, GitBranch, Image, LayoutDashboard, LogOut, PanelLeft, RadioTower, Settings2, Sparkles, Upload, Video, Waypoints } from "lucide-react";
+import { Activity, Bot, BookOpenText, Boxes, CalendarClock, CircuitBoard, CloudCog, FileChartColumnIncreasing, GitBranch, Image, LayoutDashboard, LogOut, PanelLeft, RadioTower, Settings2, Sparkles, Upload, Video, Waypoints } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from "./DashboardLayoutSkeleton";
@@ -24,6 +24,7 @@ const menuItems = [
   { icon: Upload, label: "Media Library", path: "/media" },
   { icon: FileChartColumnIncreasing, label: "Research", path: "/research" },
   { icon: CalendarClock, label: "Schedules", path: "/schedules" },
+  { icon: Activity, label: "Maintenance", path: "/maintenance" },
   { icon: CloudCog, label: "Deployments", path: "/deployments" },
   { icon: RadioTower, label: "Integrations", path: "/integrations" },
   { icon: CircuitBoard, label: "Logs", path: "/logs" },

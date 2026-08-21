@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { addAuditEvent, createAgentForOwner, createProjectForOwner, deleteProjectForOwner, listAgentsForOwner, listProjectAuditEventsForOwner, listProjectsForOwner, updateAgentForOwner, updateProjectForOwner } from "../db";
+import { addAuditEvent, createAgentDispatchForOwner, createAgentForOwner, createProjectForOwner, deleteProjectForOwner, listAgentDispatchesForOwner, listAgentsForOwner, listProjectAuditEventsForOwner, listProjectsForOwner, resolveAgentDispatchForOwner, updateAgentForOwner, updateProjectForOwner } from "../db";
 import { protectedProcedure, router } from "../_core/trpc";
 import { evaluateExecutionPolicy } from "../policy";
 
@@ -36,6 +36,7 @@ export const projectRouter = router({
 
 export const agentRouter = router({
   list: protectedProcedure.query(({ ctx }) => listAgentsForOwner(ctx.user.id)),
+  dispatches: protectedProcedure.input(z.object({ agentId: z.number().int().positive().optional() }).optional()).query(({ ctx, input }) => listAgentDispatchesForOwner(ctx.user.id, input?.agentId)),
   create: protectedProcedure.input(z.object({
     name: z.string().trim().min(2).max(160),
     description: z.string().trim().max(4000).optional(),
@@ -65,14 +66,17 @@ export const agentRouter = router({
     if (!agent) throw new Error("Agent not found");
     const policy = evaluateExecutionPolicy(agent.autonomyLevel, input.action);
     const outcome = policy.decision === "allowed" ? "success" as const : "pending" as const;
-    await addAuditEvent(ctx.user.id, { action: "agent_dispatch.requested", resourceType: "agent", resourceId: String(agent.id), outcome, detail: `${agent.name}: ${input.task}` });
-    return { status: outcome === "success" ? "queued" as const : "needs_approval" as const, policy };
+    const status = outcome === "success" ? "queued" as const : "needs_approval" as const;
+    const dispatchId = await createAgentDispatchForOwner(ctx.user.id, { agentId: agent.id, task: input.task, action: input.action, status });
+    await addAuditEvent(ctx.user.id, { action: "agent_dispatch.requested", resourceType: "agent", resourceId: String(agent.id), outcome, detail: `${agent.name}: ${input.task}`, metadata: { dispatchId, action: input.action } });
+    return { status, policy, dispatchId };
   }),
-  resolveDispatch: protectedProcedure.input(z.object({ agentId: z.number().int().positive(), task: z.string().trim().min(3).max(2000), decision: z.enum(["approved", "denied"]) })).mutation(async ({ ctx, input }) => {
-    const agents = await listAgentsForOwner(ctx.user.id); const agent = agents.find(item => item.id === input.agentId);
+  resolveDispatch: protectedProcedure.input(z.object({ dispatchId: z.number().int().positive(), decision: z.enum(["approved", "denied"]) })).mutation(async ({ ctx, input }) => {
+    const dispatch = await resolveAgentDispatchForOwner(ctx.user.id, input.dispatchId, input.decision);
+    const agents = await listAgentsForOwner(ctx.user.id); const agent = agents.find(item => item.id === dispatch.agentId);
     if (!agent) throw new Error("Agent not found");
     const outcome = input.decision === "approved" ? "success" as const : "denied" as const;
-    await addAuditEvent(ctx.user.id, { action: `agent_dispatch.${input.decision}`, resourceType: "agent", resourceId: String(agent.id), outcome, detail: `${agent.name}: ${input.task}. No external action was invoked.` });
+    await addAuditEvent(ctx.user.id, { action: `agent_dispatch.${input.decision}`, resourceType: "agent", resourceId: String(agent.id), outcome, detail: `${agent.name}: ${dispatch.task}. No external action was invoked.`, metadata: { dispatchId: dispatch.id, action: dispatch.action } });
     return { status: input.decision, execution: "not_invoked" as const };
   }),
 });

@@ -54,6 +54,17 @@ export const agents = mysqlTable("agents", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, table => [index("agents_owner_project_idx").on(table.ownerId, table.projectId)]);
 
+export const agentDispatches = mysqlTable("agent_dispatches", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  agentId: int("agentId").notNull(),
+  task: text("task").notNull(),
+  action: mysqlEnum("action", ["plan", "research", "generate_content", "publish", "deploy", "delete", "credential_change"]).notNull(),
+  status: mysqlEnum("status", ["needs_approval", "queued", "approved", "denied"]).notNull(),
+  resolvedAt: timestamp("resolvedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, table => [index("agent_dispatches_owner_status_created_idx").on(table.ownerId, table.status, table.createdAt), index("agent_dispatches_agent_status_idx").on(table.agentId, table.status)]);
+
 export const conversations = mysqlTable("conversations", {
   id: int("id").autoincrement().primaryKey(),
   ownerId: int("ownerId").notNull(),
@@ -153,6 +164,33 @@ export const scheduleExecutions = mysqlTable("schedule_executions", {
   detail: text("detail").notNull(),
   receivedAt: timestamp("receivedAt").defaultNow().notNull(),
 }, table => [uniqueIndex("schedule_executions_schedule_key_unique").on(table.scheduleId, table.idempotencyKey), index("schedule_executions_owner_received_idx").on(table.ownerId, table.receivedAt)]);
+
+export const maintenancePlans = mysqlTable("maintenance_plans", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  name: varchar("name", { length: 160 }).notNull(),
+  maxCycles: int("maxCycles").default(2400).notNull(),
+  cyclesCompleted: int("cyclesCompleted").default(0).notNull(),
+  intervalMinutes: int("intervalMinutes").default(60).notNull(),
+  scheduleCronTaskUid: varchar("scheduleCronTaskUid", { length: 65 }),
+  enabled: boolean("enabled").default(true).notNull(),
+  lastCycleAt: timestamp("lastCycleAt"),
+  lastSummary: text("lastSummary"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [index("maintenance_plans_owner_enabled_idx").on(table.ownerId, table.enabled), index("maintenance_plans_task_uid_idx").on(table.scheduleCronTaskUid)]);
+
+export const maintenanceCycles = mysqlTable("maintenance_cycles", {
+  id: int("id").autoincrement().primaryKey(),
+  maintenancePlanId: int("maintenancePlanId").notNull(),
+  ownerId: int("ownerId").notNull(),
+  taskUid: varchar("taskUid", { length: 65 }).notNull(),
+  idempotencyKey: varchar("idempotencyKey", { length: 180 }).notNull(),
+  status: mysqlEnum("status", ["completed", "duplicate", "skipped", "failed"]).notNull(),
+  summary: text("summary").notNull(),
+  details: json("details"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, table => [uniqueIndex("maintenance_cycles_plan_key_unique").on(table.maintenancePlanId, table.idempotencyKey), index("maintenance_cycles_owner_created_idx").on(table.ownerId, table.createdAt)]);
 
 export const niftyWatchDefinitions = mysqlTable("nifty_watch_definitions", {
   id: int("id").autoincrement().primaryKey(),
