@@ -33,6 +33,8 @@ run_step exact-tests env ROOT="$ROOT" "$SCRIPT_DIR/run_exact_tests.sh" "$REPOS" 
 run_step python-tests bash -lc "cd '$REPOS/daily-research-reels-automation' && pytest -q; a=\$?; cd '$REPOS/pharma-outreach-automation' && pytest -q; b=\$?; exit \$((a||b))"
 find "$REPOS" -type f -name '*.pyc' -delete
 find "$REPOS" -type d -name __pycache__ -empty -delete
+# github-mcp-serve may generate this reset artifact during checks; remove only that known path.
+rm -f "$REPOS/github-mcp-serve/pnpm-lock.yaml"
 set +e
 git_rc=0
 for dir in "$REPOS"/*; do
