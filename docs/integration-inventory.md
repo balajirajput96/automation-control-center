@@ -38,7 +38,7 @@ Julius still presented a Log In dialog. A Google sign-in attempt was initiated t
 
 ## Google Drive report destination
 
-A private Google Drive folder named **Automation Control Center** has been created for future runbooks and approved automation reports. Its verified Drive folder ID is `1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo`; an earlier stale reference was retired after a read-only verification. No existing Drive files were modified or shared.
+A private Google Drive folder named **Automation Control Center** has been created for future runbooks and approved automation reports. Its currently verified Drive folder ID is `18l-M8C00XpE6l3kxn1tSkp6vNi0SJcOR`. No existing Drive files were modified or shared.
 
 ## GitHub automation validation
 

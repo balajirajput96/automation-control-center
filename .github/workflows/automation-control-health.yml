@@ -101,8 +101,8 @@ jobs:
           grep -q "LASTEXITCODE" antigravity/run-daily-review.ps1
 
           # Check private Drive folder ID in scheduled prompts
-          grep -q "1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo" gemini-spark/daily-brief-prompt.md
-          grep -q "1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo" julius/scheduled-analysis-prompt.md
+          grep -q "18l-M8C00XpE6l3kxn1tSkp6vNi0SJcOR" gemini-spark/daily-brief-prompt.md
+          grep -q "18l-M8C00XpE6l3kxn1tSkp6vNi0SJcOR" julius/scheduled-analysis-prompt.md
 
       - name: Verify no local secret files are tracked
         shell: bash
