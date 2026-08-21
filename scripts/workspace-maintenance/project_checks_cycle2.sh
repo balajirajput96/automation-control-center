@@ -47,8 +47,16 @@ for dir in "$REPOS"/*; do
   if [ "$result" = "pass" ]; then
     if node -e 'let p=require(process.argv[1]); process.exit(p.scripts&&p.scripts.test?0:1)' "$dir/package.json" >/dev/null 2>&1; then
       if [ "$name" = "chatbot" ]; then
-        # Next.js/Playwright needs a bounded heap in constrained local environments.
-        test=$(run_cmd "$LOGS/${name}_test.log" 600 "cd '$dir' && NODE_OPTIONS=--max-old-space-size=1536 pnpm test")
+        # Next.js/Playwright needs a bounded heap and a provisioned browser after reset.
+        if [ ! -x "${PLAYWRIGHT_CHROMIUM:-$HOME/.cache/ms-playwright/chromium-1161/chrome-linux/chrome}" ]; then
+          install_browser=$(run_cmd "$LOGS/${name}_playwright_install.log" 600 "cd '$dir' && pnpm exec playwright install chromium")
+          [ "$install_browser" -eq 0 ] || result="playwright_install_failure"
+        fi
+        if [ "$result" = "pass" ]; then
+          test=$(run_cmd "$LOGS/${name}_test.log" 600 "cd '$dir' && NODE_OPTIONS=--max-old-space-size=1536 pnpm test")
+        else
+          test="skipped"
+        fi
       else
         test=$(run_cmd "$LOGS/${name}_test.log" 600 "cd '$dir' && pnpm test")
       fi
