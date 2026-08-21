@@ -6,7 +6,7 @@ Every day at 08:00 local time, review only the Google apps that I have explicitl
 
 Save each daily briefing document to the existing private Google Drive destination folder:
 - **Folder Name**: `Automation Control Center`
-- **Folder ID**: `18l-M8C00XpE6l3kxn1tSkp6vNi0SJcOR`
+- **Folder ID**: `1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo`
 - **File Name Format**: `daily-brief_YYYY-MM-DD.md` (or Google Doc titled `Daily Automation Briefing — YYYY-MM-DD`)
 
 ## Structured Output Contract

@@ -43,3 +43,5 @@ WORKSPACE_OUTPUT_DIR=reports/private/workspace-maintenance scripts/workspace-mai
 ```
 
 The daily runner writes machine-readable local output under `reports/private/workspace-maintenance/`. Review failures rather than suppressing them; the runner continues through bounded stages so the final TSV contains a complete picture.
+
+Repository recovery is deliberately **plan-first**. `recover_repositories.sh --plan` emits an ignored TSV identifying clean fast-forward or clone candidates without touching any checkout. An apply run requires an explicit `ALLOW_REPOSITORY_RECOVERY=1` environment flag and refuses to proceed through a dirty working tree or a non-Git destination. It never moves or deletes existing files automatically.

@@ -7,7 +7,7 @@ Run this analysis once each business day after the source dataset has refreshed.
 Save and deliver the generated analysis report to the existing private Google Drive destination folder:
 - **Destination Service**: Google Drive (Private)
 - **Folder Name**: `Automation Control Center`
-- **Folder ID**: `18l-M8C00XpE6l3kxn1tSkp6vNi0SJcOR`
+- **Folder ID**: `1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo`
 - **File Naming Convention**: `julius-analysis_YYYY-MM-DD.json` or `julius-analysis_YYYY-MM-DD.md`
 
 ## Structured Output Contract
@@ -80,5 +80,5 @@ Before enabling the schedule, verify the configuration values below:
 | Dataset | The exact Julius dataset, notebook, or connected data source |
 | Business objective | The decision, report, or metric this analysis serves |
 | Reporting time | Local daily run time (e.g. 08:30 local) |
-| Delivery destination | Google Drive: `Automation Control Center` (`18l-M8C00XpE6l3kxn1tSkp6vNi0SJcOR`) |
+| Delivery destination | Google Drive: `Automation Control Center` (`1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo`) |
 | Human review rule | The person or condition that approves follow-up actions |

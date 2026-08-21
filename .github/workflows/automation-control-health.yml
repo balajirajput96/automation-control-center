@@ -59,6 +59,8 @@ jobs:
             "scripts/workspace-maintenance/test_workspace_maintenance.sh"
             "scripts/workspace-maintenance/project_checks_cycle2.sh"
             "scripts/workspace-maintenance/test_project_checks_cycle2.sh"
+            "scripts/workspace-maintenance/recover_repositories.sh"
+            "scripts/workspace-maintenance/test_recover_repositories.sh"
             "scripts/continuous-maintenance/audit_rebase_state.sh"
             "scripts/continuous-maintenance/daily_workspace_maintenance.sh"
             "scripts/continuous-maintenance/original_repo_metadata.tsv"
@@ -95,6 +97,7 @@ jobs:
           python scripts/test_record_terminal_history_metadata.py
           bash scripts/workspace-maintenance/test_workspace_maintenance.sh
           bash scripts/workspace-maintenance/test_project_checks_cycle2.sh
+          bash scripts/workspace-maintenance/test_recover_repositories.sh
           bash scripts/continuous-maintenance/test_continuous_maintenance.sh
           bash scripts/github-account-audit/test_github_account_audit.sh
 
@@ -124,8 +127,8 @@ jobs:
           grep -q "LASTEXITCODE" antigravity/run-daily-review.ps1
 
           # Check private Drive folder ID in scheduled prompts
-          grep -q "18l-M8C00XpE6l3kxn1tSkp6vNi0SJcOR" gemini-spark/daily-brief-prompt.md
-          grep -q "18l-M8C00XpE6l3kxn1tSkp6vNi0SJcOR" julius/scheduled-analysis-prompt.md
+          grep -q "1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo" gemini-spark/daily-brief-prompt.md
+          grep -q "1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo" julius/scheduled-analysis-prompt.md
 
       - name: Verify no local secret files are tracked
         shell: bash
