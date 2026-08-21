@@ -1,0 +1,16 @@
+[Unit]
+Description=GitHub Workspace Daily Maintenance
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+WorkingDirectory=%h/github-workspace
+Environment=WORKSPACE_ROOT=%h/github-workspace
+Environment=WORKSPACE_REPOS=%h/github-workspace/repos
+Environment=PATH=%h/.nvm/versions/node/v22.13.0/bin:%h/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=/usr/bin/flock -n /tmp/github-workspace-daily-maintenance.lock /usr/bin/timeout 2400 /usr/bin/bash %h/github-workspace/repos/automation-control-center/scripts/continuous-maintenance/daily_workspace_maintenance.sh
+StandardOutput=append:%h/github-workspace/checkpoints/systemd-daily-maintenance.log
+StandardError=append:%h/github-workspace/checkpoints/systemd-daily-maintenance.log
+TimeoutStartSec=2500
