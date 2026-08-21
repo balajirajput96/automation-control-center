@@ -59,6 +59,14 @@ jobs:
             "scripts/workspace-maintenance/test_workspace_maintenance.sh"
             "scripts/workspace-maintenance/project_checks_cycle2.sh"
             "scripts/workspace-maintenance/test_project_checks_cycle2.sh"
+            "scripts/continuous-maintenance/audit_rebase_state.sh"
+            "scripts/continuous-maintenance/daily_workspace_maintenance.sh"
+            "scripts/continuous-maintenance/original_repo_metadata.tsv"
+            "scripts/continuous-maintenance/run_exact_tests.sh"
+            "scripts/continuous-maintenance/run_repo_checks_cycle.sh"
+            "scripts/continuous-maintenance/test_continuous_maintenance.sh"
+            "systemd/github-workspace-daily-maintenance.service"
+            "systemd/github-workspace-daily-maintenance.timer"
             "scripts/github-account-audit/run_audit.sh"
             "scripts/github-account-audit/bootstrap_state_branch.sh"
             "scripts/github-account-audit/test_github_account_audit.sh"
@@ -87,6 +95,7 @@ jobs:
           python scripts/test_record_terminal_history_metadata.py
           bash scripts/workspace-maintenance/test_workspace_maintenance.sh
           bash scripts/workspace-maintenance/test_project_checks_cycle2.sh
+          bash scripts/continuous-maintenance/test_continuous_maintenance.sh
           bash scripts/github-account-audit/test_github_account_audit.sh
 
       - name: Validate secret-safe CLI integration health checker
