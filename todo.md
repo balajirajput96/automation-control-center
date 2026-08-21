@@ -64,10 +64,12 @@
 - [x] Design and document a 2,400-cycle hourly continuation model with bounded self-healing, machine-readable sanitized state, and GitHub-centered maintenance.
 - [x] Implement and test the continuation state recorder, bounded maintenance workflow, and safe recovery procedures without exporting credentials or raw history.
 - [x] Configure and verify the authorized hourly continuation schedule for up to 2,400 cycles.
-- [ ] Publish the verified persistent-mission controls and record external-provider or user-controlled blockers.
+- [x] Publish the verified persistent-mission controls and record external-provider or user-controlled blockers.
 - [x] Restore the existing daily control review because the current scheduler reports it paused.
 - [x] Repair any stale fixed workspace paths and self-matching safety guards in synchronized continuation scripts before enabling their broader use.
 - [x] Add deterministic regression coverage for plan-first repository recovery and include it in private health validation.
 - [x] Replace stale Drive destination assertions in the synchronized health workflow with the verified private Automation Control Center folder contract.
+- [x] Run the current bounded private maintenance review across repository, schedule, approved CLIs, Drive, n8n, execution records, templates, and tracked-secret protections.
+- [x] Document the verified absence of local Gemini and Jules CLI executables in the current sandbox without modifying provider authentication or installations.
 - [x] Complete final isolated runtime validation of Dependabot PR #5 and merge it only if its validated toolchain update remains clean.
 - [x] Repair merged workspace-maintenance scripts so they use current project paths, metadata-only history inspection, opt-in cleanup, and accurate non-secret CLI readiness checks.
