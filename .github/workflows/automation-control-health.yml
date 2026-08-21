@@ -60,6 +60,9 @@ jobs:
             "scripts/github-account-audit/run_audit.sh"
             "scripts/github-account-audit/bootstrap_state_branch.sh"
             "scripts/github-account-audit/test_github_account_audit.sh"
+            "scripts/integration-health/check_cli_integrations.sh"
+            "scripts/integration-health/test_cli_integrations.sh"
+            "docs/secure-integration-persistence.md"
           )
           for path in "${required[@]}"; do
             test -f "$path"
@@ -82,6 +85,14 @@ jobs:
           python scripts/test_record_terminal_history_metadata.py
           bash scripts/workspace-maintenance/test_workspace_maintenance.sh
           bash scripts/github-account-audit/test_github_account_audit.sh
+
+      - name: Validate secret-safe CLI integration health checker
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n scripts/integration-health/check_cli_integrations.sh
+          bash -n scripts/integration-health/test_cli_integrations.sh
+          bash scripts/integration-health/test_cli_integrations.sh
 
       - name: Validate local configuration contracts and security
         shell: bash
