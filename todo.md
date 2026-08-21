@@ -77,6 +77,8 @@
 - [x] Apply, validate, and privately publish only confirmed low-risk continuity repairs from the renewed cycle.
 - [x] Run the next bounded persistent continuation cycle across repository state, workflows, schedules, Drive, n8n, approved CLIs, and state records.
 - [x] Implement, test, and privately publish only confirmed low-risk fixes or state-record corrections from this continuation cycle.
+- [ ] Safely rebase the local continuation tracker onto the newly advanced private main branch and audit its command-center resilience, schema, and dependency changes.
+- [ ] Validate and publish only confirmed low-risk integration fixes from the synchronized resilience-control update.
 - [x] Record the read-only preservation review of unmerged private historical-maintenance branches without merging or executing their code.
 - [x] Refresh the readiness record with the verified advance of the hourly continuation state from execution 39 to 41.
 - [x] Update the readiness record to reflect the newly completed private health and hourly continuation workflow runs.
