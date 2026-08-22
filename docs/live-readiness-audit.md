@@ -7,7 +7,7 @@
 | GitHub Actions | The five most recent `Automation Control Health` runs completed successfully. The latest run, `31994321361`, completed at `2026-08-17T04:23:46Z` for commit `f305d033d66555d8d3a0da95392ddcc5257d0e8c`. | **Active** |
 | n8n API | The configured endpoint returned the n8n Cloud `404 - No workspace here` response when queried read-only. No workflows or executions are currently available at that endpoint. | **Blocked** |
 | n8n MCP | The configured MCP endpoint rejected initialization with a `4xx` legacy-SSE compatibility error, so no workflow-management tools are currently exposed. | **Blocked** |
-| Google Drive | Folder ID `1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo` exists, is not trashed, and is named **Automation Control Center**. The superseded identifier returns provider HTTP `404`. | **Active** |
+| Google Drive | Folder ID `18l-M8C00XpE6l3kxn1tSkp6vNi0SJcOR` exists, is not trashed, and is named **Automation Control Center**. The superseded identifier returns provider HTTP `404`. | **Active** |
 | Gemini Spark | The schedules URL loaded without visible schedule content in the current browser session; its active account and schedule state could not be confirmed. | **Blocked** |
 | Julius | The workspace shell is visible, but the page still presents **Log In**, so the session and any scheduled analysis remain unverified. | **Blocked** |
 | Daily control review | The configured **Daily Automation Control and Antigravity Review** remains enabled at `09:15` Asia/Calcutta; its last recorded execution is `2026-08-17T03:48:45.585Z`. | **Active** |

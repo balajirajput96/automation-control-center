@@ -38,7 +38,7 @@ Julius still presented a Log In dialog. A Google sign-in attempt was initiated t
 
 ## Google Drive report destination
 
-A private Google Drive folder named **Automation Control Center** is the verified destination for future runbooks and approved automation reports. Its current Drive folder ID is `1wwQXNYhxGkhaVrHJn6BHX8jOp41XZcqo`; the superseded identifier returned provider HTTP `404` during the latest read-only check. No existing Drive files were modified or shared.
+A private Google Drive folder named **Automation Control Center** is the verified destination for future runbooks and approved automation reports. Its current Drive folder ID is `18l-M8C00XpE6l3kxn1tSkp6vNi0SJcOR`; the superseded identifier returned provider HTTP `404` during the latest read-only check. No existing Drive files were modified or shared.
 
 ## GitHub automation validation
 
