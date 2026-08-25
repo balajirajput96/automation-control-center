@@ -84,6 +84,25 @@
 - [x] Migrate deprecated command-center pnpm manifest settings into supported workspace configuration to remove validation warnings without changing dependency intent.
 - [x] Regenerate the command-center lockfile from the synchronized Vite 7 manifest before completing frozen-install validation.
 - [x] Record the read-only preservation review of unmerged private historical-maintenance branches without merging or executing their code.
+- [x] Inspect existing research, content, media, Drive, and automation assets relevant to the 3,000 Hindi research-reels mission.
+- [x] Create the restart-safe reel taxonomy, evidence policy, uniqueness registry, source database, batch plan, and master progress checkpoint.
+- [x] Build and validate the secret-safe research-to-Drive production pipeline, including QC, upload verification, retry records, and continuation controls.
+- [x] Produce, quality-check, upload, and verify Reel 0001 with its source metadata and checkpoint before starting the next reel.
+- [x] Repair the existing Reel 0001 because verified Drive metadata shows 3.833 seconds rather than the required approximately 60-second duration.
+- [x] Preserve the original short Reel 0001 as an archived predecessor while uploading and verifying one corrected 60-second replacement with updated metadata and checkpoint.
+- [x] Reconcile conflicting existing Reel 0001 records into one canonical completed neuroplasticity reel while preserving prior blocked habit-formation assets as the unique planned Reel 0002 retry.
+- [x] Generate and validate one canonical 3,000-slot uniqueness registry, batch map, retry queue, and Drive-aware production checkpoint before scaling further.
+- [x] Create the private, restart-safe Hindi research-reels workspace and repository with Git-ignored media outputs and Drive checkpoint references.
+- [x] Safely integrate the existing private Hindi-reels repository with the local Reel 0001 repair workspace without overwriting prior production records.
+- [x] Rebuild the Reel 0001 research record, Hindi 60-second script, scene plan, narration spans, caption plan, and explicit evidence limitations.
+- [x] Extend the existing active daily automation review with the user-authorized safe Hindi-reel continuation procedure while preserving its cadence, connector scope, and security boundaries.
+- [x] Render Reel 0002 with verified local scientific visual fallback assets because five requested new scenes remain unavailable after generation was initiated.
+- [x] Finalize and verify the Drive-complete Reel 0002 checkpoint, reconcile it into the canonical catalog, and advance the next unique reel to 0003.
+- [x] Normalize rebase-introduced trailing whitespace in the verified Reel 0002 source, script, and caption specifications before final private publication.
+- [x] Normalize rebase-introduced trailing whitespace in the verified Reel 0002 source, script, and caption specifications before final private publication.
+- [x] Adjust the canonical Reel 0003 concept so it is materially distinct from Reel 0002 and add an explicit completed-topic exclusion to the uniqueness registry.
+- [x] Research, produce, quality-check, upload, and verify the concept-distinct Reel 0003 on implementation-intention if–then planning, then advance the canonical checkpoint.
+- [x] Extend the 52.93-second Reel 0003 narration with an evidence-consistent Hindi outro so the delivered reel meets the approximately 60-second target.
 - [x] Refresh the readiness record with the verified advance of the hourly continuation state from execution 39 to 41.
 - [x] Update the readiness record to reflect the newly completed private health and hourly continuation workflow runs.
 - [x] Complete final isolated runtime validation of Dependabot PR #5 and merge it only if its validated toolchain update remains clean.
