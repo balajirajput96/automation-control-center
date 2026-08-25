@@ -103,7 +103,10 @@
 - [x] Adjust the canonical Reel 0003 concept so it is materially distinct from Reel 0002 and add an explicit completed-topic exclusion to the uniqueness registry.
 - [x] Research, produce, quality-check, upload, and verify the concept-distinct Reel 0003 on implementation-intention if–then planning, then advance the canonical checkpoint.
 - [x] Extend the 52.93-second Reel 0003 narration with an evidence-consistent Hindi outro so the delivered reel meets the approximately 60-second target.
+- [x] Research, produce, quality-check, upload, and verify the concept-distinct Reel 0004 on environmental friction, then advance the canonical 3,000-reel checkpoint to Reel 0005.
+- [x] Replace the overlapping generated Reel 0004 cue concept with a concept-distinct evidence-backed environmental-friction topic before research and production.
 - [x] Refresh the readiness record with the verified advance of the hourly continuation state from execution 39 to 41.
 - [x] Update the readiness record to reflect the newly completed private health and hourly continuation workflow runs.
 - [x] Complete final isolated runtime validation of Dependabot PR #5 and merge it only if its validated toolchain update remains clean.
 - [x] Repair merged workspace-maintenance scripts so they use current project paths, metadata-only history inspection, opt-in cleanup, and accurate non-secret CLI readiness checks.
+- [ ] Research, produce, quality-check, upload, and verify the concept-distinct Reel 0005 on retrieval practice before advancing the canonical checkpoint.
