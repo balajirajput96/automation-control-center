@@ -109,4 +109,5 @@
 - [x] Update the readiness record to reflect the newly completed private health and hourly continuation workflow runs.
 - [x] Complete final isolated runtime validation of Dependabot PR #5 and merge it only if its validated toolchain update remains clean.
 - [x] Repair merged workspace-maintenance scripts so they use current project paths, metadata-only history inspection, opt-in cleanup, and accurate non-secret CLI readiness checks.
-- [ ] Research, produce, quality-check, upload, and verify the concept-distinct Reel 0005 on retrieval practice before advancing the canonical checkpoint.
+- [x] Research, produce, quality-check, upload, and verify the concept-distinct Reel 0005 on retrieval practice before advancing the canonical checkpoint to Reel 0006.
+- [ ] Research, produce, quality-check, upload, and verify the concept-distinct Reel 0006 on spaced-repetition interval scheduling before advancing the canonical checkpoint.
