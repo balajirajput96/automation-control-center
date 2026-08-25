@@ -83,7 +83,7 @@
 - [x] Perform and record desktop/mobile visual verification for Chat, NIFTY, Integrations, Deployments, Logs, and GitHub detail routes.
 - [x] Re-read the validation documentation and confirm the latest build, test, and complete route coverage details are persisted.
 - [x] Capture and record desktop/mobile verification for an actual authorized GitHub repository detail route.
-- [ ] Create a final checkpoint after all completed TODO items are marked as complete.
+- [x] Create a final checkpoint after all completed TODO items are marked as complete; credential-gated provider items remain explicitly open.
 - [x] Add a NIFTY market-data module with source-disclosed index overview, historical chart, and delayed-data status handling.
 - [x] Add configurable NIFTY watch and alert definitions with explicit non-advisory messaging and production-safe scheduling boundaries.
 - [x] Add a persisted informational NIFTY alert-definition state distinct from saved daily-close watch records.
